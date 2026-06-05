@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Reserva{% endblock %}
+{% block breadcrumb_parent %}Reservas{% endblock %}
+{% block breadcrumb_title %}Nueva Reserva{% endblock %}
+{% block nav_reservas %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'reservas:lista' %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="nueva-reserva-grid">
+
+  <!-- Formulario -->
+  <div class="card">
+    <div class="card-header">Datos de la reserva</div>
+    <div class="card-body">
+      <form method="post" novalidate id="formReserva">
+        {% csrf_token %}
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Hotel</label>
+            {{ form.hotel }}
+            {% if form.hotel.errors %}
+              <div class="form-error">{{ form.hotel.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Origen</label>
+            {{ form.origen }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Huésped</label>
+          {{ form.huesped }}
+          {% if form.huesped.errors %}
+            <div class="form-error">{{ form.huesped.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tipo de Habitación</label>
+          {{ form.tipo_habitacion }}
+          {% if form.tipo_habitacion.errors %}
+            <div class="form-error">{{ form.tipo_habitacion.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Fecha de Entrada</label>
+            {{ form.fecha_entrada }}
+            {% if form.fecha_entrada.errors %}
+              <div class="form-error">{{ form.fecha_entrada.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha de Salida</label>
+            {{ form.fecha_salida }}
+            {% if form.fecha_salida.errors %}
+              <div class="form-error">{{ form.fecha_salida.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Adultos</label>
+            {{ form.num_adultos }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Niños</label>
+            {{ form.num_ninos }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observaciones</label>
+          {{ form.observaciones }}
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-check-lg"></i> Crear Reserva
+          </button>
+          <a href="{% url 'reservas:lista' %}" class="btn-secondary">
+            Cancelar
+          </a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Panel resumen -->
+  <div>
+    <div class="card resumen-card">
+      <div class="card-header">Resumen de estadía</div>
+      <div class="card-body">
+        <div class="resumen-row">
+          <span class="resumen-label">Noches</span>
+          <span class="resumen-valor" id="resumenNoches">—</span>
+        </div>
+        <div class="resumen-row">
+          <span class="resumen-label">Tipo</span>
+          <span class="resumen-valor" id="resumenTipo">—</span>
+        </div>
+        <div class="resumen-row">
+          <span class="resumen-label">Precio / noche</span>
+          <span class="resumen-valor" id="resumenPrecioNoche">—</span>
+        </div>
+        <div class="resumen-divider"></div>
+        <div class="resumen-row resumen-total">
+          <span>Total estimado</span>
+          <span id="resumenTotal">S/ —</span>
+        </div>
+        <p class="resumen-nota">
+          El precio final se calcula con la tarifa vigente al momento de confirmar.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/nueva_reserva.js' %}"></script>
+{% endblock %}

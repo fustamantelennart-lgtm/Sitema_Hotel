@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout{% endblock %}
+{% block breadcrumb_parent %}Recepción · Check-in / out{% endblock %}
+{% block breadcrumb_title %}Checkout{% endblock %}
+{% block nav_checkin %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'reservas:folio' estancia.pk %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver al folio
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="nueva-reserva-grid">
+
+  <div class="card">
+    <div class="card-header">
+      <i class="bi bi-box-arrow-right"></i> Confirmar Checkout
+    </div>
+    <div class="card-body">
+
+      <p style="color:var(--color-text-muted); margin-bottom:20px; font-size:13.5px;">
+        Al confirmar el checkout el folio quedará cerrado y la habitación
+        <strong>{{ estancia.habitacion.numero }}</strong> pasará automáticamente
+        a estado <strong>Limpieza</strong>.
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Método de pago</label>
+          <select name="metodo_pago" class="form-select">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TARJETA">Tarjeta</option>
+            <option value="TRANSFERENCIA">Transferencia</option>
+            <option value="YAPE">Yape / Plin</option>
+          </select>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-check-lg"></i> Confirmar Checkout
+          </button>
+          <a href="{% url 'reservas:folio' estancia.pk %}" class="btn-secondary">
+            Cancelar
+          </a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="card resumen-card">
+    <div class="card-header">Resumen</div>
+    <div class="card-body">
+      <div class="resumen-row">
+        <span class="resumen-label">Huésped</span>
+        <span class="resumen-valor">{{ estancia.reserva.huesped.nombre_completo }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Habitación</span>
+        <span class="resumen-valor">{{ estancia.habitacion.numero }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Check-in</span>
+        <span class="resumen-valor">{{ estancia.fecha_checkin|date:"d M Y" }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Noches</span>
+        <span class="resumen-valor">{{ estancia.reserva.num_noches }}</span>
+      </div>
+      <div class="resumen-divider"></div>
+      <div class="resumen-row resumen-total">
+        <span>Total a cobrar</span>
+        <span>S/ {{ estancia.folio.total }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

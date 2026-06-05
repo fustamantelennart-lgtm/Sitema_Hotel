@@ -1,0 +1,37 @@
+.tarea-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  gap: 12px;
+}
+
+.tarea-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tarea-numero {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  min-width: 48px;
+}
+
+.tarea-tipo {
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tarea-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tarea-accion {
+  flex-shrink: 0;
+}
