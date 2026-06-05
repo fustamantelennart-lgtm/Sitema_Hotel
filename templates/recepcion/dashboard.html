@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard — Recepción{% endblock %}
-{% block nav_recepcion %}active{% endblock %}
+{% block title %}Habitaciones{% endblock %}
+{% block breadcrumb_parent %}Recepción{% endblock %}
+{% block breadcrumb_title %}Habitaciones{% endblock %}
+{% block nav_habitaciones %}active{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -10,110 +12,75 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="fw-bold mb-0">
-    <i class="bi bi-grid-3x3-gap"></i>
-    Mapa de Habitaciones
-    {% if hotel %}<small class="text-muted fs-6 ms-2">{{ hotel.nombre }}</small>{% endif %}
-  </h4>
-  <a href="{% url 'reservas:nueva' %}" class="btn btn-dark">
-    <i class="bi bi-plus-lg"></i> Nueva Reserva
-  </a>
-</div>
-
 <!-- KPIs -->
-<div class="row g-3 mb-4">
-  <div class="col-6 col-md-3">
-    <div class="card kpi-card disponibles h-100">
-      <div class="card-body">
-        <div class="text-muted small">Disponibles</div>
-        <div class="fs-2 fw-bold text-success">{{ disponibles }}</div>
-        <div class="text-muted small">de {{ total }} habitaciones</div>
-      </div>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">
+      <span class="dot dot-disponible"></span> Disponibles
     </div>
+    <div class="kpi-value">{{ disponibles }}</div>
+    <div class="kpi-sub">de {{ total }} habitaciones</div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="card kpi-card ocupadas h-100">
-      <div class="card-body">
-        <div class="text-muted small">Ocupadas</div>
-        <div class="fs-2 fw-bold text-danger">{{ ocupadas }}</div>
-      </div>
+  <div class="kpi-card">
+    <div class="kpi-label">
+      <span class="dot dot-ocupada"></span> Ocupadas
     </div>
+    <div class="kpi-value">{{ ocupadas }}</div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="card kpi-card limpieza h-100">
-      <div class="card-body">
-        <div class="text-muted small">En Limpieza</div>
-        <div class="fs-2 fw-bold text-warning">{{ limpieza }}</div>
-      </div>
+  <div class="kpi-card">
+    <div class="kpi-label">
+      <span class="dot dot-limpieza"></span> En Limpieza
     </div>
+    <div class="kpi-value">{{ limpieza }}</div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="card kpi-card mant h-100">
-      <div class="card-body">
-        <div class="text-muted small">Mantenimiento</div>
-        <div class="fs-2 fw-bold text-secondary">{{ mant }}</div>
-      </div>
+  <div class="kpi-card">
+    <div class="kpi-label">
+      <span class="dot dot-mantenimiento"></span> Mantenimiento
     </div>
+    <div class="kpi-value">{{ mant }}</div>
   </div>
-</div>
-
-<!-- Leyenda -->
-<div class="d-flex gap-3 mb-4 flex-wrap">
-  <span class="badge bg-success px-3 py-2">● Disponible</span>
-  <span class="badge bg-danger px-3 py-2">● Ocupada</span>
-  <span class="badge bg-warning text-dark px-3 py-2">● En Limpieza</span>
-  <span class="badge bg-secondary px-3 py-2">● Mantenimiento</span>
 </div>
 
 <!-- Mapa por piso -->
 {% for piso, habs in pisos.items %}
-<div class="mb-4">
-  <h6 class="text-muted fw-bold mb-2 text-uppercase">
-    <i class="bi bi-layers"></i> Piso {{ piso }}
-  </h6>
-  <div class="d-flex flex-wrap gap-2">
-    {% for hab in habs %}
-    <div class="habitacion-celda bg-{{ hab.color }}
-                {% if hab.color == 'warning' %}text-dark{% else %}text-white{% endif %}"
-         data-id="{{ hab.id }}"
-         data-numero="{{ hab.numero }}"
-         data-estado="{{ hab.get_estado_display }}"
-         data-tipo="{{ hab.tipo.nombre }}"
-         data-precio="{{ hab.tipo.precio_base }}">
-      <span class="numero">{{ hab.numero }}</span>
-      <span class="tipo">{{ hab.tipo.nombre }}</span>
-    </div>
-    {% endfor %}
+<div class="piso-header">
+  Piso {{ piso }} · {{ habs|length }} habitaciones
+</div>
+<div class="hab-grid mb-4">
+  {% for hab in habs %}
+  <div class="hab-celda {{ hab.estado|lower }}"
+       data-id="{{ hab.id }}"
+       data-numero="{{ hab.numero }}"
+       data-estado="{{ hab.get_estado_display }}"
+       data-tipo="{{ hab.tipo.nombre }}"
+       data-precio="{{ hab.tipo.precio_base }}">
+    <span class="hab-estado-dot dot-{{ hab.estado|lower }}"></span>
+    <div class="hab-numero">{{ hab.numero }}</div>
+    <div class="hab-tipo">{{ hab.tipo.nombre }}</div>
+    <div class="hab-estado-label {{ hab.estado|lower }}">{{ hab.get_estado_display }}</div>
   </div>
+  {% endfor %}
 </div>
 {% empty %}
 <div class="alert alert-info">
   <i class="bi bi-info-circle"></i>
-  No hay habitaciones registradas. 
-  <a href="/admin/recepcion/habitacion/add/">Agregar desde el admin</a>
+  No hay habitaciones. <a href="/admin/recepcion/habitacion/add/">Agregar desde el admin</a>
 </div>
 {% endfor %}
 
 <!-- Modal detalle -->
-<div class="modal fade" id="modalHab" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="bi bi-door-open"></i>
-          Habitación <span id="modalNumero"></span>
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Tipo:</strong> <span id="modalTipo"></span></p>
-        <p><strong>Estado:</strong> <span id="modalEstado"></span></p>
-        <p><strong>Precio base:</strong> S/ <span id="modalPrecio"></span> / noche</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      </div>
+<div id="modalOverlay" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-box-header">
+      <span class="modal-box-title">Habitación <span id="modalNumero"></span></span>
+      <button class="modal-box-close" id="modalClose">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-box-body">
+      <p><span class="form-label">Tipo</span> <span id="modalTipo"></span></p>
+      <p><span class="form-label">Estado</span> <span id="modalEstado"></span></p>
+      <p><span class="form-label">Precio base</span> S/ <span id="modalPrecio"></span> / noche</p>
     </div>
   </div>
 </div>

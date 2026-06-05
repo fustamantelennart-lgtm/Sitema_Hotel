@@ -10,11 +10,7 @@
 ## Equipo
 | Nombre | Módulo |
 |---|---|
-| Fustamante Sosa Lennart Samuel | Recepción + Reservas |
-| Correa Hurtado Sleyter Alexander | Housekeeping |
-| Medina Garcés Leonardo Franco | Gerencia + Reportes |
-| Llatas Davila Walter Alessandro | Usuarios + Testing |
-
+| Fustamante Sosa Lennart Samuel
 ## Levantar el proyecto
 
 ```bash

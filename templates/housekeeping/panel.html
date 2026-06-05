@@ -1,7 +1,94 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Housekeeping{% endblock %}
+{% block breadcrumb_parent %}Limpieza{% endblock %}
+{% block breadcrumb_title %}Tareas{% endblock %}
 {% block nav_housekeeping %}active{% endblock %}
+
+{% block topbar_actions %}
+<div class="topbar-actions">
+  <span class="badge badge-gray">
+    {{ tareas.count }} tarea{{ tareas.count|pluralize }} pendiente{{ tareas.count|pluralize }}
+  </span>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/housekeeping.css' %}">
+{% endblock %}
+
 {% block content %}
-<h4 class="fw-bold mb-4"><i class="bi bi-stars"></i> Panel Housekeeping</h4>
-<p class="text-muted">Módulo en construcción...</p>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); max-width:500px; margin-bottom:24px;">
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-limpieza"></span> Pendientes</div>
+    <div class="kpi-value">{{ pendientes }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-ocupada"></span> En proceso</div>
+    <div class="kpi-value">{{ en_proceso }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-disponible"></span> Listas hoy</div>
+    <div class="kpi-value">{{ listas_hoy }}</div>
+  </div>
+</div>
+
+<!-- Lista de tareas -->
+{% if tareas %}
+  {% regroup tareas by habitacion.piso as tareas_por_piso %}
+  {% for piso in tareas_por_piso %}
+  <div class="piso-header">Piso {{ piso.grouper }}</div>
+
+  {% for tarea in piso.list %}
+  <div class="tarea-row card mb-2">
+    <div class="tarea-info">
+      <div class="tarea-numero">{{ tarea.habitacion.numero }}</div>
+      <div>
+        <div class="tarea-tipo">{{ tarea.habitacion.tipo.nombre }}</div>
+        <div class="tarea-meta">
+          <span class="badge {% if tarea.prioridad == 'ALTA' %}badge-red{% elif tarea.prioridad == 'MEDIA' %}badge-sand{% else %}badge-gray{% endif %}">
+            {{ tarea.get_prioridad_display }}
+          </span>
+          {% if tarea.asignada_a %}
+          <span style="font-size:12px; color:var(--color-text-muted);">
+            <i class="bi bi-person"></i> {{ tarea.asignada_a.get_full_name }}
+          </span>
+          {% endif %}
+          <span style="font-size:12px; color:var(--color-text-muted);">
+            <i class="bi bi-clock"></i> {{ tarea.fecha_creacion|date:"H:i" }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="tarea-accion">
+      {% if tarea.estado == 'PENDIENTE' %}
+      <form method="post" action="{% url 'housekeeping:iniciar' tarea.pk %}">
+        {% csrf_token %}
+        <button class="btn-secondary" type="submit">
+          <i class="bi bi-play"></i> Iniciar
+        </button>
+      </form>
+      {% elif tarea.estado == 'EN_PROCESO' %}
+      <form method="post" action="{% url 'housekeeping:completar' tarea.pk %}">
+        {% csrf_token %}
+        <button class="btn-primary" type="submit">
+          <i class="bi bi-check-lg"></i> Marcar lista
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  {% endfor %}
+{% else %}
+<div class="alert alert-success">
+  <i class="bi bi-check-circle"></i>
+  No hay tareas pendientes. Todas las habitaciones están listas.
+</div>
+{% endif %}
+
 {% endblock %}

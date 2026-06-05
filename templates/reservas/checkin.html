@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Check-in{% endblock %}
+{% block breadcrumb_parent %}Recepción · Check-in / out{% endblock %}
+{% block breadcrumb_title %}Check-in{% endblock %}
+{% block nav_checkin %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'reservas:lista' %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="nueva-reserva-grid">
+
+  <!-- Formulario -->
+  <div class="card">
+    <div class="card-header">
+      <i class="bi bi-box-arrow-in-right"></i>
+      Asignación de habitación
+    </div>
+    <div class="card-body">
+
+      {% if habitaciones %}
+      <p style="color:var(--color-text-muted); font-size:13px; margin-bottom:16px;">
+        Selecciona una habitación disponible del tipo
+        <strong>{{ reserva.tipo_habitacion.nombre }}</strong>
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="hab-grid mb-4">
+          {% for hab in habitaciones %}
+          <label class="hab-celda disponible" style="cursor:pointer;">
+            <input type="radio" name="habitacion" value="{{ hab.id }}"
+                   style="display:none" required>
+            <span class="hab-estado-dot dot-disponible"></span>
+            <div class="hab-numero">{{ hab.numero }}</div>
+            <div class="hab-tipo">{{ hab.tipo.nombre }}</div>
+            <div class="hab-estado-label disponible">Piso {{ hab.piso }}</div>
+          </label>
+          {% endfor %}
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-check-lg"></i> Confirmar Check-in
+          </button>
+          <a href="{% url 'reservas:lista' %}" class="btn-secondary">Cancelar</a>
+        </div>
+      </form>
+
+      {% else %}
+      <div class="alert alert-error">
+        <i class="bi bi-exclamation-circle"></i>
+        No hay habitaciones disponibles del tipo
+        <strong>{{ reserva.tipo_habitacion.nombre }}</strong>.
+      </div>
+      <a href="{% url 'reservas:lista' %}" class="btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="card resumen-card">
+    <div class="card-header">Resumen de estadía</div>
+    <div class="card-body">
+      <div class="resumen-row">
+        <span class="resumen-label">Reserva</span>
+        <span class="resumen-valor">R-{{ reserva.pk }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Huésped</span>
+        <span class="resumen-valor">{{ reserva.huesped.nombre_completo }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Tipo</span>
+        <span class="resumen-valor">{{ reserva.tipo_habitacion.nombre }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Llegada</span>
+        <span class="resumen-valor">{{ reserva.fecha_entrada }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Salida</span>
+        <span class="resumen-valor">{{ reserva.fecha_salida }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Noches</span>
+        <span class="resumen-valor">{{ reserva.num_noches }}</span>
+      </div>
+      <div class="resumen-row">
+        <span class="resumen-label">Adultos</span>
+        <span class="resumen-valor">{{ reserva.num_adultos }}</span>
+      </div>
+      <div class="resumen-divider"></div>
+      <div class="resumen-row resumen-total">
+        <span>Total</span>
+        <span>S/ {{ reserva.precio_total }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/checkin.js' %}"></script>
+{% endblock %}

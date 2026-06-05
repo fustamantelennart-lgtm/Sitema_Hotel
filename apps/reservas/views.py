@@ -10,9 +10,15 @@ from .forms import ReservaForm, CargoForm
 @login_required
 def lista(request):
     hoy = timezone.now().date()
-    llegadas  = Reserva.objects.filter(fecha_entrada=hoy,  estado='CONFIRMADA').select_related('huesped','tipo_habitacion')
-    en_casa   = Reserva.objects.filter(estado='CHECKIN').select_related('huesped','habitacion')
-    salidas   = Reserva.objects.filter(fecha_salida=hoy,   estado='CHECKIN').select_related('huesped','habitacion')
+    llegadas = Reserva.objects.filter(
+        fecha_entrada=hoy, estado='CONFIRMADA'
+    ).select_related('huesped', 'tipo_habitacion')
+    en_casa = Reserva.objects.filter(
+        estado='CHECKIN'
+    ).select_related('huesped', 'habitacion')
+    salidas = Reserva.objects.filter(
+        fecha_salida=hoy, estado='CHECKIN'
+    ).select_related('huesped', 'habitacion')
     context = {
         'llegadas': llegadas,
         'en_casa':  en_casa,
@@ -40,7 +46,7 @@ def nueva(request):
 def checkin(request, pk):
     reserva = get_object_or_404(Reserva, pk=pk, estado='CONFIRMADA')
 
-    # REGLA: solo habitaciones DISPONIBLES
+    # REGLA: solo habitaciones DISPONIBLES del mismo tipo
     habitaciones = Habitacion.objects.filter(
         hotel=reserva.hotel,
         tipo=reserva.tipo_habitacion,
@@ -48,7 +54,7 @@ def checkin(request, pk):
     )
 
     if request.method == 'POST':
-        hab_id = request.POST.get('habitacion')
+        hab_id     = request.POST.get('habitacion')
         habitacion = get_object_or_404(Habitacion, pk=hab_id, estado='DISPONIBLE')
 
         # Crear estancia
@@ -65,12 +71,12 @@ def checkin(request, pk):
             tipo='HABITACION',
             registrado_por=request.user,
         )
-        # Crear folio
+        # Crear y calcular folio
         folio = Folio.objects.create(estancia=estancia)
         folio.recalcular()
 
         # Cambiar estados
-        habitacion.estado = 'OCUPADA'
+        habitacion.estado  = 'OCUPADA'
         habitacion.save()
         reserva.estado     = 'CHECKIN'
         reserva.habitacion = habitacion
@@ -103,11 +109,10 @@ def agregar_cargo(request, pk):
     form     = CargoForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            cargo = form.save(commit=False)
+            cargo                = form.save(commit=False)
             cargo.estancia       = estancia
             cargo.registrado_por = request.user
             cargo.save()
-            # Recalcular folio
             estancia.folio.recalcular()
             messages.success(request, f'Cargo "{cargo.concepto}" agregado.')
             return redirect('reservas:folio', pk=estancia.pk)
@@ -130,7 +135,7 @@ def checkout(request, pk):
         metodo_pago = request.POST.get('metodo_pago', 'EFECTIVO')
 
         # Cerrar folio
-        folio = estancia.folio
+        folio             = estancia.folio
         folio.estado      = 'PAGADO'
         folio.fecha_pago  = timezone.now()
         folio.metodo_pago = metodo_pago
@@ -141,4 +146,38 @@ def checkout(request, pk):
         estancia.fecha_checkout = timezone.now()
         estancia.save()
 
-        # Cambiar estad
+        # Cambiar estado reserva
+        reserva        = estancia.reserva
+        reserva.estado = 'CHECKOUT'
+        reserva.save()
+
+        # REGLA CRÍTICA: habitación pasa a LIMPIEZA
+        habitacion        = estancia.habitacion
+        habitacion.estado = 'LIMPIEZA'
+        habitacion.save()
+
+        # Crear tarea de limpieza automáticamente
+        from apps.housekeeping.models import TareaLimpieza
+        TareaLimpieza.objects.create(
+            habitacion=habitacion,
+            prioridad='ALTA',
+        )
+
+        messages.success(request, f'Checkout realizado. Habitación {habitacion.numero} en limpieza.')
+        return redirect('recepcion:dashboard')
+
+    return render(request, 'reservas/checkout.html', {'estancia': estancia})
+
+
+@login_required
+def huespedes(request):
+    lista_huespedes = Huesped.objects.all().order_by('apellidos', 'nombres')
+    return render(request, 'reservas/huespedes.html', {'huespedes': lista_huespedes})
+
+
+@login_required
+def checkin_buscar(request):
+    llegadas = Reserva.objects.filter(
+        estado='CONFIRMADA'
+    ).select_related('huesped', 'tipo_habitacion').order_by('fecha_entrada')
+    return render(request, 'reservas/checkin_buscar.html', {'llegadas': llegadas})

@@ -1,111 +1,178 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Hotel System{% endblock %}</title>
-  {% load static %}
-
-  <!-- Bootstrap 5 CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-        rel="stylesheet">
-
-  <link rel="stylesheet" href="{% static 'css/hotel.css' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-light">
+<body>
 
-  {% if user.is_authenticated %}
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="{% url 'recepcion:dashboard' %}">
-        <i class="bi bi-building"></i> Hotel System
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-              data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+{% if user.is_authenticated %}
+<div class="layout">
 
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav me-auto">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
 
-          {% if user.es_recepcionista %}
-          <li class="nav-item">
-            <a class="nav-link {% block nav_recepcion %}{% endblock %}"
-               href="{% url 'recepcion:dashboard' %}">
-              <i class="bi bi-grid-3x3-gap"></i> Recepción
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% block nav_reservas %}{% endblock %}"
-               href="{% url 'reservas:lista' %}">
-              <i class="bi bi-calendar-check"></i> Reservas
-            </a>
-          </li>
-          {% endif %}
-
-          {% if user.es_housekeeping %}
-          <li class="nav-item">
-            <a class="nav-link {% block nav_housekeeping %}{% endblock %}"
-               href="{% url 'housekeeping:panel' %}">
-              <i class="bi bi-stars"></i> Housekeeping
-            </a>
-          </li>
-          {% endif %}
-
-          {% if user.es_admin %}
-          <li class="nav-item">
-            <a class="nav-link {% block nav_gerencia %}{% endblock %}"
-               href="{% url 'gerencia:dashboard' %}">
-              <i class="bi bi-bar-chart-line"></i> Gerencia
-            </a>
-          </li>
-          {% endif %}
-
-        </ul>
-
-        <ul class="navbar-nav">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-              <i class="bi bi-person-circle"></i>
-              {{ user.get_full_name|default:user.username }}
-              <span class="badge bg-secondary ms-1">{{ user.get_rol_display }}</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li>
-                <form method="post" action="{% url 'usuarios:logout' %}">
-                  {% csrf_token %}
-                  <button class="dropdown-item text-danger" type="submit">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                  </button>
-                </form>
-              </li>
-            </ul>
-          </li>
-        </ul>
+    <!-- Brand -->
+    <a class="sidebar-brand" href="{% url 'recepcion:dashboard' %}">
+      <div class="sidebar-brand-icon">H</div>
+      <div>
+        <div class="sidebar-brand-name">Hotel System</div>
+        <div class="sidebar-brand-rol">{{ user.get_rol_display }}</div>
       </div>
-    </div>
-  </nav>
-  {% endif %}
+    </a>
 
-  <main class="container-fluid py-4">
-    {% if messages %}
-      {% for msg in messages %}
-        <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
-          {{ msg }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
+    <!-- Nav Recepcionista -->
+    {% if user.es_recepcionista %}
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Operación</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="{% url 'recepcion:dashboard' %}"
+           class="{% block nav_habitaciones %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-grid-3x3-gap"></i></span>
+          <span class="nav-label">Habitaciones</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'reservas:lista' %}"
+           class="{% block nav_reservas %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-calendar-check"></i></span>
+          <span class="nav-label">Reservas</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'reservas:checkin_buscar' %}"
+           class="{% block nav_checkin %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-arrow-left-right"></i></span>
+          <span class="nav-label">Check-in / out</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'reservas:huespedes' %}"
+           class="{% block nav_huespedes %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-people"></i></span>
+          <span class="nav-label">Huéspedes</span>
+        </a>
+      </li>
+    </ul>
     {% endif %}
 
-    {% block content %}{% endblock %}
-  </main>
+    <!-- Nav Housekeeping -->
+    {% if user.es_housekeeping %}
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Limpieza</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="{% url 'housekeeping:panel' %}"
+           class="{% block nav_housekeeping %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-stars"></i></span>
+          <span class="nav-label">Tareas</span>
+        </a>
+      </li>
+    </ul>
+    {% endif %}
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-  </script>
-  {% block extra_js %}{% endblock %}
+    <!-- Nav Admin/Gerencia -->
+    {% if user.es_admin %}
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Inteligencia</div>
+    </div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="{% url 'gerencia:dashboard' %}"
+           class="{% block nav_gerencia %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-house"></i></span>
+          <span class="nav-label">Resumen</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'gerencia:ocupacion' %}"
+           class="{% block nav_ocupacion %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
+          <span class="nav-label">Ocupación</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'gerencia:usuarios' %}"
+           class="{% block nav_usuarios %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-person-gear"></i></span>
+          <span class="nav-label">Usuarios</span>
+        </a>
+      </li>
+    </ul>
+    {% endif %}
+
+    <!-- Footer usuario -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+        <div>
+          <div class="sidebar-user-name">{{ user.get_full_name|default:user.username }}</div>
+          <div class="sidebar-user-turno">{{ user.get_rol_display }}</div>
+        </div>
+        <form method="post" action="{% url 'usuarios:logout' %}" style="margin-left:auto">
+          {% csrf_token %}
+          <button class="sidebar-logout" type="submit" title="Cerrar sesión">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <span class="topbar-breadcrumb-parent">{% block breadcrumb_parent %}{% endblock %}</span>
+        <span class="topbar-breadcrumb-title">{% block breadcrumb_title %}Dashboard{% endblock %}</span>
+      </div>
+      <div class="topbar-actions">
+        {% block topbar_actions %}
+        <a href="{% url 'reservas:nueva' %}" class="btn-primary">
+          <i class="bi bi-plus-lg"></i> Nueva reserva
+        </a>
+        {% endblock %}
+      </div>
+    </header>
+
+    <!-- ALERTS -->
+    <div style="padding: 0 24px; margin-top: 16px;">
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert alert-{% if msg.tags == 'error' %}error{% elif msg.tags == 'success' %}success{% else %}info{% endif %}">
+            <i class="bi bi-{% if msg.tags == 'error' %}exclamation-circle{% elif msg.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+            {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-body">
+      {% block content %}{% endblock %}
+    </div>
+
+  </div>
+
+</div>
+
+{% else %}
+{% endif %}
+
+{% block extra_js %}{% endblock %}
 </body>
 </html>
+

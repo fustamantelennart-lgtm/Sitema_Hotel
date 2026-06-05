@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Folio — {{ estancia.reserva.huesped.nombre_completo }}{% endblock %}
+{% block breadcrumb_parent %}Recepción · Reservas{% endblock %}
+{% block breadcrumb_title %}Cuenta del huésped{% endblock %}
+{% block nav_reservas %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'reservas:lista' %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/folio.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="folio-grid">
+
+  <!-- Cargos -->
+  <div class="card">
+    <div class="card-header folio-card-header">
+      <div>
+        <div style="font-size:11px; color:var(--color-text-muted); margin-bottom:2px;">
+          CUENTA DEL HUÉSPED
+        </div>
+        <div style="font-family:var(--font-serif); font-size:20px; font-weight:700;">
+          {{ estancia.reserva.huesped.nombre_completo }}
+        </div>
+        <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
+          <span class="badge badge-gray">Hab. {{ estancia.habitacion.numero }}</span>
+          <span class="badge badge-gray">{{ estancia.reserva.huesped.nacionalidad }}</span>
+          <span class="badge badge-gray">{{ estancia.reserva.num_noches }} noches</span>
+          <span class="badge badge-gray">R-{{ estancia.reserva.pk }}</span>
+        </div>
+      </div>
+      <div class="folio-total-header">
+        <div style="font-size:11px; color:var(--color-text-muted);">TOTAL A COBRAR</div>
+        <div class="folio-monto-grande">S/ {{ folio.total }}</div>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th style="text-align:right">Importe</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cargo in cargos %}
+          <tr>
+            <td style="color:var(--color-text-muted); white-space:nowrap;">
+              {{ cargo.fecha|date:"d M H:i" }}
+            </td>
+            <td>{{ cargo.concepto }}</td>
+            <td>
+              <span class="badge badge-gray">{{ cargo.get_tipo_display }}</span>
+            </td>
+            <td style="text-align:right; font-weight:600;">
+              S/ {{ cargo.monto }}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" style="text-align:center; color:var(--color-text-muted); padding:24px;">
+              Sin cargos registrados
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Subtotales -->
+    <div class="folio-subtotales">
+      <div class="folio-sub-row">
+        <span>Subtotal</span>
+        <span>S/ {{ folio.subtotal }}</span>
+      </div>
+      <div class="folio-sub-row">
+        <span>IGV (18%)</span>
+        <span>S/ {{ folio.igv }}</span>
+      </div>
+      <div class="folio-sub-row folio-sub-total">
+        <span>Total</span>
+        <span>S/ {{ folio.total }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div style="display:flex; flex-direction:column; gap:12px;">
+
+    {% if estancia.estado == 'ACTIVA' %}
+
+    <!-- Agregar cargo -->
+    <div class="card">
+      <div class="card-header">Acciones</div>
+      <div class="card-body" style="display:flex; flex-direction:column; gap:8px;">
+
+        <a href="{% url 'reservas:cargo' estancia.pk %}" class="btn-secondary">
+          <i class="bi bi-plus-lg"></i> Agregar cargo manual
+        </a>
+
+        {% if folio.estado == 'PENDIENTE' %}
+        <a href="{% url 'reservas:checkout' estancia.pk %}" class="btn-primary">
+          <i class="bi bi-box-arrow-right"></i> Realizar Checkout
+        </a>
+        {% else %}
+        <div class="badge badge-green" style="padding:10px; justify-content:center;">
+          <i class="bi bi-check-circle"></i> Folio pagado
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+    {% else %}
+    <div class="card">
+      <div class="card-body">
+        <div class="badge badge-green" style="padding:10px; justify-content:center; width:100%;">
+          <i class="bi bi-check-circle"></i> Estancia finalizada
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Desglose por categoría -->
+    <div class="card">
+      <div class="card-header">Desglose por categoría</div>
+      <div class="card-body" style="display:flex; flex-direction:column; gap:10px;">
+        {% regroup cargos by get_tipo_display as cargos_por_tipo %}
+        {% for grupo in cargos_por_tipo %}
+        <div class="desglose-row">
+          <span>{{ grupo.grouper }}</span>
+          <span style="font-weight:600;">
+            S/ {% with total=0 %}
+              {% for c in grupo.list %}
+                {{ c.monto|add:total }}
+              {% endfor %}
+            {% endwith %}
+          </span>
+        </div>
+        {% empty %}
+        <p style="color:var(--color-text-muted); font-size:13px;">Sin cargos</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
