@@ -1,119 +1,146 @@
 {% extends 'base.html' %}
-{% load static %}
-
 {% block title %}Panel de Reservas{% endblock %}
+{% block breadcrumb_parent %}Recepción{% endblock %}
+{% block breadcrumb_title %}Panel de Reservas — {{ hoy }}{% endblock %}
 {% block nav_reservas %}active{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
-{% endblock %}
-
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="fw-bold mb-0">
-    <i class="bi bi-calendar-check"></i> Panel de Reservas
-    <small class="text-muted fs-6 ms-2">{{ hoy }}</small>
-  </h4>
-  <a href="{% url 'reservas:nueva' %}" class="btn btn-dark">
-    <i class="bi bi-plus-lg"></i> Nueva Reserva
-  </a>
-</div>
 
-<!-- Llegadas -->
-<div class="card mb-4">
-  <div class="card-header bg-success text-white fw-bold">
-    <i class="bi bi-box-arrow-in-right"></i> Llegadas hoy ({{ llegadas.count }})
+<!-- Llegadas hoy -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-header" style="background:var(--color-primary); color:#fff;">
+    <i class="bi bi-box-arrow-in-right"></i>
+    Llegadas hoy ({{ llegadas.count }})
   </div>
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>#</th><th>Huésped</th><th>Tipo</th><th>Noches</th><th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in llegadas %}
-        <tr>
-          <td>{{ r.pk }}</td>
-          <td>{{ r.huesped.nombre_completo }}</td>
-          <td>{{ r.tipo_habitacion.nombre }}</td>
-          <td>{{ r.num_noches }}</td>
-          <td>
-            <a href="{% url 'reservas:checkin' r.pk %}" class="btn btn-sm btn-success">
-              <i class="bi bi-box-arrow-in-right"></i> Check-in
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5" class="text-center text-muted py-3">Sin llegadas hoy</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Huésped</th>
+        <th>Tipo</th>
+        <th>Noches</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in llegadas %}
+      <tr>
+        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+        <td>
+          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+        </td>
+        <td>{{ r.tipo_habitacion.nombre }}</td>
+        <td>{{ r.num_noches }}</td>
+        <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
+        <td>
+          <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px;">
+            <i class="bi bi-box-arrow-in-right"></i> Check-in
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center; padding:32px; color:var(--color-text-muted);">
+          Sin llegadas hoy
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <!-- En Casa -->
-<div class="card mb-4">
-  <div class="card-header bg-danger text-white fw-bold">
-    <i class="bi bi-house"></i> En Casa ({{ en_casa.count }})
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-header" style="background:#1a1a1a; color:#fff;">
+    <i class="bi bi-house"></i>
+    En Casa ({{ en_casa.count }})
   </div>
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>#</th><th>Huésped</th><th>Habitación</th><th>Sale</th><th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in en_casa %}
-        <tr>
-          <td>{{ r.pk }}</td>
-          <td>{{ r.huesped.nombre_completo }}</td>
-          <td>{{ r.habitacion.numero }}</td>
-          <td>{{ r.fecha_salida }}</td>
-          <td>
-            <a href="{% url 'reservas:folio' r.estancia.pk %}" class="btn btn-sm btn-primary">
-              <i class="bi bi-receipt"></i> Folio
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5" class="text-center text-muted py-3">Sin huéspedes en casa</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Huésped</th>
+        <th>Habitación</th>
+        <th>Sale</th>
+        <th>Folio</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in en_casa %}
+      <tr>
+        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+        <td>
+          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+        </td>
+        <td>Hab. {{ r.habitacion.numero }}</td>
+        <td>{{ r.fecha_salida|date:"d M Y" }}</td>
+        <td>
+          {% if r.estancia.tiene_deuda %}
+            <span class="badge badge-sand">Pendiente</span>
+          {% else %}
+            <span class="badge badge-green">Pagado</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'reservas:folio' r.estancia.pk %}" class="btn-secondary" style="font-size:12px; padding:6px 12px;">
+            <i class="bi bi-receipt"></i> Folio
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align:center; padding:32px; color:var(--color-text-muted);">
+          Sin huéspedes en casa
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
-<!-- Salidas -->
-<div class="card mb-4">
-  <div class="card-header bg-warning text-dark fw-bold">
-    <i class="bi bi-box-arrow-right"></i> Salidas hoy ({{ salidas.count }})
+<!-- Salidas hoy -->
+<div class="card">
+  <div class="card-header" style="background:var(--color-accent); color:#1a1a1a;">
+    <i class="bi bi-box-arrow-right"></i>
+    Salidas hoy ({{ salidas.count }})
   </div>
-  <div class="card-body p-0">
-    <table class="table table-hover mb-0">
-      <thead class="table-light">
-        <tr>
-          <th>#</th><th>Huésped</th><th>Habitación</th><th>Acción</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in salidas %}
-        <tr>
-          <td>{{ r.pk }}</td>
-          <td>{{ r.huesped.nombre_completo }}</td>
-          <td>{{ r.habitacion.numero }}</td>
-          <td>
-            <a href="{% url 'reservas:checkout' r.estancia.pk %}" class="btn btn-sm btn-warning">
-              <i class="bi bi-box-arrow-right"></i> Checkout
-            </a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="4" class="text-center text-muted py-3">Sin salidas hoy</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Huésped</th>
+        <th>Habitación</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in salidas %}
+      <tr>
+        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+        <td>
+          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+        </td>
+        <td>Hab. {{ r.habitacion.numero }}</td>
+        <td>
+          <a href="{% url 'reservas:checkout' r.estancia.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px; background:var(--color-danger);">
+            <i class="bi bi-box-arrow-right"></i> Checkout
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align:center; padding:32px; color:var(--color-text-muted);">
+          Sin salidas hoy
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+
 {% endblock %}
