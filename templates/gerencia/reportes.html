@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Reportes{% endblock %}
+{% block breadcrumb_parent %}Gerencia{% endblock %}
+{% block breadcrumb_title %}Reportes — {{ mes }}{% endblock %}
+{% block nav_reportes %}active{% endblock %}
+
+{% block content %}
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-disponible"></span> Total reservas</div>
+    <div class="kpi-value">{{ resumen.total }}</div>
+    <div class="kpi-sub">Este mes</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-disponible"></span> Confirmadas</div>
+    <div class="kpi-value">{{ resumen.confirmadas }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-ocupada"></span> En casa</div>
+    <div class="kpi-value">{{ resumen.checkin }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-limpieza"></span> Checkout</div>
+    <div class="kpi-value">{{ resumen.checkout }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-mantenimiento"></span> Canceladas</div>
+    <div class="kpi-value">{{ resumen.canceladas }}</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label"><span class="dot dot-disponible"></span> Ingresos</div>
+    <div class="kpi-value" style="font-size:20px;">S/ {{ resumen.ingresos }}</div>
+    <div class="kpi-sub">Este mes</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-pie-chart" style="color:var(--color-primary);"></i>
+    Reservas por tipo de habitación
+  </div>
+  {% if por_tipo %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Tipo</th>
+        <th>Reservas</th>
+        <th>Ingresos</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in por_tipo %}
+      <tr>
+        <td style="font-weight:600;">{{ t.tipo_habitacion__nombre }}</td>
+        <td>{{ t.total }}</td>
+        <td style="font-weight:600;">S/ {{ t.ingresos }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-graph-up" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    No hay datos de reservas aún.
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

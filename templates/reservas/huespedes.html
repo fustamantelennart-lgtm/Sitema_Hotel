@@ -4,81 +4,73 @@
 {% block breadcrumb_title %}Huéspedes{% endblock %}
 {% block nav_huespedes %}active{% endblock %}
 
+{% block topbar_actions %}
+<form method="get" style="display:flex; gap:8px;">
+  <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o DNI..."
+         class="form-control" style="width:260px;">
+  <button type="submit" class="btn-secondary">
+    <i class="bi bi-search"></i>
+  </button>
+</form>
+{% endblock %}
+
 {% block content %}
-<div class="card border-0 shadow-sm">
-  <div class="card-header bg-white border-0 pt-3 pb-2 d-flex justify-content-between align-items-center">
-    <h6 class="fw-bold mb-0">
-      <i class="bi bi-people me-2"></i> Huéspedes registrados
-    </h6>
-    <form method="get" class="d-flex gap-2">
-      <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nombre o DNI..."
-             class="form-control form-control-sm" style="width:260px;">
-      <button type="submit" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-search"></i>
-      </button>
-    </form>
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-people" style="color:var(--color-primary);"></i>
+    Huéspedes registrados
   </div>
-  <div class="card-body p-0">
-    {% if huespedes %}
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th class="ps-3">Nombre</th>
-            <th>Doc.</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Nacionalidad</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for h in huespedes %}
-          <tr>
-            <td class="ps-3 fw-semibold">{{ h.nombre_completo }}</td>
-            <td><span class="badge bg-light text-dark">{{ h.tipo_doc }}</span> {{ h.num_doc }}</td>
-            <td class="text-muted small">{{ h.email|default:"—" }}</td>
-            <td class="text-muted small">{{ h.telefono|default:"—" }}</td>
-            <td class="text-muted small">{{ h.nacionalidad }}</td>
-            <td class="text-end pe-3">
-              <a href="{% url 'reservas:huesped_detalle' h.pk %}"
-                 class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-eye"></i> Ver
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% if huespedes.has_other_pages %}
-    <div class="d-flex justify-content-center py-3">
-      <nav>
-        <ul class="pagination pagination-sm mb-0">
-          {% if huespedes.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ huespedes.previous_page_number }}&q={{ q }}">«</a>
-          </li>
-          {% endif %}
-          <li class="page-item active">
-            <span class="page-link">{{ huespedes.number }} / {{ huespedes.paginator.num_pages }}</span>
-          </li>
-          {% if huespedes.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ huespedes.next_page_number }}&q={{ q }}">»</a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
+  {% if huespedes %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Documento</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Nacionalidad</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for h in huespedes %}
+      <tr>
+        <td style="font-weight:600;">{{ h.nombre_completo }}</td>
+        <td>
+          <span class="badge badge-gray">{{ h.tipo_doc }}</span>
+          {{ h.num_doc }}
+        </td>
+        <td style="color:var(--color-text-muted); font-size:12px;">{{ h.email|default:"—" }}</td>
+        <td style="color:var(--color-text-muted); font-size:12px;">{{ h.telefono|default:"—" }}</td>
+        <td style="color:var(--color-text-muted); font-size:12px;">{{ h.nacionalidad }}</td>
+        <td>
+          <a href="{% url 'reservas:huesped_detalle' h.pk %}" class="btn-secondary" style="font-size:12px; padding:6px 12px;">
+            <i class="bi bi-eye"></i> Ver
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if huespedes.has_other_pages %}
+  <div style="display:flex; justify-content:center; padding:16px; gap:8px;">
+    {% if huespedes.has_previous %}
+    <a href="?page={{ huespedes.previous_page_number }}&q={{ q }}" class="btn-secondary" style="padding:6px 12px;">«</a>
     {% endif %}
-    {% else %}
-    <div class="text-center py-5 text-muted">
-      <i class="bi bi-people fs-1 d-block mb-2"></i>
-      {% if q %}No se encontraron huéspedes con "{{ q }}".
-      {% else %}No hay huéspedes registrados aún.{% endif %}
-    </div>
+    <span style="padding:6px 12px; font-size:13px; color:var(--color-text-muted);">
+      {{ huespedes.number }} / {{ huespedes.paginator.num_pages }}
+    </span>
+    {% if huespedes.has_next %}
+    <a href="?page={{ huespedes.next_page_number }}&q={{ q }}" class="btn-secondary" style="padding:6px 12px;">»</a>
     {% endif %}
   </div>
+  {% endif %}
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-people" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    {% if q %}No se encontraron huéspedes con "{{ q }}".
+    {% else %}No hay huéspedes registrados aún.{% endif %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}
