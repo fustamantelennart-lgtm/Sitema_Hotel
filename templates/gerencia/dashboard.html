@@ -1,7 +1,43 @@
 {% extends 'base.html' %}
 {% block title %}Gerencia{% endblock %}
+{% block breadcrumb_parent %}Gerencia{% endblock %}
+{% block breadcrumb_title %}Dashboard{% endblock %}
 {% block nav_gerencia %}active{% endblock %}
+
 {% block content %}
-<h4 class="fw-bold mb-4"><i class="bi bi-bar-chart-line"></i> Dashboard Gerencia</h4>
-<p class="text-muted">Módulo en construcción...</p>
+<div class="row g-4">
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div class="fs-1 text-success mb-2"><i class="bi bi-calendar-check"></i></div>
+      <div class="fs-3 fw-bold">{{ total_reservas }}</div>
+      <div class="text-muted small">Reservas totales</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div class="fs-1 text-primary mb-2"><i class="bi bi-house-check"></i></div>
+      <div class="fs-3 fw-bold">{{ ocupadas }}</div>
+      <div class="text-muted small">Habitaciones ocupadas</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div class="fs-1 text-warning mb-2"><i class="bi bi-cash-stack"></i></div>
+      <div class="fs-3 fw-bold">S/ {{ ingresos }}</div>
+      <div class="text-muted small">Ingresos del mes</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div class="fs-1 text-danger mb-2"><i class="bi bi-percent"></i></div>
+      <div class="fs-3 fw-bold">{{ ocupacion_pct }}%</div>
+      <div class="text-muted small">Ocupación actual</div>
+    </div>
+  </div>
+
+</div>
 {% endblock %}
