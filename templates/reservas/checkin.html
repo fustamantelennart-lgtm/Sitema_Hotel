@@ -5,6 +5,9 @@
 {% block breadcrumb_parent %}Recepción · Check-in / out{% endblock %}
 {% block breadcrumb_title %}Check-in{% endblock %}
 {% block nav_checkin %}active{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+{% endblock %}
 
 {% block topbar_actions %}
 <a href="{% url 'reservas:lista' %}" class="btn-secondary">
@@ -45,7 +48,7 @@
           {% endfor %}
         </div>
 
-        <div style="display:flex; gap:8px;">
+      <div class="checkin-acciones">
           <button type="submit" class="btn-primary">
             <i class="bi bi-check-lg"></i> Confirmar Check-in
           </button>
