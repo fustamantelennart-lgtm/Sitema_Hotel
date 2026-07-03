@@ -49,7 +49,7 @@
 <div class="hab-grid mb-4">
   {% for hab in habs %}
   <div class="hab-celda {{ hab.estado|lower }}"
-       data-id="{{ hab.id }}"
+       data-id="{{ hab.tipo.pk }}"
        data-numero="{{ hab.numero }}"
        data-estado="{{ hab.get_estado_display }}"
        data-tipo="{{ hab.tipo.nombre }}"
@@ -81,6 +81,7 @@
       <p><span class="form-label">Tipo</span> <span id="modalTipo"></span></p>
       <p><span class="form-label">Estado</span> <span id="modalEstado"></span></p>
       <p><span class="form-label">Precio base</span> S/ <span id="modalPrecio"></span> / noche</p>
+      <div id="modalAcciones" style="margin-top:16px; display:flex; flex-direction:column; gap:8px;"></div>
     </div>
   </div>
 </div>
