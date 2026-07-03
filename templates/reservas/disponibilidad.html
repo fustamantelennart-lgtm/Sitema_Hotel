@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Disponibilidad{% endblock %}
+{% block breadcrumb_parent %}Reservas{% endblock %}
+{% block breadcrumb_title %}Disponibilidad{% endblock %}
+{% block nav_disponibilidad %}active{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Fecha entrada</label>
+        <input type="date" name="fecha_entrada" value="{{ fecha_entrada }}"
+               class="form-control form-control-sm">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Fecha salida</label>
+        <input type="date" name="fecha_salida" value="{{ fecha_salida }}"
+               class="form-control form-control-sm">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">Tipo habitación</label>
+        <select name="tipo" class="form-select form-select-sm">
+          <option value="">Todos</option>
+          {% for t in tipos %}
+          <option value="{{ t.pk }}" {% if tipo_id == t.pk|stringformat:"s" %}selected{% endif %}>
+            {{ t.nombre }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary btn-sm w-100">
+          <i class="bi bi-search"></i> Buscar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if buscado %}
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white border-0 pt-3">
+    <h6 class="fw-bold mb-0">
+      <i class="bi bi-check-circle text-success me-2"></i>
+      {{ resultados|length }} habitación(es) disponible(s)
+    </h6>
+  </div>
+  <div class="card-body p-0">
+    {% if resultados %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="ps-3">Habitación</th>
+            <th>Tipo</th>
+            <th>Piso</th>
+            <th>Estado</th>
+            <th>Precio base</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for hab in resultados %}
+          <tr>
+            <td class="ps-3 fw-semibold">Hab. {{ hab.numero }}</td>
+            <td>{{ hab.tipo.nombre }}</td>
+            <td>Piso {{ hab.piso }}</td>
+            <td>
+              <span class="badge bg-success">Disponible</span>
+            </td>
+            <td>S/ {{ hab.tipo.precio_base }}/noche</td>
+            <td class="pe-3">
+              <a href="{% url 'reservas:nueva' %}?tipo={{ hab.tipo.pk }}&fecha_entrada={{ fecha_entrada }}&fecha_salida={{ fecha_salida }}"
+                 class="btn btn-sm btn-primary">
+                <i class="bi bi-plus"></i> Reservar
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+      <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+      No hay habitaciones disponibles para esas fechas.
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
