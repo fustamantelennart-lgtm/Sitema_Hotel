@@ -14,18 +14,13 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            if user.rol == 'admin':
-                return redirect('recepcion:dashboard')
-            elif user.rol == 'recepcionista':
-                return redirect('recepcion:dashboard')
-            elif user.rol == 'housekeeping':
+            if user.rol == 'housekeeping':
                 return redirect('housekeeping:lista')
             else:
                 return redirect('recepcion:dashboard')
         else:
             messages.error(request, 'Usuario o contraseña incorrectos.')
     return render(request, 'usuarios/login.html')
-
 
 def logout_view(request):
     logout(request)

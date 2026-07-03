@@ -47,10 +47,17 @@
         </a>
       </li>
       <li>
-        <a href="{% url 'reservas:checkin_buscar' %}"
+        <a href="{% url 'reservas:checkin_lista' %}"
            class="{% block nav_checkin %}{% endblock %}">
-          <span class="nav-icon"><i class="bi bi-arrow-left-right"></i></span>
-          <span class="nav-label">Check-in / out</span>
+          <span class="nav-icon"><i class="bi bi-box-arrow-in-right"></i></span>
+          <span class="nav-label">Check-in</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'reservas:checkout_lista' %}"
+           class="{% block nav_checkout %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-box-arrow-right"></i></span>
+          <span class="nav-label">Check-out</span>
         </a>
       </li>
       <li>
@@ -60,10 +67,10 @@
           <span class="nav-label">Huéspedes</span>
         </a>
       </li>
-      <li>
+    <li>
         <a href="{% url 'reservas:disponibilidad' %}"
            class="{% block nav_disponibilidad %}{% endblock %}">
-          <span class="nav-icon"><i class="bi bi-calendar-search"></i></span>
+          <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
           <span class="nav-label">Disponibilidad</span>
         </a>
       </li>
