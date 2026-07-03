@@ -1,5 +1,5 @@
-from .models import Hotel, TipoHabitacion, Habitacion, ImagenTipoHabitacion
 from django.contrib import admin
+from .models import Hotel, TipoHabitacion, Habitacion, ImagenTipoHabitacion
 
 
 class ImagenInline(admin.TabularInline):

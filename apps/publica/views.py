@@ -282,14 +282,15 @@ def confirmacion(request, pk):
 
 def detalle(request, pk):
     tipo          = get_object_or_404(TipoHabitacion, pk=pk)
+    imagenes      = tipo.imagenes.all()
     fecha_entrada = request.GET.get('fecha_entrada', '')
     fecha_salida  = request.GET.get('fecha_salida', '')
     return render(request, 'publica/detalle.html', {
         'tipo':          tipo,
+        'imagenes':      imagenes,
         'fecha_entrada': fecha_entrada,
         'fecha_salida':  fecha_salida,
     })
-
 
 @require_GET
 def consultar_dni(request):
