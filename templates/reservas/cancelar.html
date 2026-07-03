@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Cancelar Reserva{% endblock %}
+{% block breadcrumb_parent %}Reservas{% endblock %}
+{% block breadcrumb_title %}Cancelar R-{{ reserva.pk }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+          <h5 class="fw-bold mt-2">Cancelar Reserva R-{{ reserva.pk }}</h5>
+          <p class="text-muted small">Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="bg-light rounded p-3 mb-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small">Huésped</span>
+            <span class="fw-semibold small">{{ reserva.huesped.nombre_completo }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small">Tipo</span>
+            <span class="fw-semibold small">{{ reserva.tipo_habitacion.nombre }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small">Entrada</span>
+            <span class="fw-semibold small">{{ reserva.fecha_entrada|date:"d M Y" }}</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted small">Total</span>
+            <span class="fw-semibold small">S/ {{ reserva.precio_total }}</span>
+          </div>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Motivo de cancelación</label>
+            <textarea name="motivo" class="form-control" rows="3"
+                      placeholder="Opcional — describe el motivo..."></textarea>
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-danger">
+              <i class="bi bi-x-circle"></i> Confirmar cancelación
+            </button>
+            <a href="{% url 'reservas:lista' %}" class="btn btn-outline-secondary">
+              Volver sin cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
