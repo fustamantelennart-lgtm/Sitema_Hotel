@@ -60,6 +60,20 @@
           <span class="nav-label">Huéspedes</span>
         </a>
       </li>
+      <li>
+        <a href="{% url 'reservas:disponibilidad' %}"
+           class="{% block nav_disponibilidad %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-calendar-search"></i></span>
+          <span class="nav-label">Disponibilidad</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'reservas:solicitudes_web' %}"
+           class="{% block nav_solicitudes %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-globe"></i></span>
+          <span class="nav-label">Solicitudes Web</span>
+        </a>
+      </li>
     </ul>
     {% endif %}
 
@@ -97,6 +111,13 @@
            class="{% block nav_ocupacion %}{% endblock %}">
           <span class="nav-icon"><i class="bi bi-bar-chart-line"></i></span>
           <span class="nav-label">Ocupación</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'gerencia:reportes' %}"
+           class="{% block nav_reportes %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></span>
+          <span class="nav-label">Reportes</span>
         </a>
       </li>
       <li>
@@ -168,11 +189,8 @@
   </div>
 
 </div>
-
-{% else %}
 {% endif %}
 
 {% block extra_js %}{% endblock %}
 </body>
 </html>
-

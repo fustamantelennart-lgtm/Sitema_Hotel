@@ -4,57 +4,50 @@
 {% block breadcrumb_title %}Pendientes de Check-in{% endblock %}
 
 {% block content %}
-<div class="card border-0 shadow-sm">
-  <div class="card-header bg-white border-0 pt-3">
-    <h6 class="fw-bold mb-0">
-      <i class="bi bi-box-arrow-in-right text-success me-2"></i>
-      Reservas confirmadas pendientes de check-in
-    </h6>
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-box-arrow-in-right" style="color:var(--color-primary);"></i>
+    Reservas confirmadas pendientes de check-in
   </div>
-  <div class="card-body p-0">
-    {% if llegadas %}
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
-          <tr>
-            <th class="ps-3">#</th>
-            <th>Huésped</th>
-            <th>Tipo</th>
-            <th>Entrada</th>
-            <th>Salida</th>
-            <th>Total</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for r in llegadas %}
-          <tr>
-            <td class="ps-3 text-muted small">R-{{ r.pk }}</td>
-            <td>
-              <div class="fw-semibold">{{ r.huesped.nombre_completo }}</div>
-              <div class="text-muted small">{{ r.huesped.num_doc }}</div>
-            </td>
-            <td>{{ r.tipo_habitacion.nombre }}</td>
-            <td>{{ r.fecha_entrada|date:"d M Y" }}</td>
-            <td>{{ r.fecha_salida|date:"d M Y" }}</td>
-            <td class="fw-semibold">S/ {{ r.precio_total }}</td>
-            <td class="text-end pe-3">
-              <a href="{% url 'reservas:checkin' r.pk %}"
-                 class="btn btn-success btn-sm">
-                <i class="bi bi-box-arrow-in-right"></i> Check-in
-              </a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="text-center py-5 text-muted">
-      <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-      No hay reservas pendientes de check-in.
-    </div>
-    {% endif %}
+  {% if llegadas %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Huésped</th>
+        <th>Tipo</th>
+        <th>Entrada</th>
+        <th>Salida</th>
+        <th>Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in llegadas %}
+      <tr>
+        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+        <td>
+          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+        </td>
+        <td>{{ r.tipo_habitacion.nombre }}</td>
+        <td>{{ r.fecha_entrada|date:"d M Y" }}</td>
+        <td>{{ r.fecha_salida|date:"d M Y" }}</td>
+        <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
+        <td>
+          <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px;">
+            <i class="bi bi-box-arrow-in-right"></i> Check-in
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-inbox" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    No hay reservas pendientes de check-in.
   </div>
+  {% endif %}
 </div>
 {% endblock %}

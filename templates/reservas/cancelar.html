@@ -4,50 +4,48 @@
 {% block breadcrumb_title %}Cancelar R-{{ reserva.pk }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-body p-4">
-        <div class="text-center mb-4">
-          <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
-          <h5 class="fw-bold mt-2">Cancelar Reserva R-{{ reserva.pk }}</h5>
-          <p class="text-muted small">Esta acción no se puede deshacer.</p>
-        </div>
-        <div class="bg-light rounded p-3 mb-4">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted small">Huésped</span>
-            <span class="fw-semibold small">{{ reserva.huesped.nombre_completo }}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted small">Tipo</span>
-            <span class="fw-semibold small">{{ reserva.tipo_habitacion.nombre }}</span>
-          </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted small">Entrada</span>
-            <span class="fw-semibold small">{{ reserva.fecha_entrada|date:"d M Y" }}</span>
-          </div>
-          <div class="d-flex justify-content-between">
-            <span class="text-muted small">Total</span>
-            <span class="fw-semibold small">S/ {{ reserva.precio_total }}</span>
-          </div>
-        </div>
-        <form method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label fw-semibold small">Motivo de cancelación</label>
-            <textarea name="motivo" class="form-control" rows="3"
-                      placeholder="Opcional — describe el motivo..."></textarea>
-          </div>
-          <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-danger">
-              <i class="bi bi-x-circle"></i> Confirmar cancelación
-            </button>
-            <a href="{% url 'reservas:lista' %}" class="btn btn-outline-secondary">
-              Volver sin cancelar
-            </a>
-          </div>
-        </form>
+<div style="max-width:500px; margin:0 auto;">
+  <div class="card">
+    <div class="card-body" style="text-align:center; padding-bottom:8px;">
+      <i class="bi bi-exclamation-triangle-fill" style="font-size:40px; color:var(--color-danger);"></i>
+      <h5 style="font-weight:700; margin-top:12px;">Cancelar Reserva R-{{ reserva.pk }}</h5>
+      <p style="color:var(--color-text-muted); font-size:13px;">Esta acción no se puede deshacer.</p>
+    </div>
+    <div style="background:var(--color-bg); margin:0 20px; border-radius:var(--radius); padding:16px; margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="color:var(--color-text-muted); font-size:13px;">Huésped</span>
+        <span style="font-weight:600; font-size:13px;">{{ reserva.huesped.nombre_completo }}</span>
       </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="color:var(--color-text-muted); font-size:13px;">Tipo</span>
+        <span style="font-weight:600; font-size:13px;">{{ reserva.tipo_habitacion.nombre }}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="color:var(--color-text-muted); font-size:13px;">Entrada</span>
+        <span style="font-weight:600; font-size:13px;">{{ reserva.fecha_entrada|date:"d M Y" }}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--color-text-muted); font-size:13px;">Total</span>
+        <span style="font-weight:600; font-size:13px;">S/ {{ reserva.precio_total }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Motivo de cancelación (opcional)</label>
+          <textarea name="motivo" class="form-control" rows="3"
+                    placeholder="Describe el motivo..."></textarea>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
+          <button type="submit" class="btn-primary" style="background:var(--color-danger); justify-content:center;">
+            <i class="bi bi-x-circle"></i> Confirmar cancelación
+          </button>
+          <a href="{% url 'reservas:lista' %}" class="btn-secondary" style="justify-content:center;">
+            Volver sin cancelar
+          </a>
+        </div>
+      </form>
     </div>
   </div>
 </div>
