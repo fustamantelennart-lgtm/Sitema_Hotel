@@ -1,4 +1,5 @@
 from django.db import models
+import cloudinary.models
 
 
 class Hotel(models.Model):
@@ -26,6 +27,7 @@ class TipoHabitacion(models.Model):
     amenidades  = models.JSONField(default=list, blank=True,
                                    help_text='Ej: ["WiFi","TV","AC"]')
     descripcion = models.TextField(blank=True)
+    imagen      = cloudinary.models.CloudinaryField('imagen', blank=True, null=True)
 
     class Meta:
         verbose_name        = 'Tipo de Habitación'
@@ -35,12 +37,28 @@ class TipoHabitacion(models.Model):
         return f"{self.nombre} — {self.hotel}"
 
 
+class ImagenTipoHabitacion(models.Model):
+    tipo    = models.ForeignKey(TipoHabitacion, on_delete=models.CASCADE,
+                                related_name='imagenes')
+    imagen  = cloudinary.models.CloudinaryField('imagen')
+    orden   = models.PositiveSmallIntegerField(default=0)
+    caption = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        verbose_name        = 'Imagen'
+        verbose_name_plural = 'Imágenes'
+        ordering            = ['orden']
+
+    def __str__(self):
+        return f"Imagen {self.orden} — {self.tipo.nombre}"
+
+
 class Habitacion(models.Model):
     ESTADO_CHOICES = [
-        ('DISPONIBLE',   'Disponible'),
-        ('OCUPADA',      'Ocupada'),
-        ('LIMPIEZA',     'En Limpieza'),
-        ('MANTENIMIENTO','Mantenimiento'),
+        ('DISPONIBLE',    'Disponible'),
+        ('OCUPADA',       'Ocupada'),
+        ('LIMPIEZA',      'En Limpieza'),
+        ('MANTENIMIENTO', 'Mantenimiento'),
     ]
     COLOR_MAP = {
         'DISPONIBLE':    'success',
@@ -49,14 +67,14 @@ class Habitacion(models.Model):
         'MANTENIMIENTO': 'secondary',
     }
 
-    hotel  = models.ForeignKey(Hotel, on_delete=models.CASCADE,
-                                related_name='habitaciones')
-    tipo   = models.ForeignKey(TipoHabitacion, on_delete=models.PROTECT,
-                                related_name='habitaciones')
-    numero = models.CharField(max_length=10)
-    piso   = models.PositiveSmallIntegerField()
-    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES,
-                               default='DISPONIBLE')
+    hotel         = models.ForeignKey(Hotel, on_delete=models.CASCADE,
+                                      related_name='habitaciones')
+    tipo          = models.ForeignKey(TipoHabitacion, on_delete=models.PROTECT,
+                                      related_name='habitaciones')
+    numero        = models.CharField(max_length=10)
+    piso          = models.PositiveSmallIntegerField()
+    estado        = models.CharField(max_length=15, choices=ESTADO_CHOICES,
+                                     default='DISPONIBLE')
     observaciones = models.TextField(blank=True)
 
     class Meta:
