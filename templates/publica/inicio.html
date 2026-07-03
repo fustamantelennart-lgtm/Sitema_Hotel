@@ -1,0 +1,442 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ hotel.nombre }} — Reserva tu estadía</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/publica.css' %}">
+</head>
+<body data-es-cliente="{% if request.user.is_authenticated and request.user.rol == 'cliente' %}1{% else %}0{% endif %}">
+
+  <div class="pub-hero">
+
+    <div class="pub-nav">
+      <div class="pub-brand">
+        <div class="pub-brand-icon">H</div>
+        <div>
+          <div class="pub-brand-name">{{ hotel.nombre }}</div>
+          <div class="pub-brand-sub">HOTEL · LIMA · PERÚ</div>
+        </div>
+      </div>
+      <div class="pub-nav-actions">
+        {% if request.user.is_authenticated and request.user.rol == 'cliente' %}
+          <a href="{% url 'cuenta:perfil' %}" class="pub-nav-link pub-nav-link-cuenta">
+            <i class="bi bi-person-check"></i> Mi cuenta
+          </a>
+          <a href="{% url 'cuenta:logout' %}" class="pub-nav-link pub-nav-link-salir">
+            <i class="bi bi-box-arrow-right"></i> Salir
+          </a>
+        {% else %}
+          <button id="btnAbrirLogin" class="pub-nav-link pub-nav-link-btn">
+            <i class="bi bi-person"></i> Iniciar sesión
+          </button>
+          <button id="btnAbrirRegistro" class="pub-nav-link pub-nav-link-registro pub-nav-link-btn">
+            <i class="bi bi-person-plus"></i> Crear cuenta
+          </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="pub-hero-center">
+      <p class="pub-hero-tag">RESERVAS {{ hotel.estrellas }} ESTRELLAS · LIMA, PERÚ</p>
+      <h1 class="pub-hero-titulo">
+        Descubre la mejor<br>
+        <em>estadía en Lima.</em>
+      </h1>
+
+      <div class="pub-buscador">
+        <form method="get" action="{% url 'publica:inicio' %}" id="formBuscador">
+          <div class="pub-buscador-grid">
+
+            <div class="pub-buscador-campo">
+              <label class="pub-buscador-label">Ingreso</label>
+              <input type="date" name="fecha_entrada" id="fechaEntrada"
+                     class="pub-buscador-input" value="{{ fecha_entrada }}">
+            </div>
+
+            <div class="pub-buscador-campo">
+              <label class="pub-buscador-label">Salida</label>
+              <input type="date" name="fecha_salida" id="fechaSalida"
+                     class="pub-buscador-input" value="{{ fecha_salida }}">
+            </div>
+
+            <div class="pub-buscador-campo pub-buscador-campo-hues" id="campHuespedes">
+              <label class="pub-buscador-label">Huéspedes</label>
+              <div class="pub-buscador-input pub-hues-display" id="huesDisplay">
+                1 Habitación, 2 Huéspedes
+              </div>
+              <div class="pub-hues-dropdown" id="huesDropdown" style="display:none;">
+                <div class="pub-hues-row">
+                  <span>Adultos</span>
+                  <div class="pub-hues-counter">
+                    <button type="button" class="pub-counter-btn" data-target="adultos" data-action="minus">−</button>
+                    <span id="adultoVal">2</span>
+                    <button type="button" class="pub-counter-btn" data-target="adultos" data-action="plus">+</button>
+                  </div>
+                </div>
+                <div class="pub-hues-row">
+                  <span>Niños</span>
+                  <div class="pub-hues-counter">
+                    <button type="button" class="pub-counter-btn" data-target="ninos" data-action="minus">−</button>
+                    <span id="ninoVal">0</span>
+                    <button type="button" class="pub-counter-btn" data-target="ninos" data-action="plus">+</button>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="num_adultos" id="numAdultos" value="{{ num_adultos }}">
+              <input type="hidden" name="num_ninos"   id="numNinos"   value="{{ num_ninos }}">
+            </div>
+
+            <button type="submit" class="pub-btn-buscar" id="btnBuscar">
+              <span id="buscarTexto"><i class="bi bi-search"></i> Buscar</span>
+              <span id="buscarSpinner" style="display:none;">
+                <span style="display:inline-block; width:16px; height:16px;
+                            border:2px solid rgba(255,255,255,.3);
+                            border-top-color:#fff; border-radius:50%;
+                            animation:spin .7s linear infinite;"></span>
+                Buscando...
+              </span>
+            </button>
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="pub-ventajas">
+    <div class="pub-ventaja">
+      <div class="pub-ventaja-icon"><i class="bi bi-wifi"></i></div>
+      <div class="pub-ventaja-titulo">WiFi Gratuito</div>
+      <div class="pub-ventaja-desc">Conexión de alta velocidad en todas las habitaciones y áreas comunes</div>
+    </div>
+    <div class="pub-ventaja">
+      <div class="pub-ventaja-icon"><i class="bi bi-cup-hot"></i></div>
+      <div class="pub-ventaja-titulo">Desayuno Incluido</div>
+      <div class="pub-ventaja-desc">Buffet completo cada mañana con productos frescos y locales</div>
+    </div>
+    <div class="pub-ventaja">
+      <div class="pub-ventaja-icon"><i class="bi bi-clock-history"></i></div>
+      <div class="pub-ventaja-titulo">Check-in 24h</div>
+      <div class="pub-ventaja-desc">Llegada a cualquier hora del día o de la noche sin problema</div>
+    </div>
+    <div class="pub-ventaja">
+      <div class="pub-ventaja-icon"><i class="bi bi-geo-alt"></i></div>
+      <div class="pub-ventaja-titulo">Ubicación Céntrica</div>
+      <div class="pub-ventaja-desc">En el corazón de Lima, cerca de los principales atractivos turísticos</div>
+    </div>
+  </div>
+
+  <div class="pub-section">
+    <h2 class="pub-section-titulo">Nuestras habitaciones</h2>
+    <div class="pub-tipos-grid">
+      {% for item in tipos %}
+      <div class="pub-tipo-card {% if item.disponible is not None and item.disponible == 0 %}pub-tipo-card-agotada{% endif %}">
+
+        {% if item.tipo.imagen %}
+        <div class="pub-tipo-img">
+          <img src="{{ item.tipo.imagen.url }}" alt="{{ item.tipo.nombre }}">
+          {% if item.disponible is not None %}
+            {% if item.disponible > 0 %}
+            <div class="pub-tipo-img-badge pub-disponible-ok">
+              <i class="bi bi-check-circle"></i> {{ item.disponible }} disponible(s)
+            </div>
+            {% else %}
+            <div class="pub-tipo-img-badge pub-disponible-no">
+              <i class="bi bi-x-circle"></i> Agotado
+            </div>
+            {% endif %}
+          {% endif %}
+        </div>
+        {% else %}
+        <div class="pub-tipo-img pub-tipo-img-placeholder">
+          <i class="bi bi-image"></i>
+          {% if item.disponible is not None %}
+            {% if item.disponible > 0 %}
+            <div class="pub-tipo-img-badge pub-disponible-ok">
+              <i class="bi bi-check-circle"></i> {{ item.disponible }} disponible(s)
+            </div>
+            {% else %}
+            <div class="pub-tipo-img-badge pub-disponible-no">
+              <i class="bi bi-x-circle"></i> Agotado
+            </div>
+            {% endif %}
+          {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="pub-tipo-nombre">{{ item.tipo.nombre }}</div>
+        <div class="pub-tipo-capacidad">
+          <i class="bi bi-people"></i> Hasta {{ item.tipo.capacidad }} persona(s)
+        </div>
+
+        {% if item.tipo.amenidades %}
+        <div class="pub-tipo-amenidades">
+          {% for amenidad in item.tipo.amenidades %}
+          <span class="pub-amenidad"><i class="bi bi-check2"></i> {{ amenidad }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="pub-tipo-precio">
+          <span class="pub-precio-desde">DESDE</span>
+          <span class="pub-precio-valor">S/ {{ item.tipo.precio_base }}</span>
+          <span class="pub-precio-noche">/ noche</span>
+        </div>
+
+        {% if item.precio_total and item.noches %}
+        <div class="pub-tipo-resumen">
+          <div class="pub-tipo-resumen-row">
+            <span>{{ item.noches }} noche(s)</span>
+            <span class="pub-tipo-resumen-total">S/ {{ item.precio_total }}</span>
+          </div>
+          <div class="pub-tipo-resumen-nota">Total estimado inc. IGV</div>
+        </div>
+        {% endif %}
+
+        {% if item.disponible is not None %}
+        <div class="pub-tipo-fechas">
+          <div class="pub-tipo-fecha-item">
+            <i class="bi bi-calendar-check"></i> Entrada: {{ fecha_entrada }}
+          </div>
+          <div class="pub-tipo-fecha-item">
+            <i class="bi bi-calendar-x"></i> Salida: {{ fecha_salida }}
+          </div>
+          <div class="pub-tipo-fecha-item">
+            <i class="bi bi-moon"></i> {{ item.noches }} noche(s)
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="pub-tipo-acciones">
+          <a href="{% url 'publica:detalle' item.tipo.pk %}{% if fecha_entrada %}?fecha_entrada={{ fecha_entrada }}&fecha_salida={{ fecha_salida }}{% endif %}"
+             class="pub-btn-reservar pub-btn-ver">
+            Ver más
+          </a>
+          {% if item.disponible is None or item.disponible > 0 %}
+          <a href="{% url 'publica:reservar' %}?tipo={{ item.tipo.pk }}{% if fecha_entrada %}&fecha_entrada={{ fecha_entrada }}{% endif %}{% if fecha_salida %}&fecha_salida={{ fecha_salida }}{% endif %}"
+             class="pub-btn-reservar pub-btn-reservar-action">
+            Reservar
+          </a>
+          {% else %}
+          <div class="pub-btn-reservar pub-btn-reservar-disabled">
+            Sin disp.
+          </div>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="pub-contacto" id="contacto">
+    <div class="pub-contacto-info">
+      <h2 class="pub-section-titulo" style="margin-bottom:24px;">¿Cómo llegar?</h2>
+      <div class="pub-contacto-item">
+        <div class="pub-contacto-icon"><i class="bi bi-geo-alt-fill"></i></div>
+        <div>
+          <div class="pub-contacto-label">Dirección</div>
+          <div class="pub-contacto-valor">{{ hotel.direccion }}</div>
+        </div>
+      </div>
+      <div class="pub-contacto-item">
+        <div class="pub-contacto-icon"><i class="bi bi-telephone-fill"></i></div>
+        <div>
+          <div class="pub-contacto-label">Teléfono</div>
+          <div class="pub-contacto-valor">{{ hotel.telefono }}</div>
+        </div>
+      </div>
+      <div class="pub-contacto-item">
+        <div class="pub-contacto-icon"><i class="bi bi-envelope-fill"></i></div>
+        <div>
+          <div class="pub-contacto-label">Email</div>
+          <div class="pub-contacto-valor">{{ hotel.email|default:"reservas@hotel.com" }}</div>
+        </div>
+      </div>
+      <div class="pub-contacto-item">
+        <div class="pub-contacto-icon"><i class="bi bi-clock-fill"></i></div>
+        <div>
+          <div class="pub-contacto-label">Horario de atención</div>
+          <div class="pub-contacto-valor">Lunes a Domingo · 24 horas</div>
+        </div>
+      </div>
+    </div>
+    <div class="pub-contacto-mapa">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.0!2d-79.8!3d-6.75!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwNDUnMDAuMCJTIDc5wrA0OCcwMC4wIlc!5e0!3m2!1ses!2spe!4v1620000000000!5m2!1ses!2spe"
+        allowfullscreen="" loading="lazy">
+      </iframe>
+    </div>
+  </div>
+
+  <footer class="pub-footer-completo">
+    <div class="pub-footer-grid">
+      <div class="pub-footer-col">
+        <div class="pub-footer-brand">
+          <div class="pub-brand-icon-sm" style="background:rgba(255,255,255,.15); color:#C4A882;">H</div>
+          <span style="font-family:'Playfair Display',serif; font-size:18px; font-weight:700;">{{ hotel.nombre }}</span>
+        </div>
+        <p style="font-size:13px; color:rgba(255,255,255,.5); line-height:1.6; margin-top:12px;">
+          Hotel boutique con {{ hotel.estrellas }} estrellas en el corazón de Lima.
+          Reserva directa sin intermediarios.
+        </p>
+      </div>
+      <div class="pub-footer-col">
+        <div class="pub-footer-titulo">Navegación</div>
+        <ul class="pub-footer-lista">
+          <li><a href="{% url 'publica:inicio' %}">Inicio</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="pub-footer-col">
+        <div class="pub-footer-titulo">Habitaciones</div>
+        <ul class="pub-footer-lista">
+          {% for item in tipos %}
+          <li>
+            <a href="{% url 'publica:detalle' item.tipo.pk %}">
+              {{ item.tipo.nombre }} — S/ {{ item.tipo.precio_base }}/noche
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="pub-footer-col">
+        <div class="pub-footer-titulo">Contacto</div>
+        <ul class="pub-footer-lista">
+          <li><i class="bi bi-geo-alt"></i> {{ hotel.direccion }}</li>
+          <li><i class="bi bi-telephone"></i> {{ hotel.telefono }}</li>
+          <li><i class="bi bi-envelope"></i> {{ hotel.email|default:"reservas@hotel.com" }}</li>
+          <li><i class="bi bi-clock"></i> 24 horas · 7 días</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pub-footer-bottom">
+      <span>© 2026 {{ hotel.nombre }} · Todos los derechos reservados</span>
+      <div style="display:flex; gap:16px;">
+        <a href="#">Términos y condiciones</a>
+        <a href="#">Política de privacidad</a>
+        <a href="#">Libro de reclamaciones</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/publica.js' %}"></script>
+
+  <!-- Modal Login -->
+  <div id="modalLogin" class="modal-overlay"
+       data-abrir-modal="{% if messages or request.GET.login_required %}1{% else %}0{% endif %}">
+    <div class="modal-box">
+      <button class="modal-close" id="btnCerrarLogin">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="modal-header">
+        <div class="modal-icono">H</div>
+        <h2 class="modal-titulo">Bienvenido</h2>
+        <p class="modal-subtitulo">
+          {% if request.GET.login_required %}
+            Inicia sesión para completar tu reserva
+          {% else %}
+            Inicia sesión para gestionar tus reservas
+          {% endif %}
+        </p>
+      </div>
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="modal-error"><i class="bi bi-exclamation-circle"></i> {{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+      <form method="post" action="{% url 'cuenta:login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next|default:request.get_full_path }}">
+        <div class="pub-form-group">
+          <label class="pub-label">Correo electrónico</label>
+          <input type="email" name="username" required
+                 placeholder="tucorreo@ejemplo.com" class="modal-input">
+        </div>
+        <div class="pub-form-group" style="margin-bottom:20px;">
+          <label class="pub-label">Contraseña</label>
+          <input type="password" name="password" required
+                 placeholder="Tu contraseña" class="modal-input">
+        </div>
+        <button type="submit" class="pub-btn-submit">
+          <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+        </button>
+      </form>
+      <p class="modal-footer">
+        ¿No tienes cuenta?
+        <a href="#" id="btnIrARegistro">Crear cuenta</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Modal Registro -->
+  <div id="modalRegistro" class="modal-overlay" data-abrir-modal="0">
+    <div class="modal-box" style="max-width:500px;">
+      <button class="modal-close" id="btnCerrarRegistro">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="modal-header">
+        <div class="modal-icono">H</div>
+        <h2 class="modal-titulo">Crear cuenta</h2>
+        <p class="modal-subtitulo">Regístrate para gestionar tus reservas</p>
+      </div>
+      <form method="post" action="{% url 'cuenta:registro' %}">
+        {% csrf_token %}
+        <div class="pub-form-group">
+          <label class="pub-label">DNI</label>
+          <input type="text" name="num_doc" id="inputDni" required
+                 maxlength="8" placeholder="12345678" class="modal-input"
+                 oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)">
+          <small id="dniFeedback" style="font-size:11px; display:block; margin-top:4px;"></small>
+        </div>
+        <div class="pub-form-row-2">
+          <div class="pub-form-group">
+            <label class="pub-label">Nombres</label>
+            <input type="text" name="first_name" id="regFirstName"
+                   placeholder="Se autocompleta" class="modal-input modal-input-readonly" readonly>
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Apellidos</label>
+            <input type="text" name="last_name" id="regLastName"
+                   placeholder="Se autocompleta" class="modal-input modal-input-readonly" readonly>
+          </div>
+        </div>
+        <div class="pub-form-group">
+          <label class="pub-label">Correo electrónico</label>
+          <input type="email" name="email" required
+                 placeholder="tucorreo@ejemplo.com" class="modal-input">
+        </div>
+        <div class="pub-form-group">
+          <label class="pub-label">Teléfono (opcional)</label>
+          <input type="text" name="telefono"
+                 placeholder="Ej: 987654321" class="modal-input">
+        </div>
+        <div class="pub-form-row-2">
+          <div class="pub-form-group">
+            <label class="pub-label">Contraseña</label>
+            <input type="password" name="password1" required
+                   placeholder="Contraseña" class="modal-input">
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Confirmar</label>
+            <input type="password" name="password2" required
+                   placeholder="Repite" class="modal-input">
+          </div>
+        </div>
+        <button type="submit" class="pub-btn-submit">
+          <i class="bi bi-person-plus"></i> Crear cuenta
+        </button>
+      </form>
+      <p class="modal-footer">
+        ¿Ya tienes cuenta?
+        <a href="#" id="btnIrALogin">Iniciar sesión</a>
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>

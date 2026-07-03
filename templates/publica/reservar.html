@@ -1,0 +1,277 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva Reserva — {{ hotel.nombre }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/publica.css' %}">
+</head>
+<body class="pub-form-body">
+
+  <div class="pub-form-wrap" style="max-width:680px;">
+
+    <div class="pub-form-header">
+      <a href="{% url 'publica:inicio' %}" class="pub-back">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+      <div class="pub-brand-sm">
+        <div class="pub-brand-icon-sm">H</div>
+        <span>{{ hotel.nombre }}</span>
+      </div>
+    </div>
+
+    <!-- Pasos -->
+    <div class="pasos-header">
+      <div class="paso-item active" id="pasoIndicador1">
+        <div class="paso-numero">1</div>
+        <div class="paso-label">Tu reserva</div>
+      </div>
+      <div class="paso-linea"></div>
+      <div class="paso-item" id="pasoIndicador2">
+        <div class="paso-numero">2</div>
+        <div class="paso-label">Tus datos</div>
+      </div>
+      <div class="paso-linea"></div>
+      <div class="paso-item" id="pasoIndicador3">
+        <div class="paso-numero">3</div>
+        <div class="paso-label">Confirmar</div>
+      </div>
+    </div>
+
+    {% if messages %}
+      {% for msg in messages %}
+      <div class="pub-alert pub-alert-error">
+        <i class="bi bi-exclamation-circle"></i> {{ msg }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate id="formReserva">
+      {% csrf_token %}
+
+    <form method="post" novalidate id="formReserva">
+      {% csrf_token %}
+      <!-- Precios para JS -->
+      <div id="tiposPrecios" style="display:none;"
+          data-precios='{% for pk, precio in form.tipos_precios.items %}"{{ pk }}":{{ precio }},{% endfor %}'>
+      </div>
+      
+      <!-- PASO 1: Reserva -->
+      <div id="paso1">
+        <h3 style="font-family:'Playfair Display',serif; font-size:20px;
+                   font-weight:700; margin-bottom:4px;">Detalles de tu estadía</h3>
+        <p style="font-size:13px; color:#6b7280; margin-bottom:20px;">
+          Elige el tipo de habitación y las fechas
+        </p>
+
+        <div class="pub-form-group">
+          <label class="pub-label">Tipo de habitación</label>
+          {{ form.tipo_habitacion }}
+          {% if form.tipo_habitacion.errors %}
+            <div class="pub-error">{{ form.tipo_habitacion.errors.0 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="pub-form-row">
+          <div class="pub-form-group">
+            <label class="pub-label">Fecha de entrada</label>
+            {{ form.fecha_entrada }}
+            {% if form.fecha_entrada.errors %}
+              <div class="pub-error">{{ form.fecha_entrada.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Fecha de salida</label>
+            {{ form.fecha_salida }}
+            {% if form.fecha_salida.errors %}
+              <div class="pub-error">{{ form.fecha_salida.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pub-form-row">
+          <div class="pub-form-group">
+            <label class="pub-label">Adultos</label>
+            {{ form.num_adultos }}
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Niños</label>
+            {{ form.num_ninos }}
+          </div>
+        </div>
+
+        <div class="pub-form-group">
+          <label class="pub-label">Observaciones (opcional)</label>
+          {{ form.observaciones }}
+        </div>
+
+        <!-- Resumen precio en tiempo real -->
+        <div id="resumenPrecio" style="display:none; background:#F5F0E8;
+             border-radius:10px; padding:14px 16px; margin-top:4px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px;">
+            <span style="color:#6b7280;" id="resumenNoches">0 noches</span>
+            <span style="font-weight:700; color:#2D4A3E;" id="resumenTotal">S/ 0</span>
+          </div>
+          <div style="font-size:11px; color:#6b7280; margin-top:2px;">Total estimado</div>
+        </div>
+
+        <button type="button" class="pub-btn-submit" id="btnPaso1">
+          Continuar <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- PASO 2: Datos del huésped -->
+      <div id="paso2" style="display:none;">
+        <h3 style="font-family:'Playfair Display',serif; font-size:20px;
+                   font-weight:700; margin-bottom:4px;">Tus datos personales</h3>
+        <p style="font-size:13px; color:#6b7280; margin-bottom:20px;">
+          Necesitamos tu información para procesar la reserva
+        </p>
+
+        <div class="pub-form-row">
+          <div class="pub-form-group">
+            <label class="pub-label">Tipo de documento</label>
+            {{ form.tipo_doc }}
+            {% if form.tipo_doc.errors %}
+              <div class="pub-error">{{ form.tipo_doc.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Número de documento</label>
+            {{ form.num_doc }}
+            {% if form.num_doc.errors %}
+              <div class="pub-error">{{ form.num_doc.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pub-form-row">
+          <div class="pub-form-group">
+            <label class="pub-label">Nombres</label>
+            {{ form.nombres }}
+            {% if form.nombres.errors %}
+              <div class="pub-error">{{ form.nombres.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Apellidos</label>
+            {{ form.apellidos }}
+            {% if form.apellidos.errors %}
+              <div class="pub-error">{{ form.apellidos.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pub-form-row">
+          <div class="pub-form-group">
+            <label class="pub-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="pub-error">{{ form.email.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <div class="pub-form-group">
+            <label class="pub-label">Teléfono</label>
+            {{ form.telefono }}
+            {% if form.telefono.errors %}
+              <div class="pub-error">{{ form.telefono.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="pub-form-group">
+          <label class="pub-label">Nacionalidad</label>
+          {{ form.nacionalidad }}
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="pub-alert pub-alert-error">
+          {{ form.non_field_errors.0 }}
+        </div>
+        {% endif %}
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="button" class="pub-btn-submit"
+                  style="background:#F5F0E8; color:#2D4A3E; flex:0 0 auto; width:auto; padding:12px 20px;"
+                  id="btnVolver1">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <button type="button" class="pub-btn-submit" style="flex:1;" id="btnPaso2">
+            Continuar <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 3: Confirmar -->
+      <div id="paso3" style="display:none;">
+        <h3 style="font-family:'Playfair Display',serif; font-size:20px;
+                   font-weight:700; margin-bottom:4px;">Confirma tu reserva</h3>
+        <p style="font-size:13px; color:#6b7280; margin-bottom:20px;">
+          Revisa los datos antes de continuar al pago
+        </p>
+
+        <!-- Resumen reserva -->
+        <div style="background:#F5F0E8; border-radius:12px; padding:20px; margin-bottom:20px;">
+          <div style="font-size:11px; font-weight:700; text-transform:uppercase;
+                      letter-spacing:.1em; color:#6b7280; margin-bottom:12px;">
+            Tu estadía
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; font-size:13px;">
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Tipo</span>
+              <span id="resumenTipo" style="font-weight:600;"></span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Entrada</span>
+              <span id="resumenEntrada" style="font-weight:600;"></span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Salida</span>
+              <span id="resumenSalida" style="font-weight:600;"></span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Huésped</span>
+              <span id="resumenNombre" style="font-weight:600;"></span>
+            </div>
+            <div style="border-top:1px solid #E5DDD0; padding-top:8px; margin-top:4px;
+                        display:flex; justify-content:space-between;
+                        font-family:'Playfair Display',serif; font-size:18px; font-weight:700;">
+              <span>Total estimado</span>
+              <span id="resumenTotalFinal" style="color:#2D4A3E;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fff; border:1px solid #E5DDD0; border-radius:12px;
+                    padding:14px 16px; margin-bottom:20px; font-size:12px; color:#6b7280;">
+          <i class="bi bi-info-circle" style="color:#2D4A3E;"></i>
+          Al continuar irás a la página de pago seguro. Tu reserva se confirmará automáticamente al completar el pago.
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="pub-btn-submit"
+                  style="background:#F5F0E8; color:#2D4A3E; flex:0 0 auto; width:auto; padding:12px 20px;"
+                  id="btnVolver2">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+          <button type="submit" class="pub-btn-submit" style="flex:1;">
+            <i class="bi bi-lock-fill"></i> Ir al pago
+          </button>
+        </div>
+      </div>
+
+      <div id="formErrores"
+     data-tiene-errores="{{ form.errors|yesno:'1,0' }}"
+     data-errores-paso2="{{ form.tipo_doc.errors|yesno:'1,0' }}{{ form.num_doc.errors|yesno:'1,0' }}{{ form.nombres.errors|yesno:'1,0' }}{{ form.apellidos.errors|yesno:'1,0' }}{{ form.email.errors|yesno:'1,0' }}{{ form.telefono.errors|yesno:'1,0' }}"
+     style="display:none;">
+</div>
+    </form>
+  </div>
+
+  <script src="{% static 'js/publica.js' %}"></script>
+  <script src="{% static 'js/reservar_pasos.js' %}"></script>
+</body>
+</html>

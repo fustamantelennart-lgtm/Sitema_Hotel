@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ huesped.nombre_completo }}{% endblock %}
+{% block breadcrumb_parent %}Huéspedes{% endblock %}
+{% block breadcrumb_title %}{{ huesped.nombre_completo }}{% endblock %}
+{% block nav_huespedes %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'reservas:huespedes' %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div style="display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start;">
+
+  <!-- Card datos personales -->
+  <div class="card">
+    <div class="card-header">Datos personales</div>
+    <div class="card-body">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="width:64px; height:64px; background:var(--color-primary);
+                    border-radius:50%; display:flex; align-items:center;
+                    justify-content:center; font-size:24px; color:#fff;
+                    font-weight:700; margin:0 auto 12px;">
+          {{ huesped.nombres|first|upper }}{{ huesped.apellidos|first|upper }}
+        </div>
+        <div style="font-size:16px; font-weight:700;">{{ huesped.nombre_completo }}</div>
+        <div style="font-size:12px; color:var(--color-text-muted);">{{ huesped.nacionalidad }}</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:13px;">
+        <div>
+          <div style="font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+                      color:var(--color-text-muted); margin-bottom:2px;">Documento</div>
+          <div style="font-weight:600;">{{ huesped.tipo_doc }} — {{ huesped.num_doc }}</div>
+        </div>
+        <div>
+          <div style="font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+                      color:var(--color-text-muted); margin-bottom:2px;">Email</div>
+          <div>{{ huesped.email|default:"—" }}</div>
+        </div>
+        <div>
+          <div style="font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+                      color:var(--color-text-muted); margin-bottom:2px;">Teléfono</div>
+          <div>{{ huesped.telefono|default:"—" }}</div>
+        </div>
+        <div>
+          <div style="font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+                      color:var(--color-text-muted); margin-bottom:2px;">Total reservas</div>
+          <div style="font-weight:700; color:var(--color-primary); font-size:20px;">
+            {{ reservas.count }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial reservas -->
+  <div class="card">
+    <div class="card-header">Historial de reservas</div>
+    <div class="card-body p-0">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tipo</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+            <th>Noches</th>
+            <th>Total</th>
+            <th>Origen</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reservas %}
+          <tr>
+            <td><strong>R-{{ r.pk }}</strong></td>
+            <td>{{ r.tipo_habitacion.nombre }}</td>
+            <td>{{ r.fecha_entrada }}</td>
+            <td>{{ r.fecha_salida }}</td>
+            <td>{{ r.num_noches }}</td>
+            <td>S/ {{ r.precio_total }}</td>
+            <td>
+              <span class="badge badge-gray">{{ r.get_origen_display }}</span>
+            </td>
+            <td>
+              <span class="badge
+                {% if r.estado == 'CONFIRMADA' %}badge-green
+                {% elif r.estado == 'CHECKIN' %}badge-blue
+                {% elif r.estado == 'CHECKOUT' %}badge-gray
+                {% elif r.estado == 'CANCELADA' %}badge-red
+                {% else %}badge-sand{% endif %}">
+                {{ r.get_estado_display }}
+              </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" style="text-align:center;
+                color:var(--color-text-muted); padding:24px;">
+              Sin reservas registradas
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

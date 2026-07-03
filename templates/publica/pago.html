@@ -1,0 +1,297 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pago seguro — {{ reserva.hotel.nombre }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/publica.css' %}">
+</head>
+<body class="pub-form-body">
+
+  <div class="pub-form-wrap" style="max-width:760px;">
+
+    <div class="pub-form-header">
+      <a href="{% url 'publica:inicio' %}" class="pub-back">
+        <i class="bi bi-arrow-left"></i> Cancelar
+      </a>
+      <div class="pub-brand-sm">
+        <div class="pub-brand-icon-sm">H</div>
+        <span>{{ reserva.hotel.nombre }}</span>
+      </div>
+    </div>
+
+    <!-- Encabezado -->
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+      <div style="width:40px; height:40px; background:#e8f0ec; border-radius:10px;
+                  display:flex; align-items:center; justify-content:center;
+                  font-size:20px; color:#2D4A3E;">
+        <i class="bi bi-shield-lock"></i>
+      </div>
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:22px; font-weight:700;">
+          Pago seguro
+        </div>
+        <div style="font-size:12px; color:#6b7280;">
+          Simulación de pasarela de pago · Tus datos están protegidos
+        </div>
+      </div>
+    </div>
+
+    {% if messages %}
+      {% for msg in messages %}
+      <div class="pub-alert pub-alert-error">
+        <i class="bi bi-exclamation-circle"></i> {{ msg }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    <div style="display:grid; grid-template-columns:1fr 300px; gap:24px;">
+
+      <!-- Formulario -->
+      <div>
+
+<!-- Selector método de pago -->
+<div style="margin-bottom:24px;">
+  <div style="font-size:11px; font-weight:700; text-transform:uppercase;
+              letter-spacing:.1em; color:#6b7280; margin-bottom:12px;">
+    Selecciona tu método de pago
+  </div>
+  <div style="display:flex; flex-direction:column; gap:8px;">
+    <button type="button" class="metodo-btn-row active" data-metodo="tarjeta">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:36px; height:36px; background:#e8f0ec; border-radius:8px;
+                    display:flex; align-items:center; justify-content:center; font-size:18px; color:#2D4A3E;">
+          <i class="bi bi-credit-card-2-front"></i>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-weight:600; font-size:14px;">Tarjeta de crédito / débito</div>
+          <div style="font-size:11px; color:#6b7280;">Visa, Mastercard, American Express</div>
+        </div>
+      </div>
+      <i class="bi bi-check-circle-fill" style="color:#2D4A3E; font-size:18px;" id="checkTarjeta"></i>
+    </button>
+
+    <button type="button" class="metodo-btn-row" data-metodo="yape">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:36px; height:36px; background:#fce8f0; border-radius:8px;
+                    display:flex; align-items:center; justify-content:center; font-size:18px; color:#a50050;">
+          <i class="bi bi-phone-fill"></i>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-weight:600; font-size:14px;">Yape</div>
+          <div style="font-size:11px; color:#6b7280;">Pago instantáneo con tu celular</div>
+        </div>
+      </div>
+      <i class="bi bi-circle" style="color:#E5DDD0; font-size:18px;" id="checkYape"></i>
+    </button>
+
+    <button type="button" class="metodo-btn-row" data-metodo="transferencia">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:36px; height:36px; background:#e8f0fc; border-radius:8px;
+                    display:flex; align-items:center; justify-content:center; font-size:18px; color:#1a56a0;">
+          <i class="bi bi-bank2"></i>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-weight:600; font-size:14px;">Transferencia bancaria</div>
+          <div style="font-size:11px; color:#6b7280;">BCP, Interbank, BBVA, Scotiabank</div>
+        </div>
+      </div>
+      <i class="bi bi-circle" style="color:#E5DDD0; font-size:18px;" id="checkTransferencia"></i>
+    </button>
+  </div>
+</div>
+
+        <form method="post" action="{% url 'publica:procesar_pago' reserva.pk %}" id="formPago">
+          {% csrf_token %}
+          <input type="hidden" name="metodo_pago" id="metodoPago" value="tarjeta">
+
+          <!-- PANEL TARJETA -->
+          <div id="panelTarjeta">
+            <div class="pago-tarjeta" id="tarjetaPreview">
+              <div class="pago-tarjeta-top">
+                <div class="pago-tarjeta-chip"></div>
+                <div id="tarjetaTipo" style="font-size:22px; color:rgba(255,255,255,.8);">
+                  <i class="bi bi-credit-card"></i>
+                </div>
+              </div>
+              <div class="pago-tarjeta-numero" id="tarjetaNumeroPreview">
+                •••• •••• •••• ••••
+              </div>
+              <div class="pago-tarjeta-bottom">
+                <div>
+                  <div style="font-size:9px; opacity:.6; letter-spacing:.1em;">TITULAR</div>
+                  <div class="pago-tarjeta-nombre" id="tarjetaNombrePreview">NOMBRE APELLIDO</div>
+                </div>
+                <div>
+                  <div style="font-size:9px; opacity:.6; letter-spacing:.1em;">VENCE</div>
+                  <div id="tarjetaExpPreview" style="font-size:14px; font-weight:600;">MM/AA</div>
+                </div>
+              </div>
+            </div>
+            <div class="pub-form-group">
+              <label class="pub-label">Número de tarjeta</label>
+              <input type="text" name="numero_tarjeta" id="numeroTarjeta"
+                     style="width:100%; padding:10px 12px; border:1px solid #E5DDD0;
+                            border-radius:8px; font-size:16px; font-family:'Inter',sans-serif;
+                            letter-spacing:.1em;"
+                     placeholder="1234 5678 9012 3456"
+                     maxlength="19" autocomplete="cc-number">
+            </div>
+
+            <div class="pub-form-group" style="margin-top:12px;">
+              <label class="pub-label">Nombre del titular</label>
+              <input type="text" name="nombre_tarjeta" id="nombreTarjeta"
+                     style="width:100%; padding:10px 12px; border:1px solid #E5DDD0;
+                            border-radius:8px; font-size:14px; font-family:'Inter',sans-serif;
+                            text-transform:uppercase;"
+                     placeholder="COMO APARECE EN LA TARJETA"
+                     autocomplete="cc-name">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+              <div class="pub-form-group">
+                <label class="pub-label">Fecha de vencimiento</label>
+                <input type="text" name="expiracion" id="expiracion"
+                       style="width:100%; padding:10px 12px; border:1px solid #E5DDD0;
+                              border-radius:8px; font-size:14px; font-family:'Inter',sans-serif;"
+                       placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
+              </div>
+              <div class="pub-form-group">
+                <label class="pub-label">CVV</label>
+                <input type="text" name="cvv" id="cvv"
+                       style="width:100%; padding:10px 12px; border:1px solid #E5DDD0;
+                              border-radius:8px; font-size:14px; font-family:'Inter',sans-serif;"
+                       placeholder="123" maxlength="4" autocomplete="cc-csc">
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL YAPE -->
+          <div id="panelYape" style="display:none;">
+            <div style="text-align:center; padding:24px; background:#F5F0E8;
+                        border-radius:12px; margin-bottom:20px;">
+              <div style="font-size:48px; margin-bottom:12px;">📱</div>
+              <div style="font-weight:700; font-size:16px; margin-bottom:8px;">Paga con Yape</div>
+              <div style="font-size:13px; color:#6b7280; margin-bottom:16px;">
+                Yapea al número <strong>999 888 777</strong><br>
+                A nombre de: <strong>{{ reserva.hotel.nombre }}</strong>
+              </div>
+              <div style="background:#fff; border-radius:8px; padding:16px; display:inline-block;">
+                <div style="font-size:80px; line-height:1;">▣</div>
+                <div style="font-size:11px; color:#6b7280; margin-top:4px;">QR simulado</div>
+              </div>
+            </div>
+            <div class="pub-form-group">
+              <label class="pub-label">Número de operación Yape</label>
+              <input type="text" name="num_operacion_yape"
+                     style="width:100%; padding:10px 12px; border:1px solid #E5DDD0;
+                            border-radius:8px; font-size:14px; font-family:'Inter',sans-serif;"
+                     placeholder="Ej: 123456789">
+            </div>
+          </div>
+
+          <!-- PANEL TRANSFERENCIA -->
+          <div id="panelTransferencia" style="display:none;">
+            <div style="background:#F5F0E8; border-radius:12px; padding:20px; margin-bottom:20px;">
+              <div style="font-weight:700; font-size:15px; margin-bottom:16px;">
+                <i class="bi bi-bank" style="color:#2D4A3E;"></i> Datos bancarios
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px; font-size:13px;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#6b7280;">Banco</span>
+                  <strong>BCP</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#6b7280;">Cuenta</span>
+                  <strong>191-12345678-0-12</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#6b7280;">CCI</span>
+                  <strong>00219100123456780112</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#6b7280;">Titular</span>
+                  <strong>{{ reserva.hotel.nombre }}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#6b7280;">Monto</span>
+                  <strong style="color:#2D4A3E;">S/ {{ reserva.precio_total }}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="pub-form-group">
+              <label class="pub-label">Número de operación</label>
+              <input type="text" name="num_operacion_transferencia"
+                     style="width:100%; padding:10px 12px; border:1px solid #E5DDD0;
+                            border-radius:8px; font-size:14px; font-family:'Inter',sans-serif;"
+                     placeholder="Ej: 987654321">
+            </div>
+          </div>
+
+        <button type="submit" class="pub-btn-submit" style="margin-top:20px;"
+                id="btnPagar" data-total="{{ reserva.precio_total }}">
+          <i class="bi bi-lock-fill"></i> Pagar S/ {{ reserva.precio_total }}
+        </button>
+
+
+        </form>
+      </div>
+
+      <!-- Resumen reserva -->
+      <div>
+        <div style="background:#fff; border:1px solid #E5DDD0; border-radius:12px; padding:20px;">
+          <div style="font-size:13px; font-weight:700; margin-bottom:16px;
+                      padding-bottom:12px; border-bottom:1px solid #E5DDD0;">
+            Resumen de tu reserva
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; font-size:13px;">
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Reserva</span>
+              <span style="font-weight:600;">R-{{ reserva.pk }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Tipo</span>
+              <span style="font-weight:600;">{{ reserva.tipo_habitacion.nombre }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Entrada</span>
+              <span style="font-weight:600;">{{ reserva.fecha_entrada }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Salida</span>
+              <span style="font-weight:600;">{{ reserva.fecha_salida }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Noches</span>
+              <span style="font-weight:600;">{{ reserva.num_noches }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Huésped</span>
+              <span style="font-weight:600;">{{ reserva.huesped.nombre_completo }}</span>
+            </div>
+            <div style="border-top:1px solid #E5DDD0; padding-top:10px; margin-top:4px;
+                        display:flex; justify-content:space-between;
+                        font-family:'Playfair Display',serif; font-size:18px; font-weight:700;">
+              <span>Total</span>
+              <span style="color:#2D4A3E;">S/ {{ reserva.precio_total }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; background:#F5F0E8; border-radius:10px;
+                    padding:14px; font-size:12px; color:#6b7280; line-height:1.6;">
+          <i class="bi bi-info-circle" style="color:#2D4A3E;"></i>
+          Al confirmar el pago, tu reserva quedará inmediatamente confirmada y recibirás un email con los detalles.
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="{% static 'js/pago.js' %}"></script>
+</body>
+</html>

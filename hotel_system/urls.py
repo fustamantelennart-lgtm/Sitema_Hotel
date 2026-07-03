@@ -6,16 +6,14 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # Redirige raíz al dashboard de recepción
     path('', lambda request: redirect('recepcion:dashboard'), name='home'),
-
-    # Apps con Django Templates
-    path('recepcion/',    include('apps.recepcion.urls',    namespace='recepcion')),
-    path('reservas/',     include('apps.reservas.urls',     namespace='reservas')),
-    path('housekeeping/', include('apps.housekeeping.urls', namespace='housekeeping')),
-    path('gerencia/',     include('apps.gerencia.urls',     namespace='gerencia')),
-    path('usuarios/',     include('apps.usuarios.urls',     namespace='usuarios')),
+    path('recepcion/',    include('apps.recepcion.urls',       namespace='recepcion')),
+    path('reservas/',     include('apps.reservas.urls',        namespace='reservas')),
+    path('housekeeping/', include('apps.housekeeping.urls',    namespace='housekeeping')),
+    path('gerencia/',     include('apps.gerencia.urls',        namespace='gerencia')),
+    path('usuarios/',     include('apps.usuarios.urls',        namespace='usuarios')),
+    path('web/',          include('apps.publica.urls',         namespace='publica')),
+    path('cuenta/',       include('apps.usuarios.urls_cuenta', namespace='cuenta')),
 ]
 
 if settings.DEBUG:

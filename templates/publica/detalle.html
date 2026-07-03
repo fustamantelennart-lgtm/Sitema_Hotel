@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ tipo.nombre }} — {{ tipo.hotel.nombre }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/publica.css' %}">
+  
+</head>
+
+<body class="pub-form-body">
+
+  <div style="max-width:860px; margin:0 auto; padding:40px 20px;">
+
+    <!-- Header -->
+    <div class="pub-form-header" style="margin-bottom:32px;">
+      <a href="{% url 'publica:inicio' %}" class="pub-back">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+      <div class="pub-brand-sm">
+        <div class="pub-brand-icon-sm">H</div>
+        <span>{{ tipo.hotel.nombre }}</span>
+      </div>
+    </div>
+
+    <!-- Carrusel de imágenes -->
+{% if imagenes %}
+<div class="pub-carrusel" id="carrusel">
+  <div class="pub-carrusel-track" id="carruselTrack">
+    {% for img in imagenes %}
+    <div class="pub-carrusel-slide">
+      <img src="{{ img.imagen.url }}" alt="{{ img.caption|default:tipo.nombre }}">
+    </div>
+    {% endfor %}
+    {% if tipo.imagen %}
+    <div class="pub-carrusel-slide">
+      <img src="{{ tipo.imagen.url }}" alt="{{ tipo.nombre }}">
+    </div>
+    {% endif %}
+  </div>
+  <button class="pub-carrusel-btn pub-carrusel-prev" id="btnPrev">
+    <i class="bi bi-chevron-left"></i>
+  </button>
+  <button class="pub-carrusel-btn pub-carrusel-next" id="btnNext">
+    <i class="bi bi-chevron-right"></i>
+  </button>
+  <div class="pub-carrusel-dots" id="carruselDots"></div>
+</div>
+{% elif tipo.imagen %}
+<div style="width:100%; height:400px; border-radius:16px; overflow:hidden; margin-bottom:32px;">
+  <img src="{{ tipo.imagen.url }}" alt="{{ tipo.nombre }}"
+       style="width:100%; height:100%; object-fit:cover;">
+</div>
+{% else %}
+<div style="width:100%; height:300px; border-radius:16px; background:#F5F0E8;
+            display:flex; align-items:center; justify-content:center;
+            margin-bottom:32px; font-size:60px; color:#C4A882;">
+  <i class="bi bi-image"></i>
+</div>
+{% endif %}
+
+      <!-- Info -->
+      <div>
+        <h1 style="font-family:'Playfair Display',Georgia,serif; font-size:36px;
+                   font-weight:700; margin-bottom:8px;">
+          {{ tipo.nombre }}
+        </h1>
+        <p style="color:#6b7280; font-size:14px; margin-bottom:24px;">
+          <i class="bi bi-people"></i> Hasta {{ tipo.capacidad }} persona(s) ·
+          {{ tipo.hotel.nombre }}
+        </p>
+
+        {% if tipo.descripcion %}
+        <div style="margin-bottom:24px;">
+          <div class="pub-section-label">Descripción</div>
+          <p style="font-size:14px; line-height:1.7; color:#1a1a1a; margin-top:8px;">
+            {{ tipo.descripcion }}
+          </p>
+        </div>
+        {% endif %}
+
+        {% if tipo.amenidades %}
+        <div style="margin-bottom:24px;">
+          <div class="pub-section-label">Amenidades incluidas</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;">
+            {% for amenidad in tipo.amenidades %}
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+              <i class="bi bi-check-circle-fill" style="color:#2D4A3E;"></i>
+              {{ amenidad }}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Políticas -->
+        <div style="margin-bottom:24px;">
+          <div class="pub-section-label">Políticas</div>
+          <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+              <i class="bi bi-clock" style="color:#2D4A3E;"></i>
+              Check-in desde las 14:00 hrs
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+              <i class="bi bi-clock" style="color:#2D4A3E;"></i>
+              Check-out hasta las 12:00 hrs
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; font-size:14px;">
+              <i class="bi bi-info-circle" style="color:#2D4A3E;"></i>
+              Reserva sujeta a confirmación del hotel
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel reserva -->
+      <div style="background:#fff; border:1px solid #E5DDD0; border-radius:16px;
+                  padding:24px; position:sticky; top:20px;">
+
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.1em; color:#6b7280; margin-bottom:4px;">
+          PRECIO DESDE
+        </div>
+        <div style="font-family:'Playfair Display',Georgia,serif; font-size:36px;
+                    font-weight:700; color:#2D4A3E; margin-bottom:4px;">
+          S/ {{ tipo.precio_base }}
+        </div>
+        <div style="font-size:13px; color:#6b7280; margin-bottom:20px;">
+          por noche · incluye IGV
+        </div>
+
+        <div style="border-top:1px solid #E5DDD0; padding-top:16px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between;
+                      font-size:13px; padding:6px 0;">
+            <span style="color:#6b7280;">Capacidad</span>
+            <span style="font-weight:600;">{{ tipo.capacidad }} personas</span>
+          </div>
+          <div style="display:flex; justify-content:space-between;
+                      font-size:13px; padding:6px 0;">
+            <span style="color:#6b7280;">Hotel</span>
+            <span style="font-weight:600;">{{ tipo.hotel.nombre }}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between;
+                      font-size:13px; padding:6px 0;">
+            <span style="color:#6b7280;">Categoría</span>
+            <span style="font-weight:600;">
+              {% for i in tipo.hotel.estrellas|ljust:tipo.hotel.estrellas %}★{% endfor %}
+            </span>
+          </div>
+        </div>
+
+        <a href="{% url 'publica:reservar' %}?tipo={{ tipo.pk }}{% if fecha_entrada %}&fecha_entrada={{ fecha_entrada }}{% endif %}{% if fecha_salida %}&fecha_salida={{ fecha_salida }}{% endif %}"
+          class="pub-btn-submit" style="text-decoration:none;">
+          <i class="bi bi-calendar-plus"></i> Reservar esta habitación
+        </a>
+      
+
+        <p style="font-size:11px; color:#6b7280; text-align:center;
+                  margin-top:12px; line-height:1.5;">
+          Reserva gratuita · Sujeta a confirmación del hotel
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="{% static 'js/publica.js' %}"></script>
+  <script src="{% static 'js/detalle.js' %}"></script>
+</body>
+</html>
