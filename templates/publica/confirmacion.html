@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    {% if reserva.estado == 'CONFIRMADA' %}Pago exitoso{% else %}Reserva solicitada{% endif %}
+    — {{ reserva.hotel.nombre }}
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/publica.css' %}">
+</head>
+<body class="pub-form-body">
+
+  <div class="pub-form-wrap" style="text-align:center;">
+
+    {% if reserva.estado == 'CONFIRMADA' %}
+
+      <!-- Pago exitoso -->
+      <div style="width:72px; height:72px; background:#e8f0ec; border-radius:50%;
+                  display:flex; align-items:center; justify-content:center;
+                  margin:0 auto 20px; font-size:32px; color:#2D4A3E;">
+        <i class="bi bi-check-lg"></i>
+      </div>
+      <h2 class="pub-form-titulo">¡Pago exitoso!</h2>
+      <p class="pub-form-sub">
+        Tu reserva está <strong>CONFIRMADA</strong>. Te enviamos un email a
+        <strong>{{ reserva.huesped.email }}</strong> con todos los detalles.
+      </p>
+
+    {% else %}
+
+      <!-- Reserva pendiente -->
+      <div style="width:72px; height:72px; background:#fef9ee; border-radius:50%;
+                  display:flex; align-items:center; justify-content:center;
+                  margin:0 auto 20px; font-size:32px; color:#C4A882;">
+        <i class="bi bi-clock"></i>
+      </div>
+      <h2 class="pub-form-titulo">¡Solicitud recibida!</h2>
+      <p class="pub-form-sub">
+        El hotel revisará tu solicitud y te escribirá a
+        <strong>{{ reserva.huesped.email }}</strong> para confirmar.
+      </p>
+
+    {% endif %}
+
+    <!-- Resumen -->
+    <div class="pub-confirmacion-card" style="text-align:left;">
+      <div class="pub-conf-row">
+        <span>Código de reserva</span>
+        <strong>R-{{ reserva.pk }}</strong>
+      </div>
+      <div class="pub-conf-row">
+        <span>Huésped</span>
+        <strong>{{ reserva.huesped.nombre_completo }}</strong>
+      </div>
+      <div class="pub-conf-row">
+        <span>Tipo</span>
+        <strong>{{ reserva.tipo_habitacion.nombre }}</strong>
+      </div>
+      <div class="pub-conf-row">
+        <span>Entrada</span>
+        <strong>{{ reserva.fecha_entrada }}</strong>
+      </div>
+      <div class="pub-conf-row">
+        <span>Salida</span>
+        <strong>{{ reserva.fecha_salida }}</strong>
+      </div>
+      <div class="pub-conf-row">
+        <span>Noches</span>
+        <strong>{{ reserva.num_noches }}</strong>
+      </div>
+      <div class="pub-conf-row pub-conf-total">
+        <span>Total</span>
+        <strong>S/ {{ reserva.precio_total }}</strong>
+      </div>
+    </div>
+
+    <p style="font-size:12px; color:#6b7280; margin-top:16px;">
+      Guarda tu código <strong>R-{{ reserva.pk }}</strong> para cualquier consulta.
+    </p>
+
+    <a href="{% url 'publica:inicio' %}" class="pub-btn-submit"
+       style="margin-top:16px; display:inline-flex; text-decoration:none;">
+      <i class="bi bi-house"></i> Volver al inicio
+    </a>
+
+  </div>
+
+</body>
+</html>
