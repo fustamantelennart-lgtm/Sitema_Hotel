@@ -1,12 +1,11 @@
-document.getElementById('togglePassword').addEventListener('click', function () {
-    const input   = document.getElementById('password');
-    const eyeIcon = document.getElementById('eyeIcon');
+const togglePassword = document.getElementById('togglePassword');
+const passwordInput  = document.getElementById('passwordInput');
+const eyeIcon        = document.getElementById('eyeIcon');
 
-    if (input.type === 'password') {
-        input.type        = 'text';
-        eyeIcon.className = 'bi bi-eye-slash';
-    } else {
-        input.type        = 'password';
-        eyeIcon.className = 'bi bi-eye';
-    }
-});
+if (togglePassword) {
+    togglePassword.addEventListener('click', function() {
+        const tipo = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = tipo;
+        eyeIcon.className  = tipo === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+    });
+}
