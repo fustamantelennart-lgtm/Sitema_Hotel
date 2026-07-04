@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db import models
 from django.core.paginator import Paginator
+import json
 from .models import Reserva, Estancia, CargoEstancia, Folio, Huesped, Tarifa
 from apps.recepcion.models import Habitacion
 from .forms import ReservaForm, CargoForm, HuespedForm
@@ -34,40 +35,48 @@ def lista(request):
 @login_required
 @rol_requerido('admin', 'recepcionista')
 def nueva(request):
-    tipo_id      = request.GET.get('tipo')
-    initial      = {}
-    if tipo_id:
-        initial['tipo_habitacion'] = tipo_id
+    from .forms import ReservaPresencialForm
+    from apps.recepcion.models import Hotel, TipoHabitacion
 
-    form         = ReservaForm(request.POST or None, initial=initial)
-    huesped_form = HuespedForm(request.POST or None, prefix='huesped')
+    tipo_id = request.GET.get('tipo')
+    initial = {'tipo_habitacion': tipo_id} if tipo_id else {}
+    form    = ReservaPresencialForm(request.POST or None, initial=initial)
 
-    if request.method == 'POST':
-        if request.POST.get('nuevo_huesped') == '1':
-            if huesped_form.is_valid():
-                huesped = huesped_form.save()
-                return redirect(f"{request.path}?tipo={tipo_id or ''}&huesped={huesped.pk}")
-        else:
-            if form.is_valid():
-                reserva            = form.save(commit=False)
-                reserva.creado_por = request.user
-                reserva.estado     = 'CONFIRMADA'
-                reserva.calcular_precio()
-                reserva.save()
-                accion = request.POST.get('accion', 'guardar')
-                if accion == 'checkin':
-                    messages.success(request, f'Reserva #{reserva.pk} creada. Procede con el check-in.')
-                    return redirect('reservas:checkin', pk=reserva.pk)
-                messages.success(request, f'Reserva #{reserva.pk} creada correctamente.')
-                return redirect('reservas:lista')
+    if request.method == 'POST' and form.is_valid():
+        hotel                = Hotel.objects.first()
+        huesped, created     = form.get_or_create_huesped()
+        precio_noche         = Tarifa.get_precio_vigente(
+            form.cleaned_data['tipo_habitacion'],
+            form.cleaned_data['fecha_entrada'],
+            form.cleaned_data['fecha_salida'],
+        )
+        noches       = (form.cleaned_data['fecha_salida'] - form.cleaned_data['fecha_entrada']).days
+        precio_total = precio_noche * noches
+        reserva = Reserva.objects.create(
+            hotel           = hotel,
+            huesped         = huesped,
+            tipo_habitacion = form.cleaned_data['tipo_habitacion'],
+            fecha_entrada   = form.cleaned_data['fecha_entrada'],
+            fecha_salida    = form.cleaned_data['fecha_salida'],
+            num_adultos     = form.cleaned_data['num_adultos'],
+            num_ninos       = form.cleaned_data['num_ninos'],
+            estado          = 'CONFIRMADA',
+            precio_total    = precio_total,
+            origen          = 'DIRECTO',
+            observaciones   = form.cleaned_data.get('observaciones', ''),
+            creado_por      = request.user,
+        )
+        accion = request.POST.get('accion', 'guardar')
+        if accion == 'checkin':
+            messages.success(request, f'Reserva #{reserva.pk} creada. Procede con el check-in.')
+            return redirect('reservas:checkin', pk=reserva.pk)
+        messages.success(request, f'Reserva #{reserva.pk} creada correctamente.')
+        return redirect('reservas:lista')
 
-    huesped_id = request.GET.get('huesped')
-    if huesped_id:
-        form.initial['huesped'] = huesped_id
-
+    precios = {str(t.pk): float(t.precio_base) for t in TipoHabitacion.objects.all()}
     return render(request, 'reservas/nueva.html', {
-        'form':         form,
-        'huesped_form': huesped_form,
+        'form':    form,
+        'precios': json.dumps(precios),
     })
 
 
@@ -352,11 +361,9 @@ def checkin_buscar(request):
     llegadas = Reserva.objects.filter(
         estado='CONFIRMADA'
     ).select_related('huesped', 'tipo_habitacion').order_by('fecha_entrada')
-
     en_casa = Estancia.objects.filter(
         estado='ACTIVA'
     ).select_related('reserva__huesped', 'habitacion').order_by('fecha_checkin')
-
     return render(request, 'reservas/checkin_buscar.html', {
         'llegadas': llegadas,
         'en_casa':  en_casa,
