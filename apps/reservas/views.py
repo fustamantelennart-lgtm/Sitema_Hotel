@@ -51,8 +51,13 @@ def nueva(request):
             if form.is_valid():
                 reserva            = form.save(commit=False)
                 reserva.creado_por = request.user
+                reserva.estado     = 'CONFIRMADA'
                 reserva.calcular_precio()
                 reserva.save()
+                accion = request.POST.get('accion', 'guardar')
+                if accion == 'checkin':
+                    messages.success(request, f'Reserva #{reserva.pk} creada. Procede con el check-in.')
+                    return redirect('reservas:checkin', pk=reserva.pk)
                 messages.success(request, f'Reserva #{reserva.pk} creada correctamente.')
                 return redirect('reservas:lista')
 
