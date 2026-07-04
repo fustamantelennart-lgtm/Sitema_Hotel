@@ -14,6 +14,7 @@ urlpatterns = [
     path('usuarios/',     include('apps.usuarios.urls',        namespace='usuarios')),
     path('web/',          include('apps.publica.urls',         namespace='publica')),
     path('cuenta/',       include('apps.usuarios.urls_cuenta', namespace='cuenta')),
+    path('api/v1/', include('apps.api.urls')),
 ]
 
 if settings.DEBUG:

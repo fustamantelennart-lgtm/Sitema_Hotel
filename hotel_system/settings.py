@@ -22,6 +22,9 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'drf_spectacular',
 ]
 
 LOCAL_APPS = [
@@ -30,6 +33,8 @@ LOCAL_APPS = [
     'apps.reservas',
     'apps.housekeeping',
     'apps.gerencia',
+    'apps.publica',
+    'apps.api',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -129,3 +134,25 @@ DEFAULT_FROM_EMAIL  = env('DEFAULT_FROM_EMAIL',  default='webmaster@localhost')
 # RENIEC
 RENIEC_TOKEN = env('RENIEC_TOKEN', default='')
 RENIEC_URL   = env('RENIEC_URL',   default='https://api.factiliza.com/v1/dni/info')
+
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Swagger / ReDoc
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Hotel Tumán API',
+    'DESCRIPTION': 'API REST para el sistema de gestión hotelera Hotel Tumán',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
