@@ -90,9 +90,13 @@
           {{ form.observaciones }}
         </div>
 
-        <div style="display:flex; gap:8px; margin-top:8px;">
-          <button type="submit" class="btn-primary">
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+          <button type="submit" name="accion" value="guardar" class="btn-primary">
             <i class="bi bi-check-lg"></i> Crear Reserva
+          </button>
+          <button type="submit" name="accion" value="checkin" class="btn-primary"
+                  style="background:var(--color-primary-light);">
+            <i class="bi bi-box-arrow-in-right"></i> Guardar y Check-in
           </button>
           <a href="{% url 'reservas:lista' %}" class="btn-secondary">
             Cancelar
@@ -130,6 +134,34 @@
         </p>
       </div>
     </div>
+
+    <!-- Nuevo huésped -->
+    {% if huesped_form %}
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header">
+        <i class="bi bi-person-plus"></i> Registrar nuevo huésped
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="nuevo_huesped" value="1">
+          {% for field in huesped_form %}
+          <div class="form-group">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="form-error">{{ field.errors.0 }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn-secondary" style="width:100%;">
+            <i class="bi bi-person-check"></i> Guardar huésped
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
   </div>
 
 </div>
