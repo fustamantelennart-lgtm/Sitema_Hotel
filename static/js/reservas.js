@@ -21,6 +21,17 @@ function actualizarResumen() {
     }
 }
 
+function mostrarTab(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(function(el) {
+        el.style.display = 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    document.getElementById('tab-' + tab).style.display = 'block';
+    btn.classList.add('active');
+}
+
 fechaEntrada.addEventListener('change',   actualizarResumen);
 fechaSalida.addEventListener('change',    actualizarResumen);
 tipoHabitacion.addEventListener('change', actualizarResumen);

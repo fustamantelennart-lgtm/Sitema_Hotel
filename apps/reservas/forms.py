@@ -39,13 +39,13 @@ class ReservaForm(forms.ModelForm):
 
 class ReservaPresencialForm(forms.Form):
     """Form para reserva presencial — crea huésped automáticamente."""
-    # Datos huésped
-    tipo_doc    = forms.ChoiceField(
+
+    tipo_doc = forms.ChoiceField(
         choices=Huesped.TIPO_DOC,
         widget=forms.Select(attrs={'class': 'form-select'}),
         initial='DNI'
     )
-    num_doc     = forms.CharField(
+    num_doc = forms.CharField(
         max_length=20,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -54,7 +54,7 @@ class ReservaPresencialForm(forms.Form):
             'maxlength': '8',
         })
     )
-    nombres     = forms.CharField(
+    nombres = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -62,7 +62,7 @@ class ReservaPresencialForm(forms.Form):
             'placeholder': 'Se autocompleta con DNI',
         })
     )
-    apellidos   = forms.CharField(
+    apellidos = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -70,35 +70,33 @@ class ReservaPresencialForm(forms.Form):
             'placeholder': 'Se autocompleta con DNI',
         })
     )
-    email       = forms.EmailField(
+    email = forms.EmailField(
         required=False,
         widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'opcional'})
     )
-    telefono    = forms.CharField(
+    telefono = forms.CharField(
         max_length=15, required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'opcional'})
     )
-
-    # Datos reserva
     tipo_habitacion = forms.ModelChoiceField(
         queryset=None,
         widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_tipo_habitacion'})
     )
-    fecha_entrada   = forms.DateField(
+    fecha_entrada = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
-    fecha_salida    = forms.DateField(
+    fecha_salida = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
-    num_adultos     = forms.IntegerField(
+    num_adultos = forms.IntegerField(
         min_value=1, initial=1,
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
-    num_ninos       = forms.IntegerField(
+    num_ninos = forms.IntegerField(
         min_value=0, initial=0,
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
-    observaciones   = forms.CharField(
+    observaciones = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
     )
@@ -106,7 +104,8 @@ class ReservaPresencialForm(forms.Form):
     def __init__(self, *args, **kwargs):
         from apps.recepcion.models import TipoHabitacion
         super().__init__(*args, **kwargs)
-        self.fields['tipo_habitacion'].queryset = TipoHabitacion.objects.all()
+        tipos = TipoHabitacion.objects.all()
+        self.fields['tipo_habitacion'].queryset = tipos
 
     def clean_num_doc(self):
         num_doc = self.cleaned_data.get('num_doc', '').strip()
@@ -116,42 +115,77 @@ class ReservaPresencialForm(forms.Form):
         return num_doc
 
     def clean(self):
-        cleaned = super().clean()
-        fe = cleaned.get('fecha_entrada')
-        fs = cleaned.get('fecha_salida')
+        from django.utils import timezone
+        from django.db.models import Q
+
+        cleaned     = super().clean()
+        fe          = cleaned.get('fecha_entrada')
+        fs          = cleaned.get('fecha_salida')
+        tipo        = cleaned.get('tipo_habitacion')
+        num_adultos = cleaned.get('num_adultos', 0)
+        num_ninos   = cleaned.get('num_ninos', 0)
+        hoy         = timezone.now().date()
+
+        # 1. Fecha entrada no puede ser en el pasado
+        if fe and fe < hoy:
+            self.add_error('fecha_entrada',
+                'La fecha de entrada no puede ser en el pasado.')
+
+        # 2. Fecha salida posterior a entrada
         if fe and fs and fs <= fe:
-            raise forms.ValidationError('La fecha de salida debe ser posterior a la entrada.')
+            self.add_error('fecha_salida',
+                'La fecha de salida debe ser posterior a la entrada.')
+
+        # 3. Capacidad máxima
+        if tipo and num_adultos is not None:
+            total = num_adultos + (num_ninos or 0)
+            if total > tipo.capacidad:
+                raise forms.ValidationError(
+                    f'El tipo "{tipo.nombre}" tiene capacidad máxima de '
+                    f'{tipo.capacidad} persona(s). '
+                    f'Ingresaste {total}.'
+                )
+
+        # 4. Solapamiento — verificar que haya al menos una habitación libre
+        if fe and fs and tipo and fe >= hoy:
+            from apps.recepcion.models import Habitacion
+            habitaciones = Habitacion.objects.filter(
+                tipo=tipo, estado='DISPONIBLE'
+            )
+            libres = 0
+            for hab in habitaciones:
+                solapada = Reserva.objects.filter(
+                    habitacion=hab,
+                    estado__in=['PENDIENTE', 'CONFIRMADA', 'CHECKIN'],
+                ).filter(
+                    Q(fecha_entrada__lt=fs) & Q(fecha_salida__gt=fe)
+                ).exists()
+                if not solapada:
+                    libres += 1
+
+            if libres == 0:
+                raise forms.ValidationError(
+                    f'No hay habitaciones disponibles del tipo '
+                    f'"{tipo.nombre}" para las fechas '
+                    f'{fe.strftime("%d/%m/%Y")} → {fs.strftime("%d/%m/%Y")}.'
+                )
+
         return cleaned
 
     def get_or_create_huesped(self):
-        """Crea o recupera el huésped con los datos del form."""
         num_doc = self.cleaned_data['num_doc']
         huesped, created = Huesped.objects.get_or_create(
             num_doc=num_doc,
             defaults={
-                'tipo_doc':   self.cleaned_data['tipo_doc'],
-                'nombres':    self.cleaned_data['nombres'],
-                'apellidos':  self.cleaned_data['apellidos'],
-                'email':      self.cleaned_data.get('email', ''),
-                'telefono':   self.cleaned_data.get('telefono', ''),
+                'tipo_doc':     self.cleaned_data['tipo_doc'],
+                'nombres':      self.cleaned_data['nombres'],
+                'apellidos':    self.cleaned_data['apellidos'],
+                'email':        self.cleaned_data.get('email', ''),
+                'telefono':     self.cleaned_data.get('telefono', ''),
                 'nacionalidad': 'Peruana',
             }
         )
         return huesped, created
-    def __init__(self, *args, **kwargs):
-        from apps.recepcion.models import TipoHabitacion
-        super().__init__(*args, **kwargs)
-        tipos = TipoHabitacion.objects.all()
-        self.fields['tipo_habitacion'].queryset = tipos
-        # Agregar data-precio a cada opción
-        self.fields['tipo_habitacion'].widget = forms.Select(
-            attrs={'class': 'form-select', 'id': 'id_tipo_habitacion'},
-            choices=[('', '---------')] + [
-                (t.pk, t.nombre) for t in tipos
-            ]
-        )
-        # Guardar precios para el template
-        self.tipo_precios = {str(t.pk): str(t.precio_base) for t in tipos}
 
 
 class CargoForm(forms.ModelForm):
