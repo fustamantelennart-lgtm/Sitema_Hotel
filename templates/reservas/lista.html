@@ -1,146 +1,217 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Panel de Reservas{% endblock %}
 {% block breadcrumb_parent %}Recepción{% endblock %}
-{% block breadcrumb_title %}Panel de Reservas — {{ hoy }}{% endblock %}
+{% block breadcrumb_title %}Reservas del día{% endblock %}
 {% block nav_reservas %}active{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+{% endblock %}
+
 {% block content %}
+<p style="font-size:13px; color:var(--color-text-muted); margin-bottom:16px;">
+  {{ hoy }}
+</p>
 
-<!-- Llegadas hoy -->
-<div class="card" style="margin-bottom:16px;">
-  <div class="card-header" style="background:var(--color-primary); color:#fff;">
+<div style="display:flex; gap:0; margin-bottom:20px; border-bottom:2px solid var(--color-border);">
+  <button class="tab-btn active" onclick="mostrarTab('llegadas', this)">
     <i class="bi bi-box-arrow-in-right"></i>
-    Llegadas hoy ({{ llegadas.count }})
-  </div>
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Huésped</th>
-        <th>Tipo</th>
-        <th>Noches</th>
-        <th>Total</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in llegadas %}
-      <tr>
-        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
-        <td>
-          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
-          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
-        </td>
-        <td>{{ r.tipo_habitacion.nombre }}</td>
-        <td>{{ r.num_noches }}</td>
-        <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
-        <td>
-          <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px;">
-            <i class="bi bi-box-arrow-in-right"></i> Check-in
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="6" style="text-align:center; padding:32px; color:var(--color-text-muted);">
-          Sin llegadas hoy
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<!-- En Casa -->
-<div class="card" style="margin-bottom:16px;">
-  <div class="card-header" style="background:#1a1a1a; color:#fff;">
+    Llegadas hoy
+    <span class="tab-count">{{ llegadas.count }}</span>
+  </button>
+  <button class="tab-btn" onclick="mostrarTab('en_casa', this)">
     <i class="bi bi-house"></i>
-    En Casa ({{ en_casa.count }})
-  </div>
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Huésped</th>
-        <th>Habitación</th>
-        <th>Sale</th>
-        <th>Folio</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in en_casa %}
-      <tr>
-        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
-        <td>
-          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
-          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
-        </td>
-        <td>Hab. {{ r.habitacion.numero }}</td>
-        <td>{{ r.fecha_salida|date:"d M Y" }}</td>
-        <td>
-          {% if r.estancia.tiene_deuda %}
-            <span class="badge badge-sand">Pendiente</span>
-          {% else %}
-            <span class="badge badge-green">Pagado</span>
-          {% endif %}
-        </td>
-        <td>
-          <a href="{% url 'reservas:folio' r.estancia.pk %}" class="btn-secondary" style="font-size:12px; padding:6px 12px;">
-            <i class="bi bi-receipt"></i> Folio
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="6" style="text-align:center; padding:32px; color:var(--color-text-muted);">
-          Sin huéspedes en casa
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<!-- Salidas hoy -->
-<div class="card">
-  <div class="card-header" style="background:var(--color-accent); color:#1a1a1a;">
+    En Casa
+    <span class="tab-count">{{ en_casa.count }}</span>
+  </button>
+  <button class="tab-btn" onclick="mostrarTab('salidas', this)">
     <i class="bi bi-box-arrow-right"></i>
-    Salidas hoy ({{ salidas.count }})
-  </div>
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Huésped</th>
-        <th>Habitación</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for r in salidas %}
-      <tr>
-        <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
-        <td>
-          <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
-          <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
-        </td>
-        <td>Hab. {{ r.habitacion.numero }}</td>
-        <td>
-          <a href="{% url 'reservas:checkout' r.estancia.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px; background:var(--color-danger);">
-            <i class="bi bi-box-arrow-right"></i> Checkout
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4" style="text-align:center; padding:32px; color:var(--color-text-muted);">
-          Sin salidas hoy
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    Salidas hoy
+    <span class="tab-count">{{ salidas.count }}</span>
+  </button>
 </div>
 
+<!-- Tab Llegadas -->
+<div id="tab-llegadas" class="tab-content">
+  <div class="card">
+    <div class="card-header" style="background:var(--color-primary); color:#fff;">
+      <i class="bi bi-box-arrow-in-right"></i> Llegadas hoy
+    </div>
+    {% if llegadas %}
+    <div style="padding:12px 16px; border-bottom:1px solid var(--color-border);">
+      <input type="text" id="filtroLlegadas" class="form-control"
+             placeholder="Buscar huésped..." style="max-width:300px;"
+             oninput="filtrarTabla('filtroLlegadas', 'tbodyLlegadas')">
+    </div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Huésped</th>
+          <th>Tipo</th>
+          <th>Noches</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbodyLlegadas">
+        {% for r in llegadas %}
+        <tr>
+          <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+          <td>
+            <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+            <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+          </td>
+          <td>{{ r.tipo_habitacion.nombre }}</td>
+          <td>{{ r.num_noches }}</td>
+          <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
+          <td>
+            <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px;">
+              <i class="bi bi-box-arrow-in-right"></i> Check-in
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+      <i class="bi bi-inbox" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+      Sin llegadas hoy
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Tab En Casa -->
+<div id="tab-en_casa" class="tab-content" style="display:none;">
+  <div class="card">
+    <div class="card-header" style="background:#1a1a1a; color:#fff;">
+      <i class="bi bi-house"></i> En Casa
+    </div>
+    {% if en_casa %}
+    <div style="padding:12px 16px; border-bottom:1px solid var(--color-border);">
+      <input type="text" id="filtroEnCasa" class="form-control"
+             placeholder="Buscar huésped..." style="max-width:300px;"
+             oninput="filtrarTabla('filtroEnCasa', 'tbodyEnCasa')">
+    </div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Huésped</th>
+          <th>Habitación</th>
+          <th>Sale</th>
+          <th>Folio</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbodyEnCasa">
+        {% for r in en_casa %}
+        <tr>
+          <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+          <td>
+            <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+            <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+          </td>
+          <td>Hab. {{ r.habitacion.numero }}</td>
+          <td>{{ r.fecha_salida|date:"d M Y" }}</td>
+          <td>
+            {% if r.estancia.tiene_deuda %}
+              <span class="badge badge-sand">Pendiente</span>
+            {% else %}
+              <span class="badge badge-green">Pagado</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'reservas:folio' r.estancia.pk %}" class="btn-secondary" style="font-size:12px; padding:6px 12px;">
+              <i class="bi bi-receipt"></i> Folio
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+      <i class="bi bi-house" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+      Sin huéspedes en casa
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Tab Salidas -->
+<div id="tab-salidas" class="tab-content" style="display:none;">
+  <div class="card">
+    <div class="card-header" style="background:var(--color-accent); color:#1a1a1a;">
+      <i class="bi bi-box-arrow-right"></i> Salidas hoy
+    </div>
+    {% if salidas %}
+    <div style="padding:12px 16px; border-bottom:1px solid var(--color-border);">
+      <input type="text" id="filtroSalidas" class="form-control"
+             placeholder="Buscar huésped..." style="max-width:300px;"
+             oninput="filtrarTabla('filtroSalidas', 'tbodySalidas')">
+    </div>
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Huésped</th>
+          <th>Habitación</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbodySalidas">
+        {% for r in salidas %}
+        <tr>
+          <td style="color:var(--color-text-muted); font-size:12px;">R-{{ r.pk }}</td>
+          <td>
+            <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
+            <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
+          </td>
+          <td>Hab. {{ r.habitacion.numero }}</td>
+          <td>
+            <a href="{% url 'reservas:checkout' r.estancia.pk %}" class="btn-primary"
+               style="font-size:12px; padding:6px 12px; background:var(--color-danger);">
+              <i class="bi bi-box-arrow-right"></i> Checkout
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+      <i class="bi bi-box-arrow-right" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+      Sin salidas hoy
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function mostrarTab(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(function(el) {
+        el.style.display = 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach(function(b) {
+        b.classList.remove('active');
+    });
+    document.getElementById('tab-' + tab).style.display = 'block';
+    btn.classList.add('active');
+}
+
+function filtrarTabla(inputId, tbodyId) {
+    const q     = document.getElementById(inputId).value.toLowerCase();
+    const tbody = document.getElementById(tbodyId);
+    tbody.querySelectorAll('tr').forEach(function(row) {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+</script>
 {% endblock %}
