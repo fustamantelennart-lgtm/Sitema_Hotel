@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Reportar Incidente{% endblock %}
+{% block breadcrumb_parent %}Limpieza · Incidentes{% endblock %}
+{% block breadcrumb_title %}Reportar Incidente{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'housekeeping:incidentes' %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:560px; margin:0 auto;">
+  <div class="card">
+    <div class="card-header">
+      <i class="bi bi-exclamation-triangle" style="color:var(--color-danger);"></i>
+      Nuevo incidente
+    </div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Habitación</label>
+          <select name="habitacion" class="form-select" required>
+            <option value="">— Selecciona —</option>
+            {% for hab in habitaciones %}
+            <option value="{{ hab.pk }}">Hab. {{ hab.numero }} — Piso {{ hab.piso }} ({{ hab.tipo.nombre }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo</label>
+          <select name="tipo" class="form-select" required>
+            <option value="DESPERFECTO">Desperfecto</option>
+            <option value="MINIBAR">Consumo Minibar</option>
+            <option value="LIMPIEZA">Limpieza Especial</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea name="descripcion" class="form-control" rows="3" required
+                    placeholder="Describe el incidente..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Monto a cobrar (opcional)</label>
+          <input type="number" name="monto_cobrar" class="form-control"
+                 step="0.01" min="0" placeholder="Ej: 50.00">
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-check-lg"></i> Reportar
+          </button>
+          <a href="{% url 'housekeeping:incidentes' %}" class="btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

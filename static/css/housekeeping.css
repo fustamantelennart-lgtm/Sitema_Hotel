@@ -35,3 +35,16 @@
 .tarea-accion {
   flex-shrink: 0;
 }
+
+/* Barra de prioridad */
+.tarea-prioridad-bar {
+  width: 4px;
+  border-radius: 4px;
+  align-self: stretch;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.prioridad-alta  { background: var(--color-danger); }
+.prioridad-media { background: var(--color-warning); }
+.prioridad-baja  { background: var(--color-secondary); }

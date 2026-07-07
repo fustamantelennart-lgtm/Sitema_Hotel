@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Historial Housekeeping{% endblock %}
+{% block breadcrumb_parent %}Limpieza{% endblock %}
+{% block breadcrumb_title %}Historial{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'housekeeping:panel' %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/housekeeping.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-body">
+    <form method="get" style="display:flex; gap:12px; align-items:end;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Filtrar por fecha</label>
+        <input type="date" name="fecha" value="{{ fecha }}" class="form-control">
+      </div>
+      <button type="submit" class="btn-primary">
+        <i class="bi bi-search"></i> Filtrar
+      </button>
+      <a href="{% url 'housekeeping:historial' %}" class="btn-secondary">
+        <i class="bi bi-x"></i> Limpiar
+      </a>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-clock-history" style="color:var(--color-primary);"></i>
+    Tareas completadas
+  </div>
+  {% if tareas %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Habitación</th>
+        <th>Tipo</th>
+        <th>Prioridad</th>
+        <th>Asignada a</th>
+        <th>Completada</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tareas %}
+      <tr>
+        <td style="font-weight:600;">Hab. {{ t.habitacion.numero }}</td>
+        <td>{{ t.habitacion.tipo.nombre }}</td>
+        <td>
+          <span class="badge {% if t.prioridad == 'ALTA' %}badge-red{% elif t.prioridad == 'MEDIA' %}badge-sand{% else %}badge-gray{% endif %}">
+            {{ t.get_prioridad_display }}
+          </span>
+        </td>
+        <td>{{ t.asignada_a.get_full_name|default:t.asignada_a.username|default:"—" }}</td>
+        <td style="color:var(--color-text-muted); font-size:12px;">
+          {{ t.fecha_completada|date:"d M Y H:i" }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-clock-history" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    No hay tareas completadas{% if fecha %} en esta fecha{% endif %}.
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
