@@ -32,9 +32,8 @@ def dashboard(request):
         creado_en__year=anio,
     ).aggregate(t=Sum('precio_total'))['t'] or 0
 
-    # Datos para gráfico de ocupación últimos 6 meses
     from dateutil.relativedelta import relativedelta
-    meses_labels = []
+    meses_labels   = []
     meses_ocupacion = []
     for i in range(5, -1, -1):
         fecha = hoy - relativedelta(months=i)
@@ -47,35 +46,33 @@ def dashboard(request):
         meses_labels.append(label)
         meses_ocupacion.append(reservas_mes)
 
-    # Datos para gráfico de estados de habitaciones
-    estados_data = [disponibles, ocupadas, limpieza, mantenimiento]
+    estados_data   = [disponibles, ocupadas, limpieza, mantenimiento]
     estados_labels = ['Disponible', 'Ocupada', 'En Limpieza', 'Mantenimiento']
 
-    # Ingresos por tipo
     por_tipo = Reserva.objects.filter(
         estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT']
     ).values('tipo_habitacion__nombre').annotate(
         ingresos=Sum('precio_total')
     ).order_by('-ingresos')
 
-    tipo_labels  = [t['tipo_habitacion__nombre'] for t in por_tipo]
+    tipo_labels   = [t['tipo_habitacion__nombre'] for t in por_tipo]
     tipo_ingresos = [float(t['ingresos'] or 0) for t in por_tipo]
 
     return render(request, 'gerencia/dashboard.html', {
-        'total_reservas': total_reservas,
-        'ocupadas':       ocupadas,
-        'ocupacion_pct':  ocupacion_pct,
-        'ingresos':       ingresos,
-        'disponibles':    disponibles,
-        'limpieza':       limpieza,
-        'mantenimiento':  mantenimiento,
-        'total':          total,
-        'meses_labels':   json.dumps(meses_labels),
+        'total_reservas':  total_reservas,
+        'ocupadas':        ocupadas,
+        'ocupacion_pct':   ocupacion_pct,
+        'ingresos':        ingresos,
+        'disponibles':     disponibles,
+        'limpieza':        limpieza,
+        'mantenimiento':   mantenimiento,
+        'total':           total,
+        'meses_labels':    json.dumps(meses_labels),
         'meses_ocupacion': json.dumps(meses_ocupacion),
-        'estados_data':   json.dumps(estados_data),
-        'estados_labels': json.dumps(estados_labels),
-        'tipo_labels':    json.dumps(tipo_labels),
-        'tipo_ingresos':  json.dumps(tipo_ingresos),
+        'estados_data':    json.dumps(estados_data),
+        'estados_labels':  json.dumps(estados_labels),
+        'tipo_labels':     json.dumps(tipo_labels),
+        'tipo_ingresos':   json.dumps(tipo_ingresos),
     })
 
 
@@ -123,39 +120,53 @@ def usuarios(request):
 @login_required
 @rol_requerido('admin')
 def reportes(request):
-    from apps.reservas.models import Reserva, Estancia
+    from apps.reservas.models import Reserva
     from django.db.models import Sum, Count
+    from datetime import date
 
     hoy = timezone.now().date()
 
-    reservas_mes = Reserva.objects.filter(
-        creado_en__month=hoy.month,
-        creado_en__year=hoy.year,
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin    = request.GET.get('fecha_fin')
+
+    if fecha_inicio and fecha_fin:
+        fi = date.fromisoformat(fecha_inicio)
+        ff = date.fromisoformat(fecha_fin)
+    else:
+        fi = hoy.replace(day=1)
+        ff = hoy
+
+    reservas_qs = Reserva.objects.filter(
+        creado_en__date__gte=fi,
+        creado_en__date__lte=ff,
     )
 
     resumen = {
-        'total':      reservas_mes.count(),
-        'confirmadas': reservas_mes.filter(estado='CONFIRMADA').count(),
-        'checkin':    reservas_mes.filter(estado='CHECKIN').count(),
-        'checkout':   reservas_mes.filter(estado='CHECKOUT').count(),
-        'canceladas': reservas_mes.filter(estado='CANCELADA').count(),
-        'ingresos':   reservas_mes.filter(
-            estado__in=['CONFIRMADA','CHECKIN','CHECKOUT']
+        'total':       reservas_qs.count(),
+        'confirmadas': reservas_qs.filter(estado='CONFIRMADA').count(),
+        'checkin':     reservas_qs.filter(estado='CHECKIN').count(),
+        'checkout':    reservas_qs.filter(estado='CHECKOUT').count(),
+        'canceladas':  reservas_qs.filter(estado='CANCELADA').count(),
+        'ingresos':    reservas_qs.filter(
+            estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT']
         ).aggregate(t=Sum('precio_total'))['t'] or 0,
     }
 
-    por_tipo = Reserva.objects.filter(
-        estado__in=['CONFIRMADA','CHECKIN','CHECKOUT']
+    por_tipo = reservas_qs.filter(
+        estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT']
     ).values('tipo_habitacion__nombre').annotate(
         total=Count('id'),
         ingresos=Sum('precio_total'),
     ).order_by('-total')
 
     return render(request, 'gerencia/reportes.html', {
-        'resumen':  resumen,
-        'por_tipo': por_tipo,
-        'mes':      hoy.strftime('%B %Y'),
+        'resumen':      resumen,
+        'por_tipo':     por_tipo,
+        'mes':          f'{fi.strftime("%d/%m/%Y")} — {ff.strftime("%d/%m/%Y")}',
+        'fecha_inicio': str(fi),
+        'fecha_fin':    str(ff),
     })
+
 
 @login_required
 @rol_requerido('admin')
@@ -165,17 +176,22 @@ def exportar_excel(request):
     from django.http import HttpResponse
     from apps.reservas.models import Reserva
     from django.db.models import Sum
+    from datetime import date
+
+    hoy          = timezone.now().date()
+    fecha_inicio = request.GET.get('fecha_inicio', str(hoy.replace(day=1)))
+    fecha_fin    = request.GET.get('fecha_fin',    str(hoy))
+    fi = date.fromisoformat(fecha_inicio)
+    ff = date.fromisoformat(fecha_fin)
 
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = 'Reporte de Reservas'
 
-    # Estilos
-    header_font    = Font(bold=True, color='FFFFFF')
-    header_fill    = PatternFill('solid', fgColor='2D4A3E')
-    center_align   = Alignment(horizontal='center')
+    header_font  = Font(bold=True, color='FFFFFF')
+    header_fill  = PatternFill('solid', fgColor='2D4A3E')
+    center_align = Alignment(horizontal='center')
 
-    # Encabezados
     headers = ['#', 'Huésped', 'DNI', 'Tipo Habitación', 'Entrada',
                'Salida', 'Noches', 'Total S/', 'Estado', 'Origen']
     for col, header in enumerate(headers, 1):
@@ -184,10 +200,10 @@ def exportar_excel(request):
         cell.fill      = header_fill
         cell.alignment = center_align
 
-    # Datos
-    reservas = Reserva.objects.select_related(
-        'huesped', 'tipo_habitacion'
-    ).order_by('-creado_en')
+    reservas = Reserva.objects.filter(
+        creado_en__date__gte=fi,
+        creado_en__date__lte=ff,
+    ).select_related('huesped', 'tipo_habitacion').order_by('-creado_en')
 
     for row, r in enumerate(reservas, 2):
         ws.cell(row=row, column=1,  value=r.pk)
@@ -201,12 +217,10 @@ def exportar_excel(request):
         ws.cell(row=row, column=9,  value=r.get_estado_display())
         ws.cell(row=row, column=10, value=r.get_origen_display())
 
-    # Ancho de columnas
     for col in ws.columns:
         max_len = max(len(str(cell.value or '')) for cell in col)
         ws.column_dimensions[col[0].column_letter].width = max_len + 4
 
-    # Fila de totales
     total_row = reservas.count() + 2
     ws.cell(row=total_row, column=7, value='TOTAL').font = Font(bold=True)
     total = reservas.aggregate(t=Sum('precio_total'))['t'] or 0
@@ -215,7 +229,7 @@ def exportar_excel(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
-    response['Content-Disposition'] = 'attachment; filename="reporte_reservas.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="reporte_{fecha_inicio}_{fecha_fin}.xlsx"'
     wb.save(response)
     return response
 
@@ -231,28 +245,36 @@ def exportar_pdf(request):
     from django.http import HttpResponse
     from apps.reservas.models import Reserva
     from django.db.models import Sum
+    from datetime import date
     import io
 
-    buffer   = io.BytesIO()
-    doc      = SimpleDocTemplate(buffer, pagesize=landscape(A4),
-                                  leftMargin=1.5*cm, rightMargin=1.5*cm,
-                                  topMargin=2*cm, bottomMargin=2*cm)
+    hoy          = timezone.now().date()
+    fecha_inicio = request.GET.get('fecha_inicio', str(hoy.replace(day=1)))
+    fecha_fin    = request.GET.get('fecha_fin',    str(hoy))
+    fi = date.fromisoformat(fecha_inicio)
+    ff = date.fromisoformat(fecha_fin)
+
+    buffer = io.BytesIO()
+    doc    = SimpleDocTemplate(buffer, pagesize=landscape(A4),
+                                leftMargin=1.5*cm, rightMargin=1.5*cm,
+                                topMargin=2*cm, bottomMargin=2*cm)
     styles   = getSampleStyleSheet()
     elements = []
 
-    # Título
-    elements.append(Paragraph('Reporte de Reservas — Hotel Tumán',
-                               styles['Title']))
+    elements.append(Paragraph(
+        f'Reporte de Reservas — Hotel Tumán ({fi.strftime("%d/%m/%Y")} → {ff.strftime("%d/%m/%Y")})',
+        styles['Title']
+    ))
     elements.append(Spacer(1, 0.5*cm))
 
-    # Tabla
     headers = ['#', 'Huésped', 'DNI', 'Tipo', 'Entrada', 'Salida',
                'Noches', 'Total S/', 'Estado']
     data    = [headers]
 
-    reservas = Reserva.objects.select_related(
-        'huesped', 'tipo_habitacion'
-    ).order_by('-creado_en')
+    reservas = Reserva.objects.filter(
+        creado_en__date__gte=fi,
+        creado_en__date__lte=ff,
+    ).select_related('huesped', 'tipo_habitacion').order_by('-creado_en')
 
     for r in reservas:
         data.append([
@@ -267,25 +289,23 @@ def exportar_pdf(request):
             r.get_estado_display(),
         ])
 
-    # Fila total
     total = reservas.aggregate(t=Sum('precio_total'))['t'] or 0
     data.append(['', '', '', '', '', 'TOTAL',
                  str(reservas.count()), f'S/ {total}', ''])
 
     table = Table(data, repeatRows=1)
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2D4A3E')),
-        ('TEXTCOLOR',  (0, 0), (-1, 0), colors.white),
-        ('FONTNAME',   (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE',   (0, 0), (-1, 0), 9),
-        ('ALIGN',      (0, 0), (-1, -1), 'CENTER'),
-        ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -2),
-         [colors.white, colors.HexColor('#F5F0E8')]),
-        ('FONTSIZE',   (0, 1), (-1, -1), 8),
-        ('GRID',       (0, 0), (-1, -1), 0.5, colors.HexColor('#E5DDD0')),
-        ('FONTNAME',   (0, -1), (-1, -1), 'Helvetica-Bold'),
-        ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#C4A882')),
+        ('BACKGROUND',    (0, 0),  (-1, 0),  colors.HexColor('#2D4A3E')),
+        ('TEXTCOLOR',     (0, 0),  (-1, 0),  colors.white),
+        ('FONTNAME',      (0, 0),  (-1, 0),  'Helvetica-Bold'),
+        ('FONTSIZE',      (0, 0),  (-1, 0),  9),
+        ('ALIGN',         (0, 0),  (-1, -1), 'CENTER'),
+        ('VALIGN',        (0, 0),  (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS',(0, 1),  (-1, -2), [colors.white, colors.HexColor('#F5F0E8')]),
+        ('FONTSIZE',      (0, 1),  (-1, -1), 8),
+        ('GRID',          (0, 0),  (-1, -1), 0.5, colors.HexColor('#E5DDD0')),
+        ('FONTNAME',      (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('BACKGROUND',    (0, -1), (-1, -1), colors.HexColor('#C4A882')),
     ]))
 
     elements.append(table)
@@ -293,5 +313,5 @@ def exportar_pdf(request):
 
     buffer.seek(0)
     response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="reporte_reservas.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="reporte_{fecha_inicio}_{fecha_fin}.pdf"'
     return response

@@ -1,25 +1,54 @@
 {% extends 'base.html' %}
 {% block title %}Reportes{% endblock %}
 {% block breadcrumb_parent %}Gerencia{% endblock %}
-{% block breadcrumb_title %}Reportes — {{ mes }}{% endblock %}
+{% block breadcrumb_title %}Reportes{% endblock %}
 {% block nav_reportes %}active{% endblock %}
 
 {% block topbar_actions %}
-<a href="{% url 'gerencia:exportar_excel' %}" class="btn-secondary">
+<a href="{% url 'gerencia:exportar_excel' %}?fecha_inicio={{ fecha_inicio }}&fecha_fin={{ fecha_fin }}"
+   class="btn-secondary">
   <i class="bi bi-file-earmark-excel"></i> Exportar Excel
 </a>
-<a href="{% url 'gerencia:exportar_pdf' %}" class="btn-primary">
+<a href="{% url 'gerencia:exportar_pdf' %}?fecha_inicio={{ fecha_inicio }}&fecha_fin={{ fecha_fin }}"
+   class="btn-primary">
   <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
 </a>
 {% endblock %}
 
 {% block content %}
+<p style="font-size:13px; color:var(--color-text-muted); margin-bottom:16px;">
+  Período: {{ mes }}
+</p>
+
+<!-- Filtro de período -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-body">
+    <form method="get" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Fecha inicio</label>
+        <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}"
+               class="form-control">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Fecha fin</label>
+        <input type="date" name="fecha_fin" value="{{ fecha_fin }}"
+               class="form-control">
+      </div>
+      <button type="submit" class="btn-primary">
+        <i class="bi bi-search"></i> Filtrar
+      </button>
+      <a href="{% url 'gerencia:reportes' %}" class="btn-secondary">
+        <i class="bi bi-x"></i> Limpiar
+      </a>
+    </form>
+  </div>
+</div>
 
 <div class="kpi-grid">
   <div class="kpi-card">
     <div class="kpi-label"><span class="dot dot-disponible"></span> Total reservas</div>
     <div class="kpi-value">{{ resumen.total }}</div>
-    <div class="kpi-sub">Este mes</div>
+    <div class="kpi-sub">En el período</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-label"><span class="dot dot-disponible"></span> Confirmadas</div>
@@ -40,7 +69,7 @@
   <div class="kpi-card">
     <div class="kpi-label"><span class="dot dot-disponible"></span> Ingresos</div>
     <div class="kpi-value" style="font-size:20px;">S/ {{ resumen.ingresos }}</div>
-    <div class="kpi-sub">Este mes</div>
+    <div class="kpi-sub">En el período</div>
   </div>
 </div>
 
@@ -71,7 +100,7 @@
   {% else %}
   <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
     <i class="bi bi-graph-up" style="font-size:32px; display:block; margin-bottom:8px;"></i>
-    No hay datos de reservas aún.
+    No hay datos de reservas en este período.
   </div>
   {% endif %}
 </div>

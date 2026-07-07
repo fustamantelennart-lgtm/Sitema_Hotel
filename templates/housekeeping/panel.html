@@ -7,11 +7,9 @@
 {% block nav_housekeeping %}active{% endblock %}
 
 {% block topbar_actions %}
-<div class="topbar-actions">
-  <span class="badge badge-gray">
-    {{ tareas.count }} tarea{{ tareas.count|pluralize }} pendiente{{ tareas.count|pluralize }}
-  </span>
-</div>
+<a href="{% url 'housekeeping:historial' %}" class="btn-secondary">
+  <i class="bi bi-clock-history"></i> Historial
+</a>
 {% endblock %}
 
 {% block extra_css %}
@@ -20,8 +18,7 @@
 
 {% block content %}
 
-<!-- KPIs -->
-<div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); max-width:500px; margin-bottom:24px;">
+<div class="kpi-grid" style="grid-template-columns:repeat(3,1fr); max-width:500px; margin-bottom:24px;">
   <div class="kpi-card">
     <div class="kpi-label"><span class="dot dot-limpieza"></span> Pendientes</div>
     <div class="kpi-value">{{ pendientes }}</div>
@@ -36,25 +33,40 @@
   </div>
 </div>
 
-<!-- Lista de tareas -->
 {% if tareas %}
   {% regroup tareas by habitacion.piso as tareas_por_piso %}
   {% for piso in tareas_por_piso %}
   <div class="piso-header">Piso {{ piso.grouper }}</div>
 
   {% for tarea in piso.list %}
-  <div class="tarea-row card mb-2">
+  <div class="tarea-row card" style="margin-bottom:8px;">
     <div class="tarea-info">
+
+      <!-- Indicador de prioridad -->
+      <div class="tarea-prioridad-bar
+        {% if tarea.prioridad == 'ALTA' %}prioridad-alta
+        {% elif tarea.prioridad == 'MEDIA' %}prioridad-media
+        {% else %}prioridad-baja{% endif %}">
+      </div>
+
       <div class="tarea-numero">{{ tarea.habitacion.numero }}</div>
-      <div>
+
+      <div style="flex:1;">
         <div class="tarea-tipo">{{ tarea.habitacion.tipo.nombre }}</div>
         <div class="tarea-meta">
           <span class="badge {% if tarea.prioridad == 'ALTA' %}badge-red{% elif tarea.prioridad == 'MEDIA' %}badge-sand{% else %}badge-gray{% endif %}">
-            {{ tarea.get_prioridad_display }}
+            <i class="bi bi-flag"></i> {{ tarea.get_prioridad_display }}
+          </span>
+          <span class="badge {% if tarea.estado == 'EN_PROCESO' %}badge-sand{% else %}badge-gray{% endif %}">
+            {{ tarea.get_estado_display }}
           </span>
           {% if tarea.asignada_a %}
           <span style="font-size:12px; color:var(--color-text-muted);">
-            <i class="bi bi-person"></i> {{ tarea.asignada_a.get_full_name }}
+            <i class="bi bi-person-fill"></i> {{ tarea.asignada_a.get_full_name|default:tarea.asignada_a.username }}
+          </span>
+          {% else %}
+          <span style="font-size:12px; color:var(--color-danger);">
+            <i class="bi bi-person-x"></i> Sin asignar
           </span>
           {% endif %}
           <span style="font-size:12px; color:var(--color-text-muted);">
@@ -63,27 +75,55 @@
         </div>
       </div>
     </div>
-    <div class="tarea-accion">
+
+    <div class="tarea-accion" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+
+      <!-- Asignar empleado y prioridad -->
+      {% if user.es_admin or user.es_recepcionista %}
+      <form method="post" action="{% url 'housekeeping:asignar' tarea.pk %}"
+            style="display:flex; gap:6px; align-items:center;">
+        {% csrf_token %}
+        <select name="empleado" class="form-select" style="font-size:12px; padding:4px 8px; width:auto;">
+          <option value="">— Asignar —</option>
+          {% for emp in empleados %}
+          <option value="{{ emp.pk }}"
+            {% if tarea.asignada_a and tarea.asignada_a.pk == emp.pk %}selected{% endif %}>
+            {{ emp.get_full_name|default:emp.username }}
+          </option>
+          {% endfor %}
+        </select>
+        <select name="prioridad" class="form-select" style="font-size:12px; padding:4px 8px; width:auto;">
+          <option value="ALTA"  {% if tarea.prioridad == 'ALTA'  %}selected{% endif %}>Alta</option>
+          <option value="MEDIA" {% if tarea.prioridad == 'MEDIA' %}selected{% endif %}>Media</option>
+          <option value="BAJA"  {% if tarea.prioridad == 'BAJA'  %}selected{% endif %}>Baja</option>
+        </select>
+        <button type="submit" class="btn-secondary" style="font-size:12px; padding:4px 10px;">
+          <i class="bi bi-save"></i>
+        </button>
+      </form>
+      {% endif %}
+
       {% if tarea.estado == 'PENDIENTE' %}
       <form method="post" action="{% url 'housekeeping:iniciar' tarea.pk %}">
         {% csrf_token %}
-        <button class="btn-secondary" type="submit">
+        <button class="btn-secondary" type="submit" style="font-size:12px; padding:6px 12px;">
           <i class="bi bi-play"></i> Iniciar
         </button>
       </form>
       {% elif tarea.estado == 'EN_PROCESO' %}
       <form method="post" action="{% url 'housekeeping:completar' tarea.pk %}">
         {% csrf_token %}
-        <button class="btn-primary" type="submit">
+        <button class="btn-primary" type="submit" style="font-size:12px; padding:6px 12px;">
           <i class="bi bi-check-lg"></i> Marcar lista
         </button>
       </form>
       {% endif %}
+
     </div>
   </div>
   {% endfor %}
-
   {% endfor %}
+
 {% else %}
 <div class="alert alert-success">
   <i class="bi bi-check-circle"></i>

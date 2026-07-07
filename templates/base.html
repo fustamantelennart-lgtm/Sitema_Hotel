@@ -97,6 +97,13 @@
           <span class="nav-label">Tareas</span>
         </a>
       </li>
+      <li>
+        <a href="{% url 'housekeeping:incidentes' %}"
+           class="{% block nav_incidentes %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-exclamation-triangle"></i></span>
+          <span class="nav-label">Incidentes</span>
+        </a>
+      </li>
     </ul>
     {% endif %}
 

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Incidentes{% endblock %}
+{% block breadcrumb_parent %}Limpieza{% endblock %}
+{% block breadcrumb_title %}Incidentes{% endblock %}
+{% block nav_incidentes %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'housekeeping:reportar_incidente' %}" class="btn-primary">
+  <i class="bi bi-plus-lg"></i> Reportar incidente
+</a>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/housekeeping.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-body">
+    <form method="get" style="display:flex; gap:12px; align-items:end;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Filtrar</label>
+        <select name="resuelto" class="form-select" style="width:auto;">
+          <option value="">Todos</option>
+          <option value="0" {% if resuelto == '0' %}selected{% endif %}>Pendientes</option>
+          <option value="1" {% if resuelto == '1' %}selected{% endif %}>Resueltos</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-primary">
+        <i class="bi bi-search"></i> Filtrar
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-exclamation-triangle" style="color:var(--color-danger);"></i>
+    Incidentes
+    {% if pendientes %}
+    <span class="badge badge-red" style="margin-left:8px;">{{ pendientes }} pendiente{{ pendientes|pluralize }}</span>
+    {% endif %}
+  </div>
+  {% if incidentes %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Habitación</th>
+        <th>Tipo</th>
+        <th>Descripción</th>
+        <th>Monto</th>
+        <th>Reportado por</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inc in incidentes %}
+      <tr>
+        <td style="font-weight:600;">Hab. {{ inc.habitacion.numero }}</td>
+        <td><span class="badge badge-gray">{{ inc.get_tipo_display }}</span></td>
+        <td style="font-size:13px;">{{ inc.descripcion }}</td>
+        <td>{% if inc.monto_cobrar %}S/ {{ inc.monto_cobrar }}{% else %}—{% endif %}</td>
+        <td style="font-size:12px; color:var(--color-text-muted);">
+          {{ inc.reportado_por.get_full_name|default:inc.reportado_por.username|default:"—" }}
+        </td>
+        <td style="font-size:12px; color:var(--color-text-muted);">
+          {{ inc.fecha|date:"d M Y H:i" }}
+        </td>
+        <td>
+          {% if inc.resuelto %}
+            <span class="badge badge-green">Resuelto</span>
+          {% else %}
+            <span class="badge badge-red">Pendiente</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if not inc.resuelto %}
+          <form method="post" action="{% url 'housekeeping:resolver_incidente' inc.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-secondary" style="font-size:12px; padding:6px 12px;">
+              <i class="bi bi-check-lg"></i> Resolver
+            </button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-exclamation-triangle" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    No hay incidentes registrados.
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
