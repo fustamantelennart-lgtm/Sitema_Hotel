@@ -156,3 +156,142 @@ def reportes(request):
         'por_tipo': por_tipo,
         'mes':      hoy.strftime('%B %Y'),
     })
+
+@login_required
+@rol_requerido('admin')
+def exportar_excel(request):
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+    from django.http import HttpResponse
+    from apps.reservas.models import Reserva
+    from django.db.models import Sum
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Reporte de Reservas'
+
+    # Estilos
+    header_font    = Font(bold=True, color='FFFFFF')
+    header_fill    = PatternFill('solid', fgColor='2D4A3E')
+    center_align   = Alignment(horizontal='center')
+
+    # Encabezados
+    headers = ['#', 'Huésped', 'DNI', 'Tipo Habitación', 'Entrada',
+               'Salida', 'Noches', 'Total S/', 'Estado', 'Origen']
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.font      = header_font
+        cell.fill      = header_fill
+        cell.alignment = center_align
+
+    # Datos
+    reservas = Reserva.objects.select_related(
+        'huesped', 'tipo_habitacion'
+    ).order_by('-creado_en')
+
+    for row, r in enumerate(reservas, 2):
+        ws.cell(row=row, column=1,  value=r.pk)
+        ws.cell(row=row, column=2,  value=r.huesped.nombre_completo)
+        ws.cell(row=row, column=3,  value=r.huesped.num_doc)
+        ws.cell(row=row, column=4,  value=r.tipo_habitacion.nombre)
+        ws.cell(row=row, column=5,  value=str(r.fecha_entrada))
+        ws.cell(row=row, column=6,  value=str(r.fecha_salida))
+        ws.cell(row=row, column=7,  value=r.num_noches)
+        ws.cell(row=row, column=8,  value=float(r.precio_total))
+        ws.cell(row=row, column=9,  value=r.get_estado_display())
+        ws.cell(row=row, column=10, value=r.get_origen_display())
+
+    # Ancho de columnas
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or '')) for cell in col)
+        ws.column_dimensions[col[0].column_letter].width = max_len + 4
+
+    # Fila de totales
+    total_row = reservas.count() + 2
+    ws.cell(row=total_row, column=7, value='TOTAL').font = Font(bold=True)
+    total = reservas.aggregate(t=Sum('precio_total'))['t'] or 0
+    ws.cell(row=total_row, column=8, value=float(total)).font = Font(bold=True)
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="reporte_reservas.xlsx"'
+    wb.save(response)
+    return response
+
+
+@login_required
+@rol_requerido('admin')
+def exportar_pdf(request):
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.lib import colors
+    from reportlab.lib.styles import getSampleStyleSheet
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.units import cm
+    from django.http import HttpResponse
+    from apps.reservas.models import Reserva
+    from django.db.models import Sum
+    import io
+
+    buffer   = io.BytesIO()
+    doc      = SimpleDocTemplate(buffer, pagesize=landscape(A4),
+                                  leftMargin=1.5*cm, rightMargin=1.5*cm,
+                                  topMargin=2*cm, bottomMargin=2*cm)
+    styles   = getSampleStyleSheet()
+    elements = []
+
+    # Título
+    elements.append(Paragraph('Reporte de Reservas — Hotel Tumán',
+                               styles['Title']))
+    elements.append(Spacer(1, 0.5*cm))
+
+    # Tabla
+    headers = ['#', 'Huésped', 'DNI', 'Tipo', 'Entrada', 'Salida',
+               'Noches', 'Total S/', 'Estado']
+    data    = [headers]
+
+    reservas = Reserva.objects.select_related(
+        'huesped', 'tipo_habitacion'
+    ).order_by('-creado_en')
+
+    for r in reservas:
+        data.append([
+            str(r.pk),
+            r.huesped.nombre_completo,
+            r.huesped.num_doc,
+            r.tipo_habitacion.nombre,
+            str(r.fecha_entrada),
+            str(r.fecha_salida),
+            str(r.num_noches),
+            f'S/ {r.precio_total}',
+            r.get_estado_display(),
+        ])
+
+    # Fila total
+    total = reservas.aggregate(t=Sum('precio_total'))['t'] or 0
+    data.append(['', '', '', '', '', 'TOTAL',
+                 str(reservas.count()), f'S/ {total}', ''])
+
+    table = Table(data, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2D4A3E')),
+        ('TEXTCOLOR',  (0, 0), (-1, 0), colors.white),
+        ('FONTNAME',   (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE',   (0, 0), (-1, 0), 9),
+        ('ALIGN',      (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -2),
+         [colors.white, colors.HexColor('#F5F0E8')]),
+        ('FONTSIZE',   (0, 1), (-1, -1), 8),
+        ('GRID',       (0, 0), (-1, -1), 0.5, colors.HexColor('#E5DDD0')),
+        ('FONTNAME',   (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#C4A882')),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_reservas.pdf"'
+    return response
