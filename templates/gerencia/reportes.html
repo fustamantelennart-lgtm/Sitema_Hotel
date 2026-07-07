@@ -4,6 +4,15 @@
 {% block breadcrumb_title %}Reportes — {{ mes }}{% endblock %}
 {% block nav_reportes %}active{% endblock %}
 
+{% block topbar_actions %}
+<a href="{% url 'gerencia:exportar_excel' %}" class="btn-secondary">
+  <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+</a>
+<a href="{% url 'gerencia:exportar_pdf' %}" class="btn-primary">
+  <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+</a>
+{% endblock %}
+
 {% block content %}
 
 <div class="kpi-grid">
