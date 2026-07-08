@@ -32,16 +32,18 @@
     <div class="card-body">
       <form method="post">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
         <div class="form-group">
           <label class="form-label">Motivo de cancelación (opcional)</label>
           <textarea name="motivo" class="form-control" rows="3"
                     placeholder="Describe el motivo..."></textarea>
         </div>
         <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
-          <button type="submit" class="btn-primary" style="background:var(--color-danger); justify-content:center;">
+          <button type="submit" class="btn-primary"
+                  style="background:var(--color-danger); justify-content:center;">
             <i class="bi bi-x-circle"></i> Confirmar cancelación
           </button>
-          <a href="{% url 'reservas:lista' %}" class="btn-secondary" style="justify-content:center;">
+          <a href="{{ next|default:'/' }}" class="btn-secondary" style="justify-content:center;">
             Volver sin cancelar
           </a>
         </div>

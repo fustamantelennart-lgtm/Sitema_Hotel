@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Gestión de Habitaciones{% endblock %}
+{% block breadcrumb_parent %}Recepción{% endblock %}
+{% block breadcrumb_title %}Habitaciones{% endblock %}
+{% block nav_habitaciones %}active{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'recepcion:dashboard' %}" class="btn-secondary">
+  <i class="bi bi-grid-3x3-gap"></i> Ver mapa
+</a>
+{% if user.es_admin %}
+<a href="{% url 'recepcion:nueva_habitacion' %}" class="btn-primary">
+  <i class="bi bi-plus-lg"></i> Nueva habitación
+</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="card" style="margin-bottom:16px;">
+  <div class="card-body">
+    <form method="get" style="display:flex; gap:8px;">
+      <input type="text" name="q" value="{{ q }}" class="form-control"
+             placeholder="Buscar por número..." style="max-width:200px;">
+      <button type="submit" class="btn-secondary">
+        <i class="bi bi-search"></i>
+      </button>
+      {% if q %}
+      <a href="{% url 'recepcion:habitaciones' %}" class="btn-secondary">
+        <i class="bi bi-x"></i>
+      </a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-list-ul" style="color:var(--color-primary);"></i>
+    Habitaciones — {{ hotel.nombre }}
+  </div>
+  {% if habitaciones %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Piso</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+        <th>Cambiar estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for hab in habitaciones %}
+      <tr>
+        <td style="font-weight:700; font-size:16px;">{{ hab.numero }}</td>
+        <td>Piso {{ hab.piso }}</td>
+        <td>{{ hab.tipo.nombre }}</td>
+        <td>
+          <span class="badge
+            {% if hab.estado == 'DISPONIBLE' %}badge-green
+            {% elif hab.estado == 'OCUPADA' %}badge-red
+            {% elif hab.estado == 'LIMPIEZA' %}badge-sand
+            {% else %}badge-gray{% endif %}">
+            {{ hab.get_estado_display }}
+          </span>
+        </td>
+        <td style="font-size:12px; color:var(--color-text-muted);">
+          {{ hab.observaciones|default:"—" }}
+        </td>
+        <td>
+          {% if hab.estado != 'OCUPADA' %}
+          <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
+                style="display:flex; gap:6px;">
+            {% csrf_token %}
+            <select name="estado" class="form-select" style="font-size:12px; padding:4px 8px; width:auto;">
+              {% for val, label in hab.ESTADO_CHOICES %}
+              <option value="{{ val }}" {% if hab.estado == val %}selected{% endif %}>
+                {{ label }}
+              </option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-secondary" style="font-size:12px; padding:4px 10px;">
+              <i class="bi bi-save"></i>
+            </button>
+          </form>
+          {% else %}
+          <span style="font-size:12px; color:var(--color-text-muted);">
+            <i class="bi bi-lock"></i> Ocupada
+          </span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-list-ul" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    No hay habitaciones registradas.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

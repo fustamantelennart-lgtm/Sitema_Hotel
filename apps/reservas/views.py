@@ -220,13 +220,18 @@ def huespedes(request):
 @login_required
 @rol_requerido('admin', 'recepcionista')
 def checkin_lista(request):
+    from django.utils import timezone
+    hoy = timezone.now().date()
     qs = Reserva.objects.filter(
         estado='CONFIRMADA'
     ).select_related('huesped', 'tipo_habitacion').order_by('fecha_entrada')
     paginator = Paginator(qs, 15)
     page      = request.GET.get('page')
     llegadas  = paginator.get_page(page)
-    return render(request, 'reservas/checkin_lista.html', {'llegadas': llegadas})
+    return render(request, 'reservas/checkin_lista.html', {
+        'llegadas': llegadas,
+        'hoy':      hoy,
+    })
 
 
 @login_required
@@ -250,12 +255,17 @@ def cancelar(request, pk):
         return redirect('reservas:lista')
     if request.method == 'POST':
         motivo          = request.POST.get('motivo', '')
+        next_url        = request.POST.get('next', 'reservas:lista')
         reserva.estado  = 'CANCELADA'
         reserva.observaciones += f'\nCancelada por {request.user}: {motivo}'
         reserva.save()
         messages.success(request, f'Reserva R-{reserva.pk} cancelada correctamente.')
-        return redirect('reservas:lista')
-    return render(request, 'reservas/cancelar.html', {'reserva': reserva})
+        return redirect(next_url)
+    next_url = request.GET.get('next', 'reservas:lista')
+    return render(request, 'reservas/cancelar.html', {
+        'reserva': reserva,
+        'next':    next_url,
+    })
 
 
 @login_required

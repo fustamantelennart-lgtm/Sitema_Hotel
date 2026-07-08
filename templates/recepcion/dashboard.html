@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Habitaciones{% endblock %}
+{% block title %}Mapa de Habitaciones{% endblock %}
 {% block breadcrumb_parent %}Recepción{% endblock %}
-{% block breadcrumb_title %}Habitaciones{% endblock %}
-{% block nav_habitaciones %}active{% endblock %}
+{% block breadcrumb_title %}Mapa{% endblock %}
+{% block nav_mapa %}active{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'recepcion:habitaciones' %}" class="btn-secondary">
+  <i class="bi bi-list-ul"></i> Gestión
+</a>
+<a href="{% url 'reservas:nueva' %}" class="btn-primary">
+  <i class="bi bi-plus-lg"></i> Nueva reserva
+</a>
 {% endblock %}
 
 {% block content %}
@@ -64,7 +73,8 @@
 {% empty %}
 <div class="alert alert-info">
   <i class="bi bi-info-circle"></i>
-  No hay habitaciones. <a href="/admin/recepcion/habitacion/add/">Agregar desde el admin</a>
+  No hay habitaciones.
+  <a href="{% url 'recepcion:nueva_habitacion' %}">Agregar habitación</a>
 </div>
 {% endfor %}
 
