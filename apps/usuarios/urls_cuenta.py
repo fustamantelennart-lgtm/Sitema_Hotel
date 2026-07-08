@@ -4,9 +4,10 @@ from . import views
 app_name = 'cuenta'
 
 urlpatterns = [
-    path('registro/',                   views.registro_cliente, name='registro'),
-    path('login/',                      views.login_cliente,    name='login'),
-    path('logout/',                     views.logout_cliente,   name='logout'),
-    path('perfil/',                     views.perfil_cliente,   name='perfil'),
-    path('reservas/<int:pk>/cancelar/', views.cancelar_reserva, name='cancelar_reserva'),
+    path('registro/',                   views.registro_cliente,      name='registro'),
+    path('registro/ajax/',              views.registro_cliente_ajax, name='registro_ajax'),
+    path('login/',                      views.login_cliente,         name='login'),
+    path('logout/',                     views.logout_cliente,        name='logout'),
+    path('perfil/',                     views.perfil_cliente,        name='perfil'),
+    path('reservas/<int:pk>/cancelar/', views.cancelar_reserva,     name='cancelar_reserva'),
 ]

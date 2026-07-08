@@ -15,12 +15,13 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if user.rol == 'housekeeping':
-                return redirect('housekeeping:lista')
+                return redirect('housekeeping:panel')
             else:
                 return redirect('recepcion:dashboard')
         else:
             messages.error(request, 'Usuario o contraseña incorrectos.')
     return render(request, 'usuarios/login.html')
+
 
 def logout_view(request):
     logout(request)
@@ -33,14 +34,22 @@ def registro_cliente(request):
     if request.user.is_authenticated and request.user.rol == 'cliente':
         return redirect('cuenta:perfil')
 
-    form = RegistroClienteForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        user = form.save()
-        login(request, user)
-        messages.success(request, f'¡Bienvenido, {user.first_name}! Tu cuenta fue creada.')
-        return redirect('cuenta:perfil')
+    if request.method == 'POST':
+        form = RegistroClienteForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, f'¡Bienvenido, {user.first_name}! Tu cuenta fue creada.')
+            siguiente = request.POST.get('next', '')
+            return redirect(siguiente if siguiente else 'cuenta:perfil')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
+            next_url = request.POST.get('next', '/web/')
+            return redirect(f'/web/?registro_error=1&next={next_url}')
 
-    return render(request, 'cuenta/registro.html', {'form': form})
+    return redirect('/web/')
 
 
 def login_cliente(request):
@@ -98,3 +107,21 @@ def cancelar_reserva(request, pk):
         reserva.save()
         messages.success(request, 'Reserva cancelada correctamente.')
     return redirect('cuenta:perfil')
+
+from django.http import JsonResponse
+
+def registro_cliente_ajax(request):
+    from django.http import JsonResponse
+    if request.method == 'POST':
+        form = RegistroClienteForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            siguiente = request.POST.get('next', '/web/')
+            return JsonResponse({'ok': True, 'redirect': siguiente})
+        else:
+            errores = {}
+            for field, errors in form.errors.items():
+                errores[field] = errors[0]
+            return JsonResponse({'ok': False, 'errores': errores})
+    return JsonResponse({'ok': False, 'errores': {'__all__': 'Método no permitido'}})
