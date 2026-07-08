@@ -1463,3 +1463,14 @@ body {
 .pub-nav-actions { display: flex; align-items: center; gap: 12px; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+.field-error {
+  color: #dc2626;
+  font-size: 11px;
+  display: block;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+.modal-input-error {
+  border-color: #dc2626 !important;
+}

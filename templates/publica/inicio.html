@@ -328,7 +328,7 @@
 
   <!-- Modal Login -->
   <div id="modalLogin" class="modal-overlay"
-       data-abrir-modal="{% if messages or request.GET.login_required %}1{% else %}0{% endif %}">
+       data-abrir-modal="{% if not request.GET.registro_error and messages or request.GET.login_required %}1{% else %}0{% endif %}">
     <div class="modal-box">
       <button class="modal-close" id="btnCerrarLogin">
         <i class="bi bi-x-lg"></i>
@@ -344,7 +344,7 @@
           {% endif %}
         </p>
       </div>
-      {% if messages %}
+      {% if messages and not request.GET.registro_error %}
         {% for msg in messages %}
           <div class="modal-error"><i class="bi bi-exclamation-circle"></i> {{ msg }}</div>
         {% endfor %}
@@ -384,47 +384,56 @@
         <h2 class="modal-titulo">Crear cuenta</h2>
         <p class="modal-subtitulo">Regístrate para gestionar tus reservas</p>
       </div>
-      <form method="post" action="{% url 'cuenta:registro' %}">
+      <div id="registroErrores" style="display:none; margin-bottom:12px;"></div>
+      <form id="formRegistroAjax">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
         <div class="pub-form-group">
           <label class="pub-label">DNI</label>
           <input type="text" name="num_doc" id="inputDni" required
                  maxlength="8" placeholder="12345678" class="modal-input"
                  oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)">
           <small id="dniFeedback" style="font-size:11px; display:block; margin-top:4px;"></small>
+          <small class="field-error" data-field="num_doc"></small>
         </div>
         <div class="pub-form-row-2">
           <div class="pub-form-group">
             <label class="pub-label">Nombres</label>
             <input type="text" name="first_name" id="regFirstName"
                    placeholder="Se autocompleta" class="modal-input modal-input-readonly" readonly>
+            <small class="field-error" data-field="first_name"></small>
           </div>
           <div class="pub-form-group">
             <label class="pub-label">Apellidos</label>
             <input type="text" name="last_name" id="regLastName"
                    placeholder="Se autocompleta" class="modal-input modal-input-readonly" readonly>
+            <small class="field-error" data-field="last_name"></small>
           </div>
         </div>
         <div class="pub-form-group">
           <label class="pub-label">Correo electrónico</label>
           <input type="email" name="email" required
                  placeholder="tucorreo@ejemplo.com" class="modal-input">
+          <small class="field-error" data-field="email"></small>
         </div>
         <div class="pub-form-group">
           <label class="pub-label">Teléfono (opcional)</label>
           <input type="text" name="telefono"
                  placeholder="Ej: 987654321" class="modal-input">
+          <small class="field-error" data-field="telefono"></small>
         </div>
         <div class="pub-form-row-2">
           <div class="pub-form-group">
             <label class="pub-label">Contraseña</label>
             <input type="password" name="password1" required
                    placeholder="Contraseña" class="modal-input">
+            <small class="field-error" data-field="password1"></small>
           </div>
           <div class="pub-form-group">
             <label class="pub-label">Confirmar</label>
             <input type="password" name="password2" required
                    placeholder="Repite" class="modal-input">
+            <small class="field-error" data-field="password2"></small>
           </div>
         </div>
         <button type="submit" class="pub-btn-submit">

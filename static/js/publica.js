@@ -200,5 +200,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    // Registro AJAX
+const formRegistroAjax = document.getElementById('formRegistroAjax');
+if (formRegistroAjax) {
+    formRegistroAjax.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Limpiar errores previos
+        document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+        document.querySelectorAll('.modal-input').forEach(el => el.classList.remove('modal-input-error'));
+
+        const data = new FormData(this);
+        const csrf = document.querySelector('#formRegistroAjax [name=csrfmiddlewaretoken]').value;
+
+        fetch('/cuenta/registro/ajax/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrf },
+            body: data,
+        })
+        .then(r => r.json())
+        .then(res => {
+            if (res.ok) {
+                window.location.href = res.redirect || '/web/';
+            } else {
+                Object.entries(res.errores).forEach(([field, msg]) => {
+                    const errorEl = document.querySelector(`.field-error[data-field="${field}"]`);
+                    const inputEl = document.querySelector(`[name="${field}"]`);
+                    if (errorEl) errorEl.textContent = msg;
+                    if (inputEl) inputEl.classList.add('modal-input-error');
+                });
+            }
+        })
+        .catch(() => {
+            const errDiv = document.getElementById('registroErrores');
+            errDiv.style.display = 'block';
+            errDiv.innerHTML = '<div class="modal-error">Error de conexión. Intenta de nuevo.</div>';
+        });
+    });
+}
 
 });
