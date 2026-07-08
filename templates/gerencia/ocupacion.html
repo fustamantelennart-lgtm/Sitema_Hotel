@@ -1,44 +1,43 @@
 {% extends 'base.html' %}
 {% block title %}Ocupación{% endblock %}
 {% block breadcrumb_parent %}Gerencia{% endblock %}
-{% block breadcrumb_title %}Reporte de Ocupación{% endblock %}
+{% block breadcrumb_title %}Ocupación{% endblock %}
 {% block nav_ocupacion %}active{% endblock %}
 
+{% block topbar_actions %}{% endblock %}
+
 {% block content %}
-<div class="card border-0 shadow-sm">
-  <div class="card-header bg-white border-0 pt-3">
-    <h6 class="fw-bold mb-0"><i class="bi bi-graph-up me-2"></i> Ocupación por mes</h6>
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-graph-up" style="color:var(--color-primary);"></i>
+    Ocupación por mes
   </div>
-  <div class="card-body">
-    {% if datos %}
-    <div class="table-responsive">
-      <table class="table align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Mes</th>
-            <th>Reservas</th>
-            <th>Noches vendidas</th>
-            <th>Ingresos</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for d in datos %}
-          <tr>
-            <td>{{ d.mes }}</td>
-            <td>{{ d.reservas }}</td>
-            <td>{{ d.noches }}</td>
-            <td class="fw-semibold">S/ {{ d.ingresos }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <div class="text-center py-5 text-muted">
-      <i class="bi bi-graph-up fs-1 d-block mb-2"></i>
-      No hay datos de ocupación aún.
-    </div>
-    {% endif %}
+  {% if datos %}
+  <table class="tabla">
+    <thead>
+      <tr>
+        <th>Mes</th>
+        <th>Reservas</th>
+        <th>Noches vendidas</th>
+        <th>Ingresos</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in datos %}
+      <tr>
+        <td style="font-weight:600;">{{ d.mes }}</td>
+        <td>{{ d.reservas }}</td>
+        <td>{{ d.noches }}</td>
+        <td style="font-weight:600;">S/ {{ d.ingresos }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
+    <i class="bi bi-graph-up" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+    No hay datos de ocupación aún.
   </div>
+  {% endif %}
 </div>
 {% endblock %}
