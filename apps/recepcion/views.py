@@ -53,15 +53,19 @@ def cambiar_estado(request, pk):
     habitacion = get_object_or_404(Habitacion, pk=pk)
     if request.method == 'POST':
         nuevo_estado = request.POST.get('estado')
-        if nuevo_estado in dict(Habitacion.ESTADO_CHOICES):
+        estados_permitidos = ['DISPONIBLE', 'LIMPIEZA', 'MANTENIMIENTO']
+
+        if nuevo_estado not in estados_permitidos:
+            messages.error(request, 'Estado no válido.')
+        elif habitacion.estado == 'OCUPADA' and not request.user.es_admin:
+            messages.error(request, 'Solo el administrador puede liberar una habitación ocupada.')
+        else:
             habitacion.estado = nuevo_estado
             habitacion.save()
             messages.success(
                 request,
                 f'Habitación {habitacion.numero} → {habitacion.get_estado_display()}'
             )
-        else:
-            messages.error(request, 'Estado inválido.')
     return redirect('recepcion:habitaciones')
 
 

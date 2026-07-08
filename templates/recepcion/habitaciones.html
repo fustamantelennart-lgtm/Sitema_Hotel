@@ -70,25 +70,44 @@
           {{ hab.observaciones|default:"—" }}
         </td>
         <td>
-          {% if hab.estado != 'OCUPADA' %}
+          {% if hab.estado == 'OCUPADA' and user.es_admin %}
           <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
                 style="display:flex; gap:6px;">
             {% csrf_token %}
-            <select name="estado" class="form-select" style="font-size:12px; padding:4px 8px; width:auto;">
-              {% for val, label in hab.ESTADO_CHOICES %}
-              <option value="{{ val }}" {% if hab.estado == val %}selected{% endif %}>
-                {{ label }}
-              </option>
-              {% endfor %}
+            <select name="estado" class="form-select"
+                    style="font-size:12px; padding:4px 8px; width:auto;">
+              <option value="DISPONIBLE">Disponible</option>
+              <option value="LIMPIEZA">En Limpieza</option>
+              <option value="MANTENIMIENTO">Mantenimiento</option>
             </select>
-            <button type="submit" class="btn-secondary" style="font-size:12px; padding:4px 10px;">
+            <button type="submit" class="btn-secondary"
+                    style="font-size:12px; padding:4px 10px;">
               <i class="bi bi-save"></i>
             </button>
           </form>
-          {% else %}
+          {% elif hab.estado == 'OCUPADA' %}
           <span style="font-size:12px; color:var(--color-text-muted);">
             <i class="bi bi-lock"></i> Ocupada
           </span>
+          {% else %}
+          <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
+                style="display:flex; gap:6px;">
+            {% csrf_token %}
+            <select name="estado" class="form-select"
+                    style="font-size:12px; padding:4px 8px; width:auto;">
+              {% for val, label in hab.ESTADO_CHOICES %}
+              {% if val != 'OCUPADA' %}
+              <option value="{{ val }}" {% if hab.estado == val %}selected{% endif %}>
+                {{ label }}
+              </option>
+              {% endif %}
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-secondary"
+                    style="font-size:12px; padding:4px 10px;">
+              <i class="bi bi-save"></i>
+            </button>
+          </form>
           {% endif %}
         </td>
       </tr>
