@@ -32,12 +32,23 @@
           <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
         </td>
         <td>{{ r.tipo_habitacion.nombre }}</td>
-        <td>{{ r.fecha_entrada|date:"d M Y" }}</td>
+        <td>
+          {{ r.fecha_entrada|date:"d M Y" }}
+          {% if r.fecha_entrada < hoy %}
+            <span class="badge badge-red" style="margin-left:4px; font-size:10px;">Atrasada</span>
+          {% endif %}
+        </td>
         <td>{{ r.fecha_salida|date:"d M Y" }}</td>
         <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
-        <td>
-          <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary" style="font-size:12px; padding:6px 12px;">
+        <td style="display:flex; gap:8px;">
+          <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary"
+             style="font-size:12px; padding:6px 12px;">
             <i class="bi bi-box-arrow-in-right"></i> Check-in
+          </a>
+          <a href="{% url 'reservas:cancelar' r.pk %}?next=reservas:checkin_lista"
+             class="btn-secondary"
+             style="font-size:12px; padding:6px 12px; color:var(--color-danger);">
+            <i class="bi bi-x-circle"></i> Cancelar
           </a>
         </td>
       </tr>

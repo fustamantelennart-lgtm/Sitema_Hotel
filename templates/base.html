@@ -34,8 +34,15 @@
     <ul class="sidebar-nav">
       <li>
         <a href="{% url 'recepcion:dashboard' %}"
-           class="{% block nav_habitaciones %}{% endblock %}">
+           class="{% block nav_mapa %}{% endblock %}">
           <span class="nav-icon"><i class="bi bi-grid-3x3-gap"></i></span>
+          <span class="nav-label">Mapa</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'recepcion:habitaciones' %}"
+           class="{% block nav_habitaciones %}{% endblock %}">
+          <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
           <span class="nav-label">Habitaciones</span>
         </a>
       </li>
@@ -67,7 +74,7 @@
           <span class="nav-label">Huéspedes</span>
         </a>
       </li>
-    <li>
+      <li>
         <a href="{% url 'reservas:disponibilidad' %}"
            class="{% block nav_disponibilidad %}{% endblock %}">
           <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
