@@ -20,6 +20,7 @@ class Huesped(models.Model):
     telefono       = models.CharField(max_length=15, blank=True)
     nacionalidad   = models.CharField(max_length=60, default='Peruana')
     fecha_registro = models.DateTimeField(auto_now_add=True)
+    usuario        = models.OneToOneField('usuarios.Usuario',on_delete=models.SET_NULL,null=True, blank=True,related_name='huesped')
 
     class Meta:
         verbose_name        = 'Huésped'

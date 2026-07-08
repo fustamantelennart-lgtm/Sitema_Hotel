@@ -113,9 +113,10 @@ def ocupacion(request):
 @rol_requerido('admin')
 def usuarios(request):
     from apps.usuarios.models import Usuario
-    usuarios = Usuario.objects.all().order_by('rol', 'username')
+    usuarios = Usuario.objects.exclude(
+        rol='cliente'
+    ).order_by('rol', 'username')
     return render(request, 'gerencia/usuarios.html', {'usuarios': usuarios})
-
 
 @login_required
 @rol_requerido('admin')
