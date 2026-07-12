@@ -1,71 +1,177 @@
-# 🏨 Hotel System — Sistema de Gestión Hotelera
-**USS · Taller de Lenguaje de Programación · Proyecto 7**
+# Hotel Tumán — Sistema de Gestión Hotelera
 
-## Stack
-- Python 3.11 + Django 4.2
-- PostgreSQL 15 (Docker)
-- **Django Templates + Bootstrap 5** (100% server-side)
-- Docker + Docker Compose
+Sistema web completo para la gestión de un hotel boutique, desarrollado con Django 4.2, PostgreSQL y Docker.
 
-## Equipo
-| Nombre | Módulo |
-|---|---|
-| Fustamante Sosa Lennart Samuel
-## Levantar el proyecto
+---
+
+## Tecnologías
+
+- **Backend:** Python 3.11 + Django 4.2.13
+- **Base de datos:** PostgreSQL 15
+- **ORM:** Django ORM con Service Layer y Soft Delete
+- **API REST:** Django REST Framework + drf-spectacular (Swagger)
+- **Frontend:** Django Templates + CSS propio (sin Bootstrap)
+- **Imágenes:** Cloudinary
+- **Consulta DNI:** RENIEC via api.factiliza.com
+- **Contenedores:** Docker + Docker Compose
+
+---
+
+## Requisitos
+
+- Docker Desktop
+- Git
+
+---
+
+## ⚙️ Instalación
+
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/fustamantelennart-lgtm/Sitema_Hotel.git
+cd Sitema_Hotel
+```
+
+### 2. Configurar variables de entorno
+```bash
+cp .env.example .env
+# Edita .env con tus credenciales
+```
+
+### 3. Levantar con Docker
+```bash
+docker compose up -d
+```
+
+### 4. Aplicar migraciones
+```bash
+docker exec -it hotel_web python manage.py migrate
+```
+
+### 5. Crear superusuario
+```bash
+docker exec -it hotel_web python manage.py createsuperuser
+```
+
+### 6. Cargar datos de prueba
+```bash
+docker exec -it hotel_web python manage.py loaddata fixtures/initial_data.json
+```
+
+### 7. Acceder al sistema
+- **Portal web:** http://localhost:8000/web/
+- **Panel staff:** http://localhost:8000/
+- **API Swagger:** http://localhost:8000/api/v1/docs/
+- **Django Admin:** http://localhost:8000/admin/
+
+---
+
+## Credenciales de prueba
+
+### Staff
+| Usuario | Contraseña | Rol |
+|---------|-----------|-----|
+| maicol | admin123 | Administrador |
+| carlos | recep123 | Recepcionista |
+| lennart | hk123456 | Housekeeping |
+
+### Cliente portal web
+| Email | Contraseña |
+|-------|-----------|
+| fustamantelennart@gmail.com | Lefuso123 |
+
+---
+
+## Estructura del proyecto
+hotel_v2/
+├── apps/
+│   ├── usuarios/        # Auth, roles, registro cliente
+│   ├── recepcion/       # Dashboard, habitaciones
+│   ├── reservas/        # Reservas, checkin, checkout, folio
+│   ├── housekeeping/    # Tareas, incidentes
+│   ├── gerencia/        # Reportes, dashboard KPIs
+│   ├── publica/         # Portal web cliente
+│   └── api/             # API REST
+├── utils/
+│   └── models.py        # ModeloBase con soft delete
+├── static/
+│   ├── css/
+│   └── js/
+├── templates/
+├── docker-compose.yml
+├── requirements.txt
+└── .env.example
+---
+
+## Arquitectura
+
+El sistema implementa **Service Layer** con separación de responsabilidades:
+Request → View → Service → ORM → Base de datos
+↓
+Exceptions (errores de dominio)
+Cada módulo tiene:
+- `models.py` — modelos que heredan de `ModeloBase`
+- `services.py` — lógica de negocio
+- `exceptions.py` — errores específicos del dominio
+- `views.py` — solo coordinación, sin lógica de negocio
+
+---
+
+## API REST
+
+Documentación interactiva disponible en `/api/v1/docs/`
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/v1/hoteles/` | GET | Lista hoteles |
+| `/api/v1/habitaciones/` | GET | Lista habitaciones |
+| `/api/v1/habitaciones/disponibles/` | GET | Habitaciones disponibles por fecha |
+| `/api/v1/huespedes/` | GET, POST | Gestión huéspedes |
+| `/api/v1/reservas/` | GET, POST | Gestión reservas |
+| `/api/v1/token/` | POST | Obtener token auth |
+
+---
+
+## Tests
 
 ```bash
-# 1. Clonar el repositorio
-git clone <repo-url>
-cd hotel_system
-
-# 2. Levantar Docker
-docker-compose up --build
-
-# 3. Primera vez: crear superusuario
-docker-compose exec web python manage.py createsuperuser
-
-# 4. (Opcional) Cargar datos de prueba
-docker-compose exec web python manage.py loaddata fixtures/inicial.json
+docker exec -it hotel_web coverage run --source=apps manage.py test apps --verbosity=2
+docker exec -it hotel_web coverage report --skip-empty
 ```
 
-## Accesos
-| URL | Descripción |
-|---|---|
-| http://localhost:8000/ | Dashboard recepción |
-| http://localhost:8000/admin/ | Panel admin Django |
-| http://localhost:8000/reservas/ | Lista de reservas |
-| http://localhost:8000/housekeeping/ | Panel limpieza |
-| http://localhost:8000/gerencia/ | Reportes y KPIs |
+Cobertura actual: **66%** — 39 tests unitarios e integración
 
-## Estructura
-```
-hotel_system/
-├── apps/
-│   ├── usuarios/      → Usuario con roles (admin, recepcionista, housekeeping)
-│   ├── recepcion/     → Hotel, TipoHabitacion, Habitacion + mapa visual
-│   ├── reservas/      → Huesped, Tarifa, Reserva, Estancia, CargoEstancia, Folio
-│   ├── housekeeping/  → TareaLimpieza, IncidenteHabitacion
-│   └── gerencia/      → Vistas de reportes y KPIs
-├── templates/         → Django Templates por app + base.html
-├── static/css/        → hotel.css con estilos del mapa
-├── hotel_system/      → settings.py, urls.py
-├── docker-compose.yml
-├── Dockerfile
-└── requirements.txt
-```
+---
 
-## Reglas de negocio implementadas
-1. ❌ No check-in en habitación MANTENIMIENTO o LIMPIEZA
-2. 💰 Precio calculado con tarifa vigente por temporada (`Tarifa.get_precio_vigente`)
-3. 🔒 No checkout con folio PENDIENTE de pago (`estancia.tiene_deuda`)
-4. 📅 No solapamiento de reservas activas en la misma habitación (constraint con `Q()`)
-5. 🧹 Checkout → habitación pasa automáticamente a LIMPIEZA
+## Módulos del sistema
 
-## Pantallas implementadas
-- Mapa de habitaciones (grid con colores por estado)
-- Panel de reservas del día (llegadas / en casa / salidas)
-- Nueva reserva con cálculo de tarifa automático
-- Check-in con asignación de habitación
-- Folio del huésped con cargos y checkout
-- Panel housekeeping con botón "Marcar como Lista"
-- Reportes de ocupación y revenue (gerencia)
+### Operación (Recepcionista/Admin)
+- **Mapa de habitaciones** — vista visual por piso con estados en colores
+- **Gestión habitaciones** — cambiar estados, agregar nuevas
+- **Reservas** — panel con tabs (Llegadas/En Casa/Salidas)
+- **Check-in** — asignación de habitación con verificación de documento
+- **Folio** — cargos, pagos, checkout
+- **Huéspedes** — historial de reservas por huésped
+
+### Limpieza (Housekeeping)
+- **Panel de tareas** — prioridades visuales, asignación por empleado
+- **Historial** — tareas completadas filtradas por fecha
+- **Incidentes** — reporte y resolución de incidentes por habitación
+
+### Inteligencia (Admin)
+- **Dashboard** — KPIs + gráficos Chart.js (línea, donut, barras)
+- **Ocupación** — reporte mensual de noches vendidas e ingresos
+- **Reportes** — filtro por período + exportación PDF y Excel
+- **Usuarios** — gestión del personal del hotel
+
+### Portal Cliente
+- **Búsqueda** — disponibilidad en tiempo real por fechas
+- **Reserva** — formulario multi-paso con autocomplete DNI RENIEC
+- **Pago** — tarjeta, Yape o transferencia bancaria
+- **Perfil** — historial de reservas y cancelación
+
+---
+
+## Variables de entorno
+
+Ver `.env.example` para la lista completa de variables requeridas.
