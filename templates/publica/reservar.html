@@ -52,13 +52,11 @@
     <form method="post" novalidate id="formReserva">
       {% csrf_token %}
 
-    <form method="post" novalidate id="formReserva">
-      {% csrf_token %}
       <!-- Precios para JS -->
       <div id="tiposPrecios" style="display:none;"
-          data-precios='{% for pk, precio in form.tipos_precios.items %}"{{ pk }}":{{ precio }},{% endfor %}'>
+           data-precios='{% for pk, precio in form.tipos_precios.items %}"{{ pk }}":{{ precio }},{% endfor %}'>
       </div>
-      
+
       <!-- PASO 1: Reserva -->
       <div id="paso1">
         <h3 style="font-family:'Playfair Display',serif; font-size:20px;
@@ -213,7 +211,6 @@
           Revisa los datos antes de continuar al pago
         </p>
 
-        <!-- Resumen reserva -->
         <div style="background:#F5F0E8; border-radius:12px; padding:20px; margin-bottom:20px;">
           <div style="font-size:11px; font-weight:700; text-transform:uppercase;
                       letter-spacing:.1em; color:#6b7280; margin-bottom:12px;">
@@ -264,10 +261,11 @@
       </div>
 
       <div id="formErrores"
-     data-tiene-errores="{{ form.errors|yesno:'1,0' }}"
-     data-errores-paso2="{{ form.tipo_doc.errors|yesno:'1,0' }}{{ form.num_doc.errors|yesno:'1,0' }}{{ form.nombres.errors|yesno:'1,0' }}{{ form.apellidos.errors|yesno:'1,0' }}{{ form.email.errors|yesno:'1,0' }}{{ form.telefono.errors|yesno:'1,0' }}"
-     style="display:none;">
-</div>
+           data-tiene-errores="{{ form.errors|yesno:'1,0' }}"
+           data-errores-paso2="{{ form.tipo_doc.errors|yesno:'1,0' }}{{ form.num_doc.errors|yesno:'1,0' }}{{ form.nombres.errors|yesno:'1,0' }}{{ form.apellidos.errors|yesno:'1,0' }}{{ form.email.errors|yesno:'1,0' }}{{ form.telefono.errors|yesno:'1,0' }}"
+           style="display:none;">
+      </div>
+
     </form>
   </div>
 

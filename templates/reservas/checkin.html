@@ -48,7 +48,7 @@
           {% endfor %}
         </div>
 
-      <div class="checkin-acciones">
+        <div class="checkin-acciones">
           <button type="submit" class="btn-primary">
             <i class="bi bi-check-lg"></i> Confirmar Check-in
           </button>
@@ -74,25 +74,31 @@
   <div class="card resumen-card">
     <div class="card-header">Resumen de estadía</div>
     <div class="card-body">
+
       <div class="resumen-row">
         <span class="resumen-label">Reserva</span>
         <span class="resumen-valor">R-{{ reserva.pk }}</span>
       </div>
-      <div class="resumen-row">
-        <span class="resumen-label">Huésped</span>
-        <span class="resumen-valor">{{ reserva.huesped.nombre_completo }}</span>
+
+      <!-- Huésped en columna para nombres largos -->
+      <div style="padding:10px 0; border-bottom:1px solid var(--color-border);">
+        <div class="resumen-label" style="margin-bottom:4px;">Huésped</div>
+        <div style="font-weight:600; font-size:13px; line-height:1.4;">
+          {{ reserva.huesped.nombre_completo }}
+        </div>
       </div>
+
       <div class="resumen-row">
         <span class="resumen-label">Tipo</span>
         <span class="resumen-valor">{{ reserva.tipo_habitacion.nombre }}</span>
       </div>
       <div class="resumen-row">
         <span class="resumen-label">Llegada</span>
-        <span class="resumen-valor">{{ reserva.fecha_entrada }}</span>
+        <span class="resumen-valor">{{ reserva.fecha_entrada|date:"d M Y" }}</span>
       </div>
       <div class="resumen-row">
         <span class="resumen-label">Salida</span>
-        <span class="resumen-valor">{{ reserva.fecha_salida }}</span>
+        <span class="resumen-valor">{{ reserva.fecha_salida|date:"d M Y" }}</span>
       </div>
       <div class="resumen-row">
         <span class="resumen-label">Noches</span>
@@ -107,20 +113,27 @@
         <span class="resumen-label">Documento</span>
         <span class="resumen-valor">{{ reserva.huesped.tipo_doc }} {{ reserva.huesped.num_doc }}</span>
       </div>
-      <div class="resumen-row">
-        <span class="resumen-label">Email</span>
-        <span class="resumen-valor" style="font-size:12px;">{{ reserva.huesped.email|default:"—" }}</span>
+
+      <!-- Email en columna para emails largos -->
+      <div style="padding:10px 0; border-bottom:1px solid var(--color-border);">
+        <div class="resumen-label" style="margin-bottom:4px;">Email</div>
+        <div style="font-size:12px; color:var(--color-text); word-break:break-all;">
+          {{ reserva.huesped.email|default:"—" }}
+        </div>
       </div>
+
       <div class="resumen-row">
         <span class="resumen-label">Teléfono</span>
         <span class="resumen-valor">{{ reserva.huesped.telefono|default:"—" }}</span>
       </div>
+
       {% if reserva.observaciones %}
-      <div class="resumen-row" style="flex-direction:column; align-items:flex-start; gap:4px;">
-        <span class="resumen-label">Observaciones</span>
-        <span style="font-size:12px; color:var(--color-text); line-height:1.5;">{{ reserva.observaciones }}</span>
+      <div style="padding:10px 0; border-bottom:1px solid var(--color-border);">
+        <div class="resumen-label" style="margin-bottom:4px;">Observaciones</div>
+        <div style="font-size:12px; line-height:1.5;">{{ reserva.observaciones }}</div>
       </div>
       {% endif %}
+
       <div class="resumen-row resumen-total">
         <span>Total</span>
         <span>S/ {{ reserva.precio_total }}</span>

@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import TareaLimpieza
+from .models import TareaLimpieza, IncidenteHabitacion
+from .services import HousekeepingService
+from .exceptions import TareaYaIniciada, TareaYaCompletada
 
 
 @login_required
@@ -19,7 +21,6 @@ def panel(request):
         fecha_completada__date=timezone.now().date()
     ).count()
 
-    # Usuarios housekeeping para asignación
     from apps.usuarios.models import Usuario
     empleados = Usuario.objects.filter(rol='housekeeping', is_active=True)
 
@@ -34,40 +35,43 @@ def panel(request):
 
 @login_required
 def iniciar(request, pk):
-    tarea = get_object_or_404(TareaLimpieza, pk=pk)
     if request.method == 'POST':
-        tarea.estado     = 'EN_PROCESO'
-        tarea.asignada_a = request.user
-        tarea.save()
-        messages.success(request, f'Tarea Hab. {tarea.habitacion.numero} en proceso.')
+        try:
+            tarea = HousekeepingService.iniciar_tarea(pk, request.user)
+            messages.success(request, f'Tarea Hab. {tarea.habitacion.numero} en proceso.')
+        except TareaYaIniciada as e:
+            messages.error(request, str(e))
+        except TareaYaCompletada as e:
+            messages.error(request, str(e))
     return redirect('housekeeping:panel')
 
 
 @login_required
 def completar(request, pk):
-    tarea = get_object_or_404(TareaLimpieza, pk=pk)
     if request.method == 'POST':
-        tarea.marcar_lista()
-        messages.success(
-            request,
-            f'Habitación {tarea.habitacion.numero} lista — ahora está Disponible.'
-        )
+        try:
+            tarea = HousekeepingService.completar_tarea(pk)
+            messages.success(
+                request,
+                f'Habitación {tarea.habitacion.numero} lista — ahora está Disponible.'
+            )
+        except TareaYaCompletada as e:
+            messages.error(request, str(e))
     return redirect('housekeeping:panel')
 
 
 @login_required
 def asignar(request, pk):
-    tarea = get_object_or_404(TareaLimpieza, pk=pk)
     if request.method == 'POST':
-        empleado_id = request.POST.get('empleado')
-        prioridad   = request.POST.get('prioridad')
-        if empleado_id:
-            from apps.usuarios.models import Usuario
-            tarea.asignada_a = get_object_or_404(Usuario, pk=empleado_id)
-        if prioridad:
-            tarea.prioridad = prioridad
-        tarea.save()
-        messages.success(request, f'Tarea Hab. {tarea.habitacion.numero} actualizada.')
+        try:
+            tarea = HousekeepingService.asignar_tarea(
+                tarea_id    = pk,
+                empleado_id = request.POST.get('empleado'),
+                prioridad   = request.POST.get('prioridad'),
+            )
+            messages.success(request, f'Tarea Hab. {tarea.habitacion.numero} actualizada.')
+        except Exception as e:
+            messages.error(request, str(e))
     return redirect('housekeeping:panel')
 
 
@@ -78,8 +82,6 @@ def historial(request):
     ).select_related('habitacion', 'habitacion__tipo', 'asignada_a').order_by(
         '-fecha_completada'
     )
-
-    # Filtro por fecha
     fecha = request.GET.get('fecha')
     if fecha:
         from datetime import date
@@ -89,14 +91,14 @@ def historial(request):
         'tareas': tareas,
         'fecha':  fecha or '',
     })
+
+
 @login_required
 def incidentes(request):
-    from .models import IncidenteHabitacion
     qs = IncidenteHabitacion.objects.select_related(
         'habitacion', 'reportado_por'
     ).order_by('-fecha')
 
-    # Filtro
     resuelto = request.GET.get('resuelto', '')
     if resuelto == '1':
         qs = qs.filter(resuelto=True)
@@ -114,25 +116,19 @@ def incidentes(request):
 
 @login_required
 def reportar_incidente(request):
-    from .models import IncidenteHabitacion
-    from apps.recepcion.models import Habitacion
-
     if request.method == 'POST':
-        hab_id      = request.POST.get('habitacion')
-        tipo        = request.POST.get('tipo')
-        descripcion = request.POST.get('descripcion')
-        monto       = request.POST.get('monto_cobrar') or None
-
-        habitacion = get_object_or_404(Habitacion, pk=hab_id)
-        IncidenteHabitacion.objects.create(
-            habitacion    = habitacion,
-            tipo          = tipo,
-            descripcion   = descripcion,
-            monto_cobrar  = monto,
-            reportado_por = request.user,
-        )
-        messages.success(request, f'Incidente reportado en Hab. {habitacion.numero}.')
-        return redirect('housekeeping:incidentes')
+        try:
+            incidente = HousekeepingService.reportar_incidente(
+                habitacion_id = request.POST.get('habitacion'),
+                tipo          = request.POST.get('tipo'),
+                descripcion   = request.POST.get('descripcion'),
+                monto_cobrar  = request.POST.get('monto_cobrar') or None,
+                usuario       = request.user,
+            )
+            messages.success(request, f'Incidente reportado en Hab. {incidente.habitacion.numero}.')
+            return redirect('housekeeping:incidentes')
+        except Exception as e:
+            messages.error(request, str(e))
 
     from apps.recepcion.models import Habitacion
     habitaciones = Habitacion.objects.filter(
@@ -145,10 +141,10 @@ def reportar_incidente(request):
 
 @login_required
 def resolver_incidente(request, pk):
-    from .models import IncidenteHabitacion
-    incidente = get_object_or_404(IncidenteHabitacion, pk=pk)
     if request.method == 'POST':
-        incidente.resuelto = True
-        incidente.save()
-        messages.success(request, f'Incidente en Hab. {incidente.habitacion.numero} resuelto.')
+        try:
+            incidente = HousekeepingService.resolver_incidente(pk)
+            messages.success(request, f'Incidente en Hab. {incidente.habitacion.numero} resuelto.')
+        except Exception as e:
+            messages.error(request, str(e))
     return redirect('housekeeping:incidentes')

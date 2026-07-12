@@ -8,9 +8,9 @@
 <div class="card">
   <div class="card-header">
     <i class="bi bi-globe" style="color:var(--color-primary);"></i>
-    Solicitudes desde la web
+    Reservas confirmadas desde la web
     {% if solicitudes %}
-    <span class="badge badge-sand" style="margin-left:8px;">{{ solicitudes|length }}</span>
+    <span class="badge badge-green" style="margin-left:8px;">{{ solicitudes|length }}</span>
     {% endif %}
   </div>
   {% if solicitudes %}
@@ -23,6 +23,7 @@
         <th>Entrada</th>
         <th>Salida</th>
         <th>Total</th>
+        <th>Estado</th>
         <th></th>
       </tr>
     </thead>
@@ -38,20 +39,16 @@
         <td>{{ r.fecha_entrada|date:"d M Y" }}</td>
         <td>{{ r.fecha_salida|date:"d M Y" }}</td>
         <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
-        <td style="display:flex; gap:8px;">
-          <form method="post" action="{% url 'reservas:confirmar_solicitud' r.pk %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-primary" style="font-size:12px; padding:6px 12px;">
-              <i class="bi bi-check"></i> Confirmar
-            </button>
-          </form>
-          <form method="post" action="{% url 'reservas:rechazar_solicitud' r.pk %}"
-                onsubmit="return confirm('¿Rechazar esta solicitud?')">
-            {% csrf_token %}
-            <button type="submit" class="btn-secondary" style="font-size:12px; padding:6px 12px; color:var(--color-danger);">
-              <i class="bi bi-x"></i> Rechazar
-            </button>
-          </form>
+        <td>
+          <span class="badge badge-green">
+            <i class="bi bi-check-circle"></i> Pagada
+          </span>
+        </td>
+        <td>
+          <a href="{% url 'reservas:checkin' r.pk %}" class="btn-primary"
+             style="font-size:12px; padding:6px 12px;">
+            <i class="bi bi-box-arrow-in-right"></i> Ir a Check-in
+          </a>
         </td>
       </tr>
       {% endfor %}
@@ -60,7 +57,7 @@
   {% else %}
   <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
     <i class="bi bi-globe" style="font-size:32px; display:block; margin-bottom:8px;"></i>
-    No hay solicitudes web pendientes.
+    No hay reservas web confirmadas.
   </div>
   {% endif %}
 </div>
