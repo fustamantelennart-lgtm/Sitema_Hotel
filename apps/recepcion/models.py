@@ -1,8 +1,9 @@
 from django.db import models
 import cloudinary.models
+from utils.models import ModeloBase
 
 
-class Hotel(models.Model):
+class Hotel(ModeloBase):
     nombre    = models.CharField(max_length=200)
     ruc       = models.CharField(max_length=11, unique=True)
     direccion = models.TextField()
@@ -18,7 +19,7 @@ class Hotel(models.Model):
         return self.nombre
 
 
-class TipoHabitacion(models.Model):
+class TipoHabitacion(ModeloBase):
     hotel       = models.ForeignKey(Hotel, on_delete=models.CASCADE,
                                     related_name='tipos_habitacion')
     nombre      = models.CharField(max_length=100)
@@ -37,7 +38,7 @@ class TipoHabitacion(models.Model):
         return f"{self.nombre} — {self.hotel}"
 
 
-class ImagenTipoHabitacion(models.Model):
+class ImagenTipoHabitacion(ModeloBase):
     tipo    = models.ForeignKey(TipoHabitacion, on_delete=models.CASCADE,
                                 related_name='imagenes')
     imagen  = cloudinary.models.CloudinaryField('imagen')
@@ -53,7 +54,7 @@ class ImagenTipoHabitacion(models.Model):
         return f"Imagen {self.orden} — {self.tipo.nombre}"
 
 
-class Habitacion(models.Model):
+class Habitacion(ModeloBase):
     ESTADO_CHOICES = [
         ('DISPONIBLE',    'Disponible'),
         ('OCUPADA',       'Ocupada'),
