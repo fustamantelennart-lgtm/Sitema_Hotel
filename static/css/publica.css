@@ -662,6 +662,10 @@ body {
   border-radius: 8px;
   font-size: 13.5px;
   cursor: not-allowed;
+   border-color: var(--color-border, #E5DDD0) !important;
+  color: var(--color-text-muted, #9ca3af) !important;
+  background: var(--color-bg, #F5F0E8) !important;
+  cursor: default;
 }
 
 /* ===== VENTAJAS ===== */

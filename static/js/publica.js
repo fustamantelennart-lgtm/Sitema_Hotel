@@ -211,7 +211,9 @@ if (formRegistroAjax) {
         document.querySelectorAll('.modal-input').forEach(el => el.classList.remove('modal-input-error'));
 
         const data = new FormData(this);
-        const csrf = document.querySelector('#formRegistroAjax [name=csrfmiddlewaretoken]').value;
+        const csrf = document.cookie.split(';')
+        .find(c => c.trim().startsWith('csrftoken='))
+        ?.split('=')[1] || '';
 
         fetch('/cuenta/registro/ajax/', {
             method: 'POST',

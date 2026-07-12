@@ -216,16 +216,21 @@
              class="pub-btn-reservar pub-btn-ver">
             Ver más
           </a>
-          {% if item.disponible is None or item.disponible > 0 %}
-          <a href="{% url 'publica:reservar' %}?tipo={{ item.tipo.pk }}{% if fecha_entrada %}&fecha_entrada={{ fecha_entrada }}{% endif %}{% if fecha_salida %}&fecha_salida={{ fecha_salida }}{% endif %}"
-             class="pub-btn-reservar pub-btn-reservar-action">
-            Reservar
-          </a>
-          {% else %}
-          <div class="pub-btn-reservar pub-btn-reservar-disabled">
-            Sin disp.
-          </div>
-          {% endif %}
+        {% if not fecha_entrada or not fecha_salida %}
+        <button type="button" class="pub-btn-reservar pub-btn-reservar-disabled"
+                onclick="document.getElementById('fechaEntrada').focus(); window.scrollTo({top:0, behavior:'smooth'});">
+          Elige fechas primero
+        </button>
+        {% elif item.disponible is not None and item.disponible == 0 %}
+        <div class="pub-btn-reservar pub-btn-reservar-disabled">
+          Sin disponibilidad
+        </div>
+        {% else %}
+        <a href="{% url 'publica:reservar' %}?tipo={{ item.tipo.pk }}&fecha_entrada={{ fecha_entrada }}&fecha_salida={{ fecha_salida }}"
+          class="pub-btn-reservar pub-btn-reservar-action">
+          Reservar
+        </a>
+        {% endif %}
         </div>
 
       </div>

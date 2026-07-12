@@ -105,7 +105,17 @@ def reservar(request):
 
         user = request.user
         if user.is_authenticated and user.rol == 'cliente':
-            huesped_previo = Huesped.objects.filter(email=user.email).first()
+            # Buscar huésped por relación directa usuario→huesped
+            huesped_previo = None
+            try:
+                huesped_previo = user.huesped
+            except Exception:
+                pass
+
+            # Si no, buscar por email
+            if not huesped_previo:
+                huesped_previo = Huesped.objects.filter(email=user.email).first()
+
             if huesped_previo:
                 initial['tipo_doc']     = huesped_previo.tipo_doc
                 initial['num_doc']      = huesped_previo.num_doc
@@ -118,7 +128,7 @@ def reservar(request):
                 initial['nombres']   = user.first_name
                 initial['apellidos'] = user.last_name
                 initial['email']     = user.email
-                initial['telefono']  = user.telefono
+                initial['telefono']  = getattr(user, 'telefono', '')
 
         form = ReservaPublicaForm(initial=initial)
 
@@ -160,6 +170,11 @@ def reservar(request):
                 }
             )
 
+            # Vincular huésped con usuario si no está vinculado
+            if huesped.usuario is None and request.user.is_authenticated:
+                huesped.usuario = request.user
+                huesped.save()
+
             precio_noche = Tarifa.get_precio_vigente(
                 data['tipo_habitacion'],
                 data['fecha_entrada'],
@@ -169,17 +184,17 @@ def reservar(request):
             precio_total = precio_noche * noches
 
             reserva = Reserva.objects.create(
-                hotel=hotel,
-                huesped=huesped,
-                tipo_habitacion=data['tipo_habitacion'],
-                fecha_entrada=data['fecha_entrada'],
-                fecha_salida=data['fecha_salida'],
-                num_adultos=data['num_adultos'],
-                num_ninos=data['num_ninos'],
-                estado='PENDIENTE',
-                precio_total=precio_total,
-                origen='WEB',
-                observaciones=data.get('observaciones', ''),
+                hotel           = hotel,
+                huesped         = huesped,
+                tipo_habitacion = data['tipo_habitacion'],
+                fecha_entrada   = data['fecha_entrada'],
+                fecha_salida    = data['fecha_salida'],
+                num_adultos     = data['num_adultos'],
+                num_ninos       = data['num_ninos'],
+                estado          = 'PENDIENTE',
+                precio_total    = precio_total,
+                origen          = 'WEB',
+                observaciones   = data.get('observaciones', ''),
             )
 
             return redirect('publica:pago', pk=reserva.pk)
@@ -291,6 +306,7 @@ def detalle(request, pk):
         'fecha_entrada': fecha_entrada,
         'fecha_salida':  fecha_salida,
     })
+
 
 @require_GET
 def consultar_dni(request):
