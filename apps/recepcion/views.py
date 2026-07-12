@@ -3,6 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Hotel, Habitacion, TipoHabitacion
 from apps.usuarios.decorators import rol_requerido
+from .services import HabitacionService
+from .exceptions import (
+    HabitacionNoEncontrada, EstadoInvalido,
+    HabitacionDuplicada, CambioEstadoNoPermitido
+)
 
 
 @login_required
@@ -11,11 +16,9 @@ def dashboard(request):
     habitaciones = Habitacion.objects.filter(
         hotel=hotel
     ).select_related('tipo').order_by('piso', 'numero')
-
     pisos = {}
     for hab in habitaciones:
         pisos.setdefault(hab.piso, []).append(hab)
-
     context = {
         'hotel':       hotel,
         'pisos':       pisos,
@@ -35,11 +38,9 @@ def habitaciones(request):
     habitaciones = Habitacion.objects.filter(
         hotel=hotel
     ).select_related('tipo').order_by('piso', 'numero')
-
     q = request.GET.get('q', '')
     if q:
         habitaciones = habitaciones.filter(numero__icontains=q)
-
     return render(request, 'recepcion/habitaciones.html', {
         'habitaciones': habitaciones,
         'q':            q,
@@ -50,22 +51,20 @@ def habitaciones(request):
 @login_required
 @rol_requerido('admin', 'recepcionista')
 def cambiar_estado(request, pk):
-    habitacion = get_object_or_404(Habitacion, pk=pk)
     if request.method == 'POST':
-        nuevo_estado = request.POST.get('estado')
-        estados_permitidos = ['DISPONIBLE', 'LIMPIEZA', 'MANTENIMIENTO']
-
-        if nuevo_estado not in estados_permitidos:
-            messages.error(request, 'Estado no válido.')
-        elif habitacion.estado == 'OCUPADA' and not request.user.es_admin:
-            messages.error(request, 'Solo el administrador puede liberar una habitación ocupada.')
-        else:
-            habitacion.estado = nuevo_estado
-            habitacion.save()
+        try:
+            nuevo_estado = request.POST.get('estado')
+            habitacion   = HabitacionService.cambiar_estado(pk, nuevo_estado, request.user)
             messages.success(
                 request,
                 f'Habitación {habitacion.numero} → {habitacion.get_estado_display()}'
             )
+        except CambioEstadoNoPermitido as e:
+            messages.error(request, str(e))
+        except EstadoInvalido as e:
+            messages.error(request, str(e))
+        except HabitacionNoEncontrada as e:
+            messages.error(request, str(e))
     return redirect('recepcion:habitaciones')
 
 
@@ -76,24 +75,22 @@ def nueva_habitacion(request):
     tipos = TipoHabitacion.objects.filter(hotel=hotel)
 
     if request.method == 'POST':
-        numero = request.POST.get('numero', '').strip()
-        piso   = request.POST.get('piso', '')
-        tipo_id = request.POST.get('tipo')
-        obs    = request.POST.get('observaciones', '')
-
-        if not numero or not piso or not tipo_id:
-            messages.error(request, 'Completa todos los campos obligatorios.')
-        elif Habitacion.objects.filter(hotel=hotel, numero=numero).exists():
-            messages.error(request, f'Ya existe la habitación {numero}.')
-        else:
-            tipo = get_object_or_404(TipoHabitacion, pk=tipo_id)
-            Habitacion.objects.create(
-                hotel=hotel, tipo=tipo,
-                numero=numero, piso=int(piso),
-                observaciones=obs,
+        try:
+            habitacion = HabitacionService.crear_habitacion(
+                numero        = request.POST.get('numero', '').strip(),
+                piso          = request.POST.get('piso', ''),
+                tipo_id       = request.POST.get('tipo'),
+                observaciones = request.POST.get('observaciones', ''),
+                hotel         = hotel,
             )
-            messages.success(request, f'Habitación {numero} creada correctamente.')
+            messages.success(request, f'Habitación {habitacion.numero} creada correctamente.')
             return redirect('recepcion:habitaciones')
+        except HabitacionDuplicada as e:
+            messages.error(request, str(e))
+        except EstadoInvalido as e:
+            messages.error(request, str(e))
+        except HabitacionNoEncontrada as e:
+            messages.error(request, str(e))
 
     return render(request, 'recepcion/nueva_habitacion.html', {
         'hotel': hotel,
