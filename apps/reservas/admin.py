@@ -10,8 +10,8 @@ class HuespedAdmin(admin.ModelAdmin):
 
 @admin.register(Tarifa)
 class TarifaAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'tipo_habitacion', 'precio_noche', 'fecha_inicio', 'fecha_fin', 'activa')
-    list_filter  = ('activa', 'tipo_habitacion')
+    list_display = ('tipo_habitacion', 'precio_noche', 'fecha_inicio', 'fecha_fin')
+    list_filter  = ('tipo_habitacion',)
 
 
 @admin.register(Reserva)
@@ -36,5 +36,5 @@ class CargoEstanciaAdmin(admin.ModelAdmin):
 
 @admin.register(Folio)
 class FolioAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'estancia', 'subtotal', 'igv', 'total', 'estado')
+    list_display = ('pk', 'estancia', 'total', 'estado')
     list_filter  = ('estado',)

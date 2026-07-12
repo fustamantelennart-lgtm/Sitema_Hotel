@@ -1,13 +1,14 @@
 from django.db import models
 from django.conf import settings
 from apps.recepcion.models import Habitacion
+from utils.models import ModeloBase
 
 
-class TareaLimpieza(models.Model):
+class TareaLimpieza(ModeloBase):
     ESTADO = [
-        ('PENDIENTE',   'Pendiente'),
-        ('EN_PROCESO',  'En Proceso'),
-        ('LISTA',       'Lista'),
+        ('PENDIENTE',  'Pendiente'),
+        ('EN_PROCESO', 'En Proceso'),
+        ('LISTA',      'Lista'),
     ]
     PRIORIDAD = [
         ('ALTA',  'Alta'),
@@ -16,7 +17,7 @@ class TareaLimpieza(models.Model):
     ]
 
     habitacion       = models.ForeignKey(Habitacion, on_delete=models.CASCADE,
-                                          related_name='tareas_limpieza')
+                                         related_name='tareas_limpieza')
     asignada_a       = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='tareas_asignadas'
@@ -36,16 +37,15 @@ class TareaLimpieza(models.Model):
         return f"Limpieza Hab. {self.habitacion.numero} — {self.get_estado_display()}"
 
     def marcar_lista(self):
-        """Cambia la tarea a LISTA y pone la habitación en DISPONIBLE."""
         from django.utils import timezone
-        self.estado          = 'LISTA'
+        self.estado           = 'LISTA'
         self.fecha_completada = timezone.now()
         self.save()
         self.habitacion.estado = 'DISPONIBLE'
         self.habitacion.save()
 
 
-class IncidenteHabitacion(models.Model):
+class IncidenteHabitacion(ModeloBase):
     TIPO = [
         ('DESPERFECTO', 'Desperfecto'),
         ('MINIBAR',     'Consumo Minibar'),
@@ -54,11 +54,11 @@ class IncidenteHabitacion(models.Model):
     ]
 
     habitacion    = models.ForeignKey(Habitacion, on_delete=models.CASCADE,
-                                       related_name='incidentes')
+                                      related_name='incidentes')
     tipo          = models.CharField(max_length=15, choices=TIPO)
     descripcion   = models.TextField()
     monto_cobrar  = models.DecimalField(max_digits=10, decimal_places=2,
-                                         null=True, blank=True)
+                                        null=True, blank=True)
     reportado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True
