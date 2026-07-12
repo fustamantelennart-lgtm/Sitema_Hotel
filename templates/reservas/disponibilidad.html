@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Disponibilidad{% endblock %}
 {% block breadcrumb_parent %}Reservas{% endblock %}
 {% block breadcrumb_title %}Disponibilidad{% endblock %}
 {% block nav_disponibilidad %}active{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+{% endblock %}
+
 {% block content %}
+
 <div class="card" style="margin-bottom:16px;">
   <div class="card-body">
     <form method="get" style="display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:12px; align-items:end;">
@@ -35,7 +41,7 @@
 </div>
 
 {% if buscado %}
-<div class="card">
+<div class="card" style="margin-bottom:20px;">
   <div class="card-header">
     <i class="bi bi-check-circle" style="color:var(--color-primary);"></i>
     {{ resultados|length }} habitación(es) disponible(s)
@@ -78,4 +84,62 @@
   {% endif %}
 </div>
 {% endif %}
+
+<!-- Calendario / Timeline -->
+<div class="card">
+  <div class="card-header">
+    <i class="bi bi-calendar-week" style="color:var(--color-primary);"></i>
+    Calendario de reservas — próximos 14 días
+  </div>
+  <div style="overflow-x:auto;">
+    <table class="cal-table">
+      <thead>
+        <tr>
+          <th class="cal-hab-header">HAB.</th>
+          {% for dia in dias %}
+          <th class="cal-dia-header {% if dia == hoy %}hoy{% endif %}">
+            <div>{{ dia|date:"D"|slice:":2" }}</div>
+            <div class="cal-dia-num">{{ dia|date:"d" }}</div>
+            <div>{{ dia|date:"M" }}</div>
+          </th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for fila in calendario %}
+        <tr class="cal-fila">
+          <td class="cal-hab-cel">
+            <div>{{ fila.habitacion.numero }}</div>
+            <div class="cal-hab-tipo">{{ fila.habitacion.tipo.nombre }}</div>
+          </td>
+          {% for celda in fila.celdas %}
+          <td class="cal-dia-cel {% if celda.dia == hoy %}hoy{% endif %}">
+            {% if celda.reserva %}
+            <div class="cal-reserva">
+              <div class="cal-reserva-nombre">{{ celda.reserva.huesped.apellidos|slice:":8" }}</div>
+              <div class="cal-reserva-id">R-{{ celda.reserva.pk }}</div>
+            </div>
+            {% else %}
+            <div class="cal-libre"></div>
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cal-leyenda">
+    <div class="cal-leyenda-item">
+      <span class="cal-leyenda-color cal-leyenda-ocupada"></span>
+      Ocupada / Reservada
+    </div>
+    <div class="cal-leyenda-item">
+      <span class="cal-leyenda-color cal-leyenda-libre"></span>
+      Disponible
+    </div>
+  </div>
+</div>
+
 {% endblock %}

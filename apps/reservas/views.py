@@ -272,7 +272,7 @@ def cancelar(request, pk):
 @rol_requerido('admin', 'recepcionista')
 def disponibilidad(request):
     from apps.recepcion.models import TipoHabitacion
-    from datetime import date
+    from datetime import date, timedelta
     from django.db.models import Q
 
     fecha_entrada = request.GET.get('fecha_entrada')
@@ -280,6 +280,38 @@ def disponibilidad(request):
     tipo_id       = request.GET.get('tipo', '')
     resultados    = []
     tipos         = TipoHabitacion.objects.all()
+
+    # Calendario — siempre mostrar 14 días desde hoy
+    hoy        = date.today()
+    dias       = [hoy + timedelta(days=i) for i in range(14)]
+    habitaciones_cal = Habitacion.objects.select_related('tipo').order_by('piso', 'numero')
+
+    # Para cada habitación obtener sus reservas en el período
+    calendario = []
+    for hab in habitaciones_cal:
+        reservas_hab = Reserva.objects.filter(
+            habitacion=hab,
+            estado__in=['CONFIRMADA', 'CHECKIN'],
+            fecha_entrada__lte=dias[-1],
+            fecha_salida__gte=dias[0],
+        ).select_related('huesped')
+
+        celdas = []
+        for dia in dias:
+            reserva_dia = None
+            for r in reservas_hab:
+                if r.fecha_entrada <= dia < r.fecha_salida:
+                    reserva_dia = r
+                    break
+            celdas.append({
+                'dia':     dia,
+                'reserva': reserva_dia,
+            })
+
+        calendario.append({
+            'habitacion': hab,
+            'celdas':     celdas,
+        })
 
     if fecha_entrada and fecha_salida:
         fe = date.fromisoformat(fecha_entrada)
@@ -306,6 +338,8 @@ def disponibilidad(request):
         'fecha_salida':  fecha_salida or '',
         'tipo_id':       tipo_id,
         'buscado':       bool(fecha_entrada and fecha_salida),
+        'calendario':    calendario,
+        'dias':          dias,
     })
 
 
