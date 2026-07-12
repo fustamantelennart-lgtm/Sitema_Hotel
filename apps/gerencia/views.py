@@ -2,71 +2,32 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from apps.usuarios.decorators import rol_requerido
+from .services import GerenciaService
+import json
 
 
 @login_required
 @rol_requerido('admin')
 def dashboard(request):
-    from apps.reservas.models import Reserva, Estancia
-    from apps.recepcion.models import Habitacion, TipoHabitacion
-    from django.db.models import Sum, Count
-    from django.db.models.functions import TruncMonth
-    import json
+    from apps.recepcion.models import Hotel, Habitacion
 
-    hoy  = timezone.now().date()
-    mes  = hoy.month
-    anio = hoy.year
+    hotel  = Hotel.objects.first()
+    kpis   = GerenciaService.get_kpis(hotel)
+    meses_labels, meses_ocupacion = GerenciaService.get_grafico_reservas()
 
+    from apps.recepcion.models import Habitacion
     habitaciones  = Habitacion.objects.all()
-    total         = habitaciones.count()
+    disponibles   = habitaciones.filter(estado='DISPONIBLE').count()
     ocupadas      = habitaciones.filter(estado='OCUPADA').count()
     limpieza      = habitaciones.filter(estado='LIMPIEZA').count()
-    disponibles   = habitaciones.filter(estado='DISPONIBLE').count()
     mantenimiento = habitaciones.filter(estado='MANTENIMIENTO').count()
-    ocupacion_pct = round((ocupadas / total * 100), 1) if total else 0
-
-    total_reservas = Reserva.objects.count()
-    ingresos = Reserva.objects.filter(
-        estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT'],
-        creado_en__month=mes,
-        creado_en__year=anio,
-    ).aggregate(t=Sum('precio_total'))['t'] or 0
-
-    from dateutil.relativedelta import relativedelta
-    meses_labels   = []
-    meses_ocupacion = []
-    for i in range(5, -1, -1):
-        fecha = hoy - relativedelta(months=i)
-        label = fecha.strftime('%b %Y')
-        reservas_mes = Reserva.objects.filter(
-            estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT'],
-            creado_en__month=fecha.month,
-            creado_en__year=fecha.year,
-        ).count()
-        meses_labels.append(label)
-        meses_ocupacion.append(reservas_mes)
 
     estados_data   = [disponibles, ocupadas, limpieza, mantenimiento]
     estados_labels = ['Disponible', 'Ocupada', 'En Limpieza', 'Mantenimiento']
-
-    por_tipo = Reserva.objects.filter(
-        estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT']
-    ).values('tipo_habitacion__nombre').annotate(
-        ingresos=Sum('precio_total')
-    ).order_by('-ingresos')
-
-    tipo_labels   = [t['tipo_habitacion__nombre'] for t in por_tipo]
-    tipo_ingresos = [float(t['ingresos'] or 0) for t in por_tipo]
+    tipo_labels, tipo_ingresos = GerenciaService.get_grafico_tipos()
 
     return render(request, 'gerencia/dashboard.html', {
-        'total_reservas':  total_reservas,
-        'ocupadas':        ocupadas,
-        'ocupacion_pct':   ocupacion_pct,
-        'ingresos':        ingresos,
-        'disponibles':     disponibles,
-        'limpieza':        limpieza,
-        'mantenimiento':   mantenimiento,
-        'total':           total,
+        **kpis,
         'meses_labels':    json.dumps(meses_labels),
         'meses_ocupacion': json.dumps(meses_ocupacion),
         'estados_data':    json.dumps(estados_data),
@@ -118,15 +79,13 @@ def usuarios(request):
     ).order_by('rol', 'username')
     return render(request, 'gerencia/usuarios.html', {'usuarios': usuarios})
 
+
 @login_required
 @rol_requerido('admin')
 def reportes(request):
-    from apps.reservas.models import Reserva
-    from django.db.models import Sum, Count
     from datetime import date
 
-    hoy = timezone.now().date()
-
+    hoy          = timezone.now().date()
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin    = request.GET.get('fecha_fin')
 
@@ -137,28 +96,7 @@ def reportes(request):
         fi = hoy.replace(day=1)
         ff = hoy
 
-    reservas_qs = Reserva.objects.filter(
-        creado_en__date__gte=fi,
-        creado_en__date__lte=ff,
-    )
-
-    resumen = {
-        'total':       reservas_qs.count(),
-        'confirmadas': reservas_qs.filter(estado='CONFIRMADA').count(),
-        'checkin':     reservas_qs.filter(estado='CHECKIN').count(),
-        'checkout':    reservas_qs.filter(estado='CHECKOUT').count(),
-        'canceladas':  reservas_qs.filter(estado='CANCELADA').count(),
-        'ingresos':    reservas_qs.filter(
-            estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT']
-        ).aggregate(t=Sum('precio_total'))['t'] or 0,
-    }
-
-    por_tipo = reservas_qs.filter(
-        estado__in=['CONFIRMADA', 'CHECKIN', 'CHECKOUT']
-    ).values('tipo_habitacion__nombre').annotate(
-        total=Count('id'),
-        ingresos=Sum('precio_total'),
-    ).order_by('-total')
+    resumen, por_tipo = GerenciaService.get_reporte_periodo(fi, ff)
 
     return render(request, 'gerencia/reportes.html', {
         'resumen':      resumen,
