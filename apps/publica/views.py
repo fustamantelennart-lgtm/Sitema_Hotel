@@ -8,6 +8,8 @@ from apps.reservas.models import Huesped, Reserva, Tarifa
 from .forms import ReservaPublicaForm
 from .services import ReservaPublicaService
 from .exceptions import DisponibilidadAgotada, PagoInvalido, TarjetaRechazada
+from django.core.cache import cache
+
 
 
 def inicio(request):
@@ -29,35 +31,46 @@ def inicio(request):
         except Exception:
             noches = None
 
-    for tipo in TipoHabitacion.objects.all():
-        total_habs   = tipo.habitaciones.count()
-        disponible   = None
-        precio_total = None
+    # Cache key única por fechas
+    cache_key = f'disponibilidad_{fecha_entrada}_{fecha_salida}'
+    cached    = cache.get(cache_key) if fecha_entrada and fecha_salida else None
 
-        if fecha_entrada and fecha_salida and noches:
-            try:
-                fe = date.fromisoformat(fecha_entrada)
-                fs = date.fromisoformat(fecha_salida)
-                solapadas = Reserva.objects.filter(
-                    tipo_habitacion=tipo,
-                    estado__in=['PENDIENTE', 'CONFIRMADA', 'CHECKIN'],
-                ).filter(
-                    Q(fecha_entrada__lt=fs) & Q(fecha_salida__gt=fe)
-                ).count()
-                habs_disponibles = tipo.habitaciones.filter(estado='DISPONIBLE').count()
-                disponible   = max(0, habs_disponibles - solapadas)
-                precio_total = tipo.precio_base * noches
-            except Exception:
-                disponible   = None
-                precio_total = None
+    if cached:
+        tipos_con_disponibilidad = cached
+    else:
+        for tipo in TipoHabitacion.objects.all():
+            total_habs   = tipo.habitaciones.count()
+            disponible   = None
+            precio_total = None
 
-        tipos_con_disponibilidad.append({
-            'tipo':         tipo,
-            'disponible':   disponible,
-            'total':        total_habs,
-            'precio_total': precio_total,
-            'noches':       noches,
-        })
+            if fecha_entrada and fecha_salida and noches:
+                try:
+                    fe = date.fromisoformat(fecha_entrada)
+                    fs = date.fromisoformat(fecha_salida)
+                    solapadas = Reserva.objects.filter(
+                        tipo_habitacion=tipo,
+                        estado__in=['PENDIENTE', 'CONFIRMADA', 'CHECKIN'],
+                    ).filter(
+                        Q(fecha_entrada__lt=fs) & Q(fecha_salida__gt=fe)
+                    ).count()
+                    habs_disponibles = tipo.habitaciones.filter(estado='DISPONIBLE').count()
+                    disponible   = max(0, habs_disponibles - solapadas)
+                    precio_total = tipo.precio_base * noches
+                except Exception:
+                    disponible   = None
+                    precio_total = None
+
+            tipos_con_disponibilidad.append({
+                'tipo':         tipo,
+                'disponible':   disponible,
+                'total':        total_habs,
+                'precio_total': precio_total,
+                'noches':       noches,
+            })
+
+        # Guardar en caché solo si hay fechas
+        if fecha_entrada and fecha_salida:
+            cache.set(cache_key, tipos_con_disponibilidad, 300)
 
     todos_agotados = False
     if fecha_entrada and fecha_salida:

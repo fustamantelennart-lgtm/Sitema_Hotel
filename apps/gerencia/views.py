@@ -4,18 +4,24 @@ from django.utils import timezone
 from apps.usuarios.decorators import rol_requerido
 from .services import GerenciaService
 import json
-
+from django.core.cache import cache
 
 @login_required
 @rol_requerido('admin')
 def dashboard(request):
     from apps.recepcion.models import Hotel, Habitacion
 
-    hotel  = Hotel.objects.first()
-    kpis   = GerenciaService.get_kpis(hotel)
+    hotel = Hotel.objects.first()
+
+    # Cache KPIs por 5 minutos
+    cache_key = 'gerencia_kpis'
+    kpis      = cache.get(cache_key)
+    if not kpis:
+        kpis = GerenciaService.get_kpis(hotel)
+        cache.set(cache_key, kpis, 300)
+
     meses_labels, meses_ocupacion = GerenciaService.get_grafico_reservas()
 
-    from apps.recepcion.models import Habitacion
     habitaciones  = Habitacion.objects.all()
     disponibles   = habitaciones.filter(estado='DISPONIBLE').count()
     ocupadas      = habitaciones.filter(estado='OCUPADA').count()
