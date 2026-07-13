@@ -1,0 +1,1990 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "4rrpvadky71j5adaej8scsko5huo4oi0",
+  "fields": {
+    "session_data": ".eJxVjMEKwyAQRP_Fc5GNRKM99t5vkHVda9qiEJNT6L_XQA7taWDem9mFx23Nfmu8-DmKqxjE5bcLSC8uB4hPLI8qqZZ1mYM8FHnSJu818vt2un8HGVvuaxUURas02WA4uWlkNQCMQMlYTJonVKMjhdAto22KgaMl3dMBADrx-QLzDTiS:1wVLxL:meIyMVg2pcNtCEV7UlHpzBY04Kp2VGrlMrYNZMCOa-o",
+    "expire_date": "2026-06-19T04:14:51.653Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "8l6twh76of9w1b8n4eh1fy1ehji4m4ln",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2hB-Irh07xlI093IqIFkmFkZ766TzEK3r6reSyRYl5rWwXOaSJyFFYffLQM-uG2A7tBuXWJvyzxluSlyp0NeO_Hzsrt_BxVG_dbGhBJYIwApsgGPJxuVJsjMiqM3UChoRagdMUdwMUJh63zRGLL1IN4fBXQ47w:1wcu0F:fnjVlaz5aCBAuvA_B_2c42wvEXjcJ4KOdyQShZMaDE0",
+    "expire_date": "2026-07-10T00:01:03.398Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "g1eoieqe5f0eawcfjmbhaudnpx2t8012",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2hB-Irh07xlI093IqIFkmFkZ766TzEK3r6reSyRYl5rWwXOaSJyFFYffLQM-uG2A7tBuXWJvyzxluSlyp0NeO_Hzsrt_BxVG_dbGhBJYIwApsgGPJxuVJsjMiqM3UChoRagdMUdwMUJh63zRGLL1IN4fBXQ47w:1wfhLG:zR8oFYp8sFeG2akkVtBKD9QXDpz7lt7wyvCXdbE0s68",
+    "expire_date": "2026-07-17T17:06:18.222Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "lapj1vvx8eeikwfnstlmt3hc5zyfdveg",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2hB-Irh07xlI093IqIFkmFkZ766TzEK3r6reSyRYl5rWwXOaSJyFFYffLQM-uG2A7tBuXWJvyzxluSlyp0NeO_Hzsrt_BxVG_dbGhBJYIwApsgGPJxuVJsjMiqM3UChoRagdMUdwMUJh63zRGLL1IN4fBXQ47w:1wbhUy:WPlND_ByG_e0iCAMDaZVn71XX-wrlOHrx4t643QsIhA",
+    "expire_date": "2026-07-06T16:27:48.218Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "mqdyk7q64q48dauckwzveurvhy50uprk",
+  "fields": {
+    "session_data": ".eJxVjMEKwyAQRP_Fc5GNRKM99t5vkHVda9qiEJNT6L_XQA7taWDem9mFx23Nfmu8-DmKqxjE5bcLSC8uB4hPLI8qqZZ1mYM8FHnSJu818vt2un8HGVvuaxUURas02WA4uWlkNQCMQMlYTJonVKMjhdAto22KgaMl3dMBADrx-QLzDTiS:1wVMXf:d_cOcmcoeE04D7kzbDGyOZ7pyseYoLOt-3U7QtECnG8",
+    "expire_date": "2026-06-19T04:52:23.307Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "vrtwazxx9k6kb1qmaia8pgkhpfnoq7du",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hAEhhaX7j0DmYFBqgaS0q6Md7dNutDtf-_9twi4LiWsnecwJXERVpx-N8L45LqD9MB6bzK2uswTyV2RB-3y1hK_rof7d1Cwl63maD2ozKA9I501I2vnlXNAOaGDaGAYMxAYbdVgDSQLrEDnOJpN8eLzBeqNN7A:1wi0Vm:TKyYdj0jThpFBCGwfp12NUgVfw3PV3HdUU27gXK8Puk",
+    "expire_date": "2026-07-24T01:58:42.169Z"
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$ErE5QnOhQIFLTqymcrX7gM$C8HC/7dybSrUnZNzjxUGSIktht6cNceqvSsRBpWVNv8=",
+    "last_login": "2026-06-05T04:52:23.302Z",
+    "is_superuser": true,
+    "username": "samuel",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-06-05T01:46:00.777Z",
+    "rol": "recepcionista",
+    "telefono": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$hzxQMRagBfWwaMGvcLKVvu$EZTj1snkt0LPsbpP9Hzu5loxkJuYTqABR1TjoMfG/80=",
+    "last_login": "2026-06-19T01:20:43.303Z",
+    "is_superuser": false,
+    "username": "lennart",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-05T04:38:11.533Z",
+    "rol": "housekeeping",
+    "telefono": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$q7knKF07rStDo0FJQRf6VK$KS48PJumwNerPXT1BBsMflmJd0Npz2JzEfVTsx48DVI=",
+    "last_login": "2026-07-08T03:52:19.960Z",
+    "is_superuser": true,
+    "username": "carlos",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-06-18T23:50:42.403Z",
+    "rol": "recepcionista",
+    "telefono": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$Udf4VHeQrDJTuypiJSy15X$pRgmpZZEUoXvg/gweABiP/sTQw67EVcWDw8W4b7sMYY=",
+    "last_login": "2026-07-10T01:58:42.166Z",
+    "is_superuser": false,
+    "username": "maicol",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-19T01:30:24.073Z",
+    "rol": "admin",
+    "telefono": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$W0gUmN2YtOiwmPCT8OicMy$pLYcWKSNAGHQQM+5ZRWhlQBdNfYVaqSOio6A+f6KScQ=",
+    "last_login": "2026-07-10T01:22:08.375Z",
+    "is_superuser": false,
+    "username": "fustamantelennart@gmail.com",
+    "first_name": "",
+    "last_name": "",
+    "email": "fustamantelennart@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-02T17:02:44.464Z",
+    "rol": "cliente",
+    "telefono": "979893836",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$FAGzZEJqXAQFeSz0PD8E57$29A4j6P12jDTO3zwvWKpwYXLXjZ+c61xxn/LI8Au+zs=",
+    "last_login": "2026-07-04T18:03:20.650Z",
+    "is_superuser": true,
+    "username": "sam",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-07-03T17:11:06.789Z",
+    "rol": "recepcionista",
+    "telefono": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$iVsfVOZOv7S0pa8tOybNAd$p4K7IyolnCyF+2bi/JeFmIvn3wKgzqvokr83rej8/Tc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "anderperleche@gmail.com",
+    "first_name": "ANDERSON BENJAMIN",
+    "last_name": "GIRON VILLEGAS",
+    "email": "anderperleche@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T02:15:41.532Z",
+    "rol": "cliente",
+    "telefono": "979893122",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$G0o9ozfN3FbaZCfcSVD1gw$d+QWfteSve9Mn9S6vBJvIHQO1chMi3m/eHuchJwKlx4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ander@gmail.com",
+    "first_name": "DARCY MISHELLE",
+    "last_name": "HUIÑAPI RAMIREZ",
+    "email": "ander@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T02:26:35.705Z",
+    "rol": "cliente",
+    "telefono": "979893122",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$VRViTe42s8SQ3C4nAeIVJ2$B7SiUiw3fg9Ksnt6eq67AYHYHJ08/b9rpF/fldZOc5c=",
+    "last_login": "2026-07-08T02:30:24.362Z",
+    "is_superuser": false,
+    "username": "anderperlhe@gmail.com",
+    "first_name": "ANGY ABIGAIL",
+    "last_name": "CHERRES YOVERA",
+    "email": "anderperlhe@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-08T02:30:24.244Z",
+    "rol": "cliente",
+    "telefono": "979893122",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$Kw6tMv5SIh7VdPX1u2kyP2$2gEg/mUZnOFI60LnyWpSZD3gqoJsyaRG6zAGIJZB134=",
+    "last_login": "2026-07-10T00:44:57.937Z",
+    "is_superuser": false,
+    "username": "pame1@gmail.com",
+    "first_name": "PAMELA NAHI",
+    "last_name": "CHAVEZ LOPEZ",
+    "email": "pame1@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-10T00:44:57.739Z",
+    "rol": "cliente",
+    "telefono": "979893122",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$j2k7gr5MXfHuSqba5O3VWd$OlHBJtQUXdESTs5insm4Bm7ZUP/GtNQbUTMnsjepVfY=",
+    "last_login": "2026-07-10T01:21:58.827Z",
+    "is_superuser": false,
+    "username": "pamela1@gmail.com",
+    "first_name": "LENNART SAMUEL",
+    "last_name": "FUSTAMANTE SOSA",
+    "email": "pamela1@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-10T01:21:58.689Z",
+    "rol": "cliente",
+    "telefono": "979893122",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "usuarios.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$txWvFtFBCKwyx0PipOci3L$y/b0w+dzGmxDzWcNpYHlI58gZt59DctFj25b6EzUwfE=",
+    "last_login": "2026-07-10T01:57:53.179Z",
+    "is_superuser": false,
+    "username": "pamela@gmail.com",
+    "first_name": "GISSELA YULIANA",
+    "last_name": "NOVOA RIOS",
+    "email": "pamela@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-07-10T01:32:41.980Z",
+    "rol": "cliente",
+    "telefono": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "recepcion.hotel",
+  "pk": 1,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.499Z",
+    "actualizado_en": "2026-07-12T17:33:42.490Z",
+    "activo": true,
+    "creado_por": null,
+    "nombre": "Hotel Tumán",
+    "ruc": "20123456789",
+    "direccion": "Av. Principal 123, Tumán",
+    "estrellas": 3,
+    "telefono": "074000000",
+    "email": ""
+  }
+},
+{
+  "model": "recepcion.tipohabitacion",
+  "pk": 1,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.614Z",
+    "actualizado_en": "2026-07-12T17:33:42.607Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "nombre": "Estándar",
+    "capacidad": 2,
+    "precio_base": "200.00",
+    "amenidades": [],
+    "descripcion": "",
+    "imagen": "image/upload/media/tipos_habitacion/images_uccmuh"
+  }
+},
+{
+  "model": "recepcion.tipohabitacion",
+  "pk": 2,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.614Z",
+    "actualizado_en": "2026-07-12T17:33:42.607Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "nombre": "Doble",
+    "capacidad": 2,
+    "precio_base": "300.00",
+    "amenidades": [],
+    "descripcion": "",
+    "imagen": "image/upload/media/tipos_habitacion/HOTEL-CENTRO-AREQUIPA-2-e1700173477720_eq2ufs"
+  }
+},
+{
+  "model": "recepcion.tipohabitacion",
+  "pk": 3,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.614Z",
+    "actualizado_en": "2026-07-12T17:33:42.607Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "nombre": "Suite",
+    "capacidad": 4,
+    "precio_base": "500.00",
+    "amenidades": [],
+    "descripcion": "",
+    "imagen": "image/upload/media/tipos_habitacion/istockphoto-1467126728-612x612_s9dwvy"
+  }
+},
+{
+  "model": "recepcion.imagentipohabitacion",
+  "pk": 1,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.556Z",
+    "actualizado_en": "2026-07-12T17:33:42.545Z",
+    "activo": true,
+    "creado_por": null,
+    "tipo": 3,
+    "imagen": "image/upload/media/tipos_habitacion/Escritorio_-_Escritorio_con_maletero_integrado____ALCOMOBI_-_hicontract_lgrnss",
+    "orden": 1,
+    "caption": ""
+  }
+},
+{
+  "model": "recepcion.imagentipohabitacion",
+  "pk": 2,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.556Z",
+    "actualizado_en": "2026-07-12T17:33:42.545Z",
+    "activo": true,
+    "creado_por": null,
+    "tipo": 3,
+    "imagen": "image/upload/media/tipos_habitacion/descarga_ktdjdt",
+    "orden": 2,
+    "caption": ""
+  }
+},
+{
+  "model": "recepcion.imagentipohabitacion",
+  "pk": 3,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.556Z",
+    "actualizado_en": "2026-07-12T17:33:42.545Z",
+    "activo": true,
+    "creado_por": null,
+    "tipo": 3,
+    "imagen": "image/upload/media/tipos_habitacion/Drape_style_bzkzki",
+    "orden": 3,
+    "caption": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 1,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 1,
+    "numero": "101",
+    "piso": 1,
+    "estado": "DISPONIBLE",
+    "observaciones": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 2,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 1,
+    "numero": "102",
+    "piso": 1,
+    "estado": "OCUPADA",
+    "observaciones": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 3,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 1,
+    "numero": "103",
+    "piso": 1,
+    "estado": "DISPONIBLE",
+    "observaciones": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 4,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 2,
+    "numero": "201",
+    "piso": 2,
+    "estado": "DISPONIBLE",
+    "observaciones": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 5,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 2,
+    "numero": "202",
+    "piso": 2,
+    "estado": "DISPONIBLE",
+    "observaciones": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 6,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 3,
+    "numero": "301",
+    "piso": 3,
+    "estado": "DISPONIBLE",
+    "observaciones": ""
+  }
+},
+{
+  "model": "recepcion.habitacion",
+  "pk": 7,
+  "fields": {
+    "creado_en": "2026-07-12T17:33:42.446Z",
+    "actualizado_en": "2026-07-12T17:33:42.437Z",
+    "activo": true,
+    "creado_por": null,
+    "hotel": 1,
+    "tipo": 2,
+    "numero": "104",
+    "piso": 2,
+    "estado": "DISPONIBLE",
+    "observaciones": ""
+  }
+},
+{
+  "model": "reservas.huesped",
+  "pk": 36,
+  "fields": {
+    "creado_en": "2026-07-12T17:32:36.462Z",
+    "actualizado_en": "2026-07-12T17:32:36.452Z",
+    "activo": true,
+    "creado_por": null,
+    "tipo_doc": "DNI",
+    "num_doc": "74820058",
+    "nombres": "PAMELA NAHI",
+    "apellidos": "CHAVEZ LOPEZ",
+    "email": "pame1@gmail.com",
+    "telefono": "979893122",
+    "nacionalidad": "Peruana",
+    "usuario": [
+      "pame1@gmail.com"
+    ]
+  }
+},
+{
+  "model": "reservas.huesped",
+  "pk": 37,
+  "fields": {
+    "creado_en": "2026-07-12T17:32:36.462Z",
+    "actualizado_en": "2026-07-12T17:32:36.452Z",
+    "activo": true,
+    "creado_por": null,
+    "tipo_doc": "DNI",
+    "num_doc": "75897100",
+    "nombres": "LENNART SAMUEL",
+    "apellidos": "FUSTAMANTE SOSA",
+    "email": "fustamantelennart@gmail.com",
+    "telefono": "979893122",
+    "nacionalidad": "Peruana",
+    "usuario": [
+      "fustamantelennart@gmail.com"
+    ]
+  }
+},
+{
+  "model": "reservas.huesped",
+  "pk": 39,
+  "fields": {
+    "creado_en": "2026-07-12T17:32:36.462Z",
+    "actualizado_en": "2026-07-12T17:32:36.452Z",
+    "activo": true,
+    "creado_por": null,
+    "tipo_doc": "DNI",
+    "num_doc": "73897122",
+    "nombres": "GISSELA YULIANA",
+    "apellidos": "NOVOA RIOS",
+    "email": "pamela@gmail.com",
+    "telefono": "",
+    "nacionalidad": "Peruana",
+    "usuario": [
+      "pamela@gmail.com"
+    ]
+  }
+},
+{
+  "model": "reservas.reserva",
+  "pk": 24,
+  "fields": {
+    "creado_en": "2026-07-10T00:57:16.006Z",
+    "actualizado_en": "2026-07-12T17:32:36.494Z",
+    "activo": true,
+    "hotel": 1,
+    "huesped": 36,
+    "tipo_habitacion": 1,
+    "habitacion": null,
+    "fecha_entrada": "2026-07-10",
+    "fecha_salida": "2026-07-11",
+    "num_adultos": 2,
+    "num_ninos": 0,
+    "estado": "PENDIENTE",
+    "origen": "WEB",
+    "precio_total": "200.00",
+    "observaciones": "",
+    "creado_por": null
+  }
+},
+{
+  "model": "reservas.reserva",
+  "pk": 25,
+  "fields": {
+    "creado_en": "2026-07-10T01:33:12.837Z",
+    "actualizado_en": "2026-07-12T17:32:36.494Z",
+    "activo": true,
+    "hotel": 1,
+    "huesped": 39,
+    "tipo_habitacion": 1,
+    "habitacion": null,
+    "fecha_entrada": "2026-07-10",
+    "fecha_salida": "2026-07-26",
+    "num_adultos": 2,
+    "num_ninos": 0,
+    "estado": "CHECKIN",
+    "origen": "WEB",
+    "precio_total": "3200.00",
+    "observaciones": "",
+    "creado_por": null
+  }
+},
+{
+  "model": "reservas.estancia",
+  "pk": 4,
+  "fields": {
+    "creado_en": "2026-07-12T17:32:36.360Z",
+    "actualizado_en": "2026-07-12T17:32:36.348Z",
+    "activo": true,
+    "creado_por": null,
+    "reserva": 25,
+    "habitacion": 2,
+    "estado": "ACTIVA",
+    "fecha_checkin": "2026-07-10T02:11:08.710Z",
+    "fecha_checkout": null,
+    "atendido_por": [
+      "maicol"
+    ]
+  }
+},
+{
+  "model": "reservas.cargoestancia",
+  "pk": 6,
+  "fields": {
+    "creado_en": "2026-07-12T17:32:36.305Z",
+    "actualizado_en": "2026-07-12T17:32:36.291Z",
+    "activo": true,
+    "creado_por": null,
+    "estancia": 4,
+    "concepto": "Habitación 102 — 16 noche(s)",
+    "monto": "3200.00",
+    "tipo": "HABITACION",
+    "fecha": "2026-07-10T02:11:08.719Z",
+    "registrado_por": [
+      "maicol"
+    ]
+  }
+},
+{
+  "model": "reservas.folio",
+  "pk": 4,
+  "fields": {
+    "creado_en": "2026-07-12T17:32:36.391Z",
+    "actualizado_en": "2026-07-12T17:32:36.384Z",
+    "activo": true,
+    "creado_por": null,
+    "estancia": 4,
+    "total": "3776.00",
+    "estado": "PENDIENTE",
+    "metodo_pago": "",
+    "fecha_pago": null
+  }
+},
+{
+  "model": "housekeeping.tarealimpieza",
+  "pk": 1,
+  "fields": {
+    "creado_en": "2026-07-12T17:34:33.554Z",
+    "actualizado_en": "2026-07-12T17:34:33.543Z",
+    "activo": true,
+    "creado_por": null,
+    "habitacion": 1,
+    "asignada_a": [
+      "samuel"
+    ],
+    "estado": "LISTA",
+    "prioridad": "ALTA",
+    "fecha_creacion": "2026-06-05T04:24:06.182Z",
+    "fecha_completada": "2026-06-05T16:56:56.420Z",
+    "observaciones": ""
+  }
+},
+{
+  "model": "housekeeping.tarealimpieza",
+  "pk": 2,
+  "fields": {
+    "creado_en": "2026-07-12T17:34:33.554Z",
+    "actualizado_en": "2026-07-12T17:34:33.543Z",
+    "activo": true,
+    "creado_por": null,
+    "habitacion": 3,
+    "asignada_a": [
+      "samuel"
+    ],
+    "estado": "LISTA",
+    "prioridad": "ALTA",
+    "fecha_creacion": "2026-06-05T16:55:00.085Z",
+    "fecha_completada": "2026-06-19T01:29:18.284Z",
+    "observaciones": ""
+  }
+},
+{
+  "model": "housekeeping.tarealimpieza",
+  "pk": 3,
+  "fields": {
+    "creado_en": "2026-07-12T17:34:33.554Z",
+    "actualizado_en": "2026-07-12T17:34:33.543Z",
+    "activo": true,
+    "creado_por": null,
+    "habitacion": 6,
+    "asignada_a": [
+      "lennart"
+    ],
+    "estado": "LISTA",
+    "prioridad": "ALTA",
+    "fecha_creacion": "2026-06-19T01:17:04.430Z",
+    "fecha_completada": "2026-06-19T01:29:17.433Z",
+    "observaciones": ""
+  }
+},
+{
+  "model": "housekeeping.incidentehabitacion",
+  "pk": 1,
+  "fields": {
+    "creado_en": "2026-07-12T17:34:33.508Z",
+    "actualizado_en": "2026-07-12T17:34:33.494Z",
+    "activo": true,
+    "creado_por": null,
+    "habitacion": 3,
+    "tipo": "DESPERFECTO",
+    "descripcion": "Se rompio un jarron",
+    "monto_cobrar": null,
+    "reportado_por": [
+      "maicol"
+    ],
+    "fecha": "2026-07-07T06:03:57.850Z",
+    "resuelto": true
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-06-05T04:17:31.522Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "1",
+    "object_repr": "Reserva #1 — Carlos García",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Fecha entrada\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-06-05T04:38:11.658Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "usuarios",
+      "usuario"
+    ],
+    "object_id": "2",
+    "object_repr": " (Housekeeping)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-06-08T17:50:08.385Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "3",
+    "object_repr": "Suite — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Imagen\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-06-09T04:51:13.162Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "3",
+    "object_repr": "Suite — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Imagen\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-06-09T04:51:21.201Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "3",
+    "object_repr": "Suite — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Imagen\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-06-09T05:14:12.650Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "3",
+    "object_repr": "Suite — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"added\": {\"name\": \"Imagen de Habitaci\\u00f3n\", \"object\": \"Suite \\u2014 imagen 1\"}}, {\"added\": {\"name\": \"Imagen de Habitaci\\u00f3n\", \"object\": \"Suite \\u2014 imagen 2\"}}, {\"added\": {\"name\": \"Imagen de Habitaci\\u00f3n\", \"object\": \"Suite \\u2014 imagen 2\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-06-09T05:14:23.030Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "3",
+    "object_repr": "Suite — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-06-09T05:18:49.759Z",
+    "user": [
+      "samuel"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "3",
+    "object_repr": "Suite — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"name\": \"Imagen de Habitaci\\u00f3n\", \"object\": \"Suite \\u2014 imagen 3\", \"fields\": [\"Orden\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-06-19T01:19:46.980Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "usuarios",
+      "usuario"
+    ],
+    "object_id": "2",
+    "object_repr": " (Housekeeping)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2026-06-19T01:30:24.187Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "usuarios",
+      "usuario"
+    ],
+    "object_id": "4",
+    "object_repr": " (Administrador)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2026-06-22T16:29:09.036Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "2",
+    "object_repr": "Doble — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Imagen\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-06-22T16:29:54.951Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "recepcion",
+      "tipohabitacion"
+    ],
+    "object_id": "1",
+    "object_repr": "Estándar — Hotel Tumán",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Imagen\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2026-07-08T03:53:01.713Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "35",
+    "object_repr": "CHERRES YOVERA, ANGY ABIGAIL — 71703689",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2026-07-08T03:53:22.989Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "6",
+    "object_repr": "Vásquez, Carmen — 12345683",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2026-07-08T03:53:27.144Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "2",
+    "object_repr": "Torres, María — 12345679",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2026-07-08T03:53:32.484Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "13",
+    "object_repr": "Smith, John — 12345690",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 17,
+  "fields": {
+    "action_time": "2026-07-08T03:53:41.516Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "22",
+    "object_repr": "Reserva #22 — ROSALIA SOSA",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 18,
+  "fields": {
+    "action_time": "2026-07-08T03:53:56.530Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "23",
+    "object_repr": "Reserva #23 — ROSALIA SOSA",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 19,
+  "fields": {
+    "action_time": "2026-07-08T03:53:58.897Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "21",
+    "object_repr": "Reserva #21 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 20,
+  "fields": {
+    "action_time": "2026-07-08T03:54:01.708Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "20",
+    "object_repr": "Reserva #20 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 21,
+  "fields": {
+    "action_time": "2026-07-08T03:54:04.976Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "19",
+    "object_repr": "Reserva #19 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 22,
+  "fields": {
+    "action_time": "2026-07-08T03:54:07.619Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "18",
+    "object_repr": "Reserva #18 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 23,
+  "fields": {
+    "action_time": "2026-07-08T03:54:10.043Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "17",
+    "object_repr": "Reserva #17 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 24,
+  "fields": {
+    "action_time": "2026-07-08T03:54:12.456Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "16",
+    "object_repr": "Reserva #16 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 25,
+  "fields": {
+    "action_time": "2026-07-08T03:54:14.975Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "15",
+    "object_repr": "Reserva #15 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 26,
+  "fields": {
+    "action_time": "2026-07-08T03:54:18.179Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "14",
+    "object_repr": "Reserva #14 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 27,
+  "fields": {
+    "action_time": "2026-07-08T03:54:20.820Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "13",
+    "object_repr": "Reserva #13 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 28,
+  "fields": {
+    "action_time": "2026-07-08T03:54:25.257Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "12",
+    "object_repr": "Reserva #12 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 29,
+  "fields": {
+    "action_time": "2026-07-08T03:54:30.916Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "11",
+    "object_repr": "Reserva #11 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 30,
+  "fields": {
+    "action_time": "2026-07-08T03:54:33.115Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "10",
+    "object_repr": "Reserva #10 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 31,
+  "fields": {
+    "action_time": "2026-07-08T03:54:35.447Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "9",
+    "object_repr": "Reserva #9 — Samuel Fustamante",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 32,
+  "fields": {
+    "action_time": "2026-07-08T03:54:38.762Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "8",
+    "object_repr": "Reserva #8 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 33,
+  "fields": {
+    "action_time": "2026-07-08T03:54:41.964Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "7",
+    "object_repr": "Reserva #7 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 34,
+  "fields": {
+    "action_time": "2026-07-08T03:56:38.624Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "6",
+    "object_repr": "Reserva #6 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 35,
+  "fields": {
+    "action_time": "2026-07-08T03:56:44.927Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "5",
+    "object_repr": "Reserva #5 — Lennart Fustamante Sosa",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 36,
+  "fields": {
+    "action_time": "2026-07-08T03:56:47.008Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "4",
+    "object_repr": "Reserva #4 — Fernando Castro",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 37,
+  "fields": {
+    "action_time": "2026-07-08T03:56:49.993Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "3",
+    "object_repr": "Reserva #3 — Fernando Castro",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 38,
+  "fields": {
+    "action_time": "2026-07-08T03:56:52.326Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "2",
+    "object_repr": "Reserva #2 — Carlos García",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 39,
+  "fields": {
+    "action_time": "2026-07-08T03:56:55.734Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "reserva"
+    ],
+    "object_id": "1",
+    "object_repr": "Reserva #1 — Carlos García",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 40,
+  "fields": {
+    "action_time": "2026-07-08T03:57:01.972Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "34",
+    "object_repr": "SOSA, ROSALIA — 03701402",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 41,
+  "fields": {
+    "action_time": "2026-07-08T03:57:05.040Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "15",
+    "object_repr": "Rodríguez, Carlos — 12345692",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 42,
+  "fields": {
+    "action_time": "2026-07-08T03:57:08.264Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "3",
+    "object_repr": "Ramírez, Luis — 12345680",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 43,
+  "fields": {
+    "action_time": "2026-07-08T03:57:11.240Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "17",
+    "object_repr": "Martínez, Diego — 12345694",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 44,
+  "fields": {
+    "action_time": "2026-07-08T03:57:16.525Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "21",
+    "object_repr": "Castro, Fernando — 12345698",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 45,
+  "fields": {
+    "action_time": "2026-07-08T03:57:18.488Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "9",
+    "object_repr": "Chávez, Roberto — 12345686",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 46,
+  "fields": {
+    "action_time": "2026-07-08T03:57:20.312Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "20",
+    "object_repr": "Díaz, Camila — 12345697",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 47,
+  "fields": {
+    "action_time": "2026-07-08T03:57:22.512Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "4",
+    "object_repr": "Flores, Ana — 12345681",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 48,
+  "fields": {
+    "action_time": "2026-07-08T03:57:24.781Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "23",
+    "object_repr": "Fustamante, Samuel — 75897101",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 49,
+  "fields": {
+    "action_time": "2026-07-08T03:57:27.277Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "33",
+    "object_repr": "Fustamante Sosa, Lennart — 75897184",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 50,
+  "fields": {
+    "action_time": "2026-07-08T03:57:29.769Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "32",
+    "object_repr": "Fustamante Sosa, Lennart — 75897189",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 51,
+  "fields": {
+    "action_time": "2026-07-08T03:57:31.791Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "31",
+    "object_repr": "Fustamante Sosa, Lennart — 75897198",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 52,
+  "fields": {
+    "action_time": "2026-07-08T03:57:34.072Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "30",
+    "object_repr": "Fustamante Sosa, Lennart — 75897164",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 53,
+  "fields": {
+    "action_time": "2026-07-08T03:57:36.374Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "29",
+    "object_repr": "Fustamante Sosa, Lennart — 75897165",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 54,
+  "fields": {
+    "action_time": "2026-07-08T03:57:38.134Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "28",
+    "object_repr": "Fustamante Sosa, Lennart — 75897132",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 55,
+  "fields": {
+    "action_time": "2026-07-08T03:57:39.966Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "27",
+    "object_repr": "Fustamante Sosa, Lennart — 75897109",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 56,
+  "fields": {
+    "action_time": "2026-07-08T03:57:42.028Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "26",
+    "object_repr": "Fustamante Sosa, Lennart — 75897106",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 57,
+  "fields": {
+    "action_time": "2026-07-08T03:57:44.482Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "25",
+    "object_repr": "Fustamante Sosa, Lennart — 75897103",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 58,
+  "fields": {
+    "action_time": "2026-07-08T03:57:49.623Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "24",
+    "object_repr": "Fustamante Sosa, Lennart — 75897102",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 59,
+  "fields": {
+    "action_time": "2026-07-08T03:57:51.778Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "22",
+    "object_repr": "Fustamante Sosa, Lennart — 75897100",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 60,
+  "fields": {
+    "action_time": "2026-07-08T03:57:54.780Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "1",
+    "object_repr": "García, Carlos — 12345678",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 61,
+  "fields": {
+    "action_time": "2026-07-08T03:57:57.583Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "16",
+    "object_repr": "García, Isabella — 12345693",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 62,
+  "fields": {
+    "action_time": "2026-07-08T03:57:59.632Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "5",
+    "object_repr": "Gonzales, Pedro — 12345682",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 63,
+  "fields": {
+    "action_time": "2026-07-08T03:58:01.842Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "19",
+    "object_repr": "Herrera, Andrés — 12345696",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 64,
+  "fields": {
+    "action_time": "2026-07-08T03:58:03.612Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "11",
+    "object_repr": "Huanca, Miguel — 12345688",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 65,
+  "fields": {
+    "action_time": "2026-07-08T03:58:05.508Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "14",
+    "object_repr": "Johnson, Emma — 12345691",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 66,
+  "fields": {
+    "action_time": "2026-07-08T03:58:07.826Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "18",
+    "object_repr": "López, Valentina — 12345695",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 67,
+  "fields": {
+    "action_time": "2026-07-08T03:58:09.545Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "12",
+    "object_repr": "Mamani, Sandra — 12345689",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 68,
+  "fields": {
+    "action_time": "2026-07-08T03:58:11.825Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "7",
+    "object_repr": "Mendoza, Jorge — 12345684",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 69,
+  "fields": {
+    "action_time": "2026-07-08T03:58:13.808Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "8",
+    "object_repr": "Paredes, Lucía — 12345685",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 70,
+  "fields": {
+    "action_time": "2026-07-08T03:58:15.716Z",
+    "user": [
+      "carlos"
+    ],
+    "content_type": [
+      "reservas",
+      "huesped"
+    ],
+    "object_id": "10",
+    "object_repr": "Quispe, Patricia — 12345687",
+    "action_flag": 3,
+    "change_message": ""
+  }
+}
+]
