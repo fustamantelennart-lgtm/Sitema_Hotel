@@ -389,18 +389,60 @@
         <h2 class="modal-titulo">Crear cuenta</h2>
         <p class="modal-subtitulo">Regístrate para gestionar tus reservas</p>
       </div>
-      <div id="registroErrores" style="display:none; margin-bottom:12px;"></div>
+<div id="registroErrores" style="display:none; margin-bottom:12px;"></div>
+
+      <!-- Toggle tipo de registro -->
+      <div style="display:flex; gap:8px; margin-bottom:20px; background:#f5f3f0; border-radius:10px; padding:4px;">
+        <button type="button" id="btnModoPeruano" onclick="setModoRegistro('peruano')"
+                style="flex:1; padding:8px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; background:#2D4A3E; color:#fff; transition:all .2s;">
+          <i class="bi bi-person-vcard"></i> DNI (Perú)
+        </button>
+        <button type="button" id="btnModoExtranjero" onclick="setModoRegistro('extranjero')"
+                style="flex:1; padding:8px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; background:transparent; color:#6b7280; transition:all .2s;">
+          <i class="bi bi-globe"></i> Extranjero
+        </button>
+      </div>
+
       <form id="formRegistroAjax">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
-        <div class="pub-form-group">
+        <input type="hidden" name="tipo_doc" id="inputTipoDoc" value="DNI">
+
+        <!-- Modo peruano: DNI -->
+        <div id="campoDni" class="pub-form-group">
           <label class="pub-label">DNI</label>
-          <input type="text" name="num_doc" id="inputDni" required
+          <input type="text" name="num_doc" id="inputDni"
                  maxlength="8" placeholder="12345678" class="modal-input"
                  oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)">
           <small id="dniFeedback" style="font-size:11px; display:block; margin-top:4px;"></small>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleManual">
+              <span class="toggle-slider"></span>
+            </label>
+            <span style="font-size:12px; color:#6b7280;">Ingresar manualmente</span>
+          </div>
           <small class="field-error" data-field="num_doc"></small>
         </div>
+
+        <!-- Modo extranjero: tipo doc + número -->
+        <div id="campoExtranjero" style="display:none;">
+          <div class="pub-form-row-2" style="margin-bottom:0;">
+            <div class="pub-form-group">
+              <label class="pub-label">Tipo documento</label>
+              <select id="selectTipoDoc" class="modal-input" onchange="document.getElementById('inputTipoDoc').value=this.value">
+                <option value="CE">Carnet Extranjería</option>
+                <option value="PAS">Pasaporte</option>
+              </select>
+            </div>
+            <div class="pub-form-group">
+              <label class="pub-label">Número</label>
+              <input type="text" id="inputNumDocExt" placeholder="Nro. documento" class="modal-input"
+                     oninput="document.querySelector('[name=num_doc]').value=this.value">
+            </div>
+          </div>
+        </div>
+
         <div class="pub-form-row-2">
           <div class="pub-form-group">
             <label class="pub-label">Nombres</label>

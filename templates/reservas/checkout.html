@@ -5,6 +5,10 @@
 {% block breadcrumb_parent %}Recepción · Check-in / out{% endblock %}
 {% block breadcrumb_title %}Checkout{% endblock %}
 {% block nav_checkin %}active{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
 
 {% block topbar_actions %}
 <a href="{% url 'reservas:folio' estancia.pk %}" class="btn-secondary">
@@ -28,11 +32,11 @@
         a estado <strong>Limpieza</strong>.
       </p>
 
-      <form method="post">
+      <form method="post" id="formCheckout">
         {% csrf_token %}
         <div class="form-group">
           <label class="form-label">Método de pago</label>
-          <select name="metodo_pago" class="form-select">
+          <select name="metodo_pago" class="form-select" id="metodoPago">
             <option value="EFECTIVO">Efectivo</option>
             <option value="TARJETA">Tarjeta</option>
             <option value="TRANSFERENCIA">Transferencia</option>
@@ -41,7 +45,7 @@
         </div>
 
         <div style="display:flex; gap:8px; margin-top:8px;">
-          <button type="submit" class="btn-primary">
+          <button type="button" id="btnAbrirConfirmacion" class="btn-primary">
             <i class="bi bi-check-lg"></i> Confirmar Checkout
           </button>
           <a href="{% url 'reservas:folio' estancia.pk %}" class="btn-secondary">
@@ -50,37 +54,106 @@
         </div>
       </form>
 
+      <!-- Modal de confirmación -->
+      <div class="modal-overlay" id="modalConfirmarCheckout" style="display:none;">
+        <div class="modal-box">
+          <div class="modal-box-header">
+            <span class="modal-box-title">Confirmar Checkout</span>
+            <button type="button" class="modal-box-close" id="modalConfirmarClose">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <div class="modal-box-body">
+            <p style="display:block; font-size:13.5px; color:var(--color-text-muted);">
+              Esta acción cerrará el folio y no se puede deshacer.
+              La habitación <strong>{{ estancia.habitacion.numero }}</strong> pasará a
+              estado <strong>Limpieza</strong>.
+            </p>
+            <p>
+              <span>Total a cobrar</span>
+              <strong>S/ {{ estancia.folio.total }}</strong>
+            </p>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button type="button" id="btnConfirmarDefinitivo" class="btn-primary" style="flex:1; justify-content:center;">
+                <i class="bi bi-check-lg"></i> Sí, confirmar
+              </button>
+              <button type="button" id="modalConfirmarCancelar" class="btn-secondary" style="flex:1; justify-content:center;">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- Resumen -->
-  <div class="card resumen-card">
-    <div class="card-header">Resumen</div>
-    <div class="card-body">
-      <div class="resumen-row">
-        <span class="resumen-label">Huésped</span>
-        <span class="resumen-valor">{{ estancia.reserva.huesped.nombre_completo }}</span>
-      </div>
-      <div class="resumen-row">
-        <span class="resumen-label">Habitación</span>
-        <span class="resumen-valor">{{ estancia.habitacion.numero }}</span>
-      </div>
-      <div class="resumen-row">
-        <span class="resumen-label">Check-in</span>
-        <span class="resumen-valor">{{ estancia.fecha_checkin|date:"d M Y" }}</span>
-      </div>
-      <div class="resumen-row">
-        <span class="resumen-label">Noches</span>
-        <span class="resumen-valor">{{ estancia.reserva.num_noches }}</span>
-      </div>
-      <div class="resumen-divider"></div>
-      <div class="resumen-row resumen-total">
-        <span>Total a cobrar</span>
-        <span>S/ {{ estancia.folio.total }}</span>
+    {% if tiene_deuda %}
+    <div class="card" style="margin-bottom:16px; border-left:4px solid var(--color-danger, #c0392b); background:#fdf2f2;">
+      <div class="card-body" style="display:flex; align-items:center; gap:10px; padding:14px 18px;">
+        <i class="bi bi-exclamation-triangle-fill" style="color:var(--color-danger, #c0392b); font-size:20px;"></i>
+        <span style="font-size:13.5px;">
+          Este folio tiene una deuda pendiente de <strong>S/ {{ estancia.folio.total }}</strong>.
+          Debe pagarse antes de confirmar el checkout.
+        </span>
       </div>
     </div>
+    {% endif %}
+
+    <!-- Resumen -->
+    <div class="card resumen-card">
+      <div class="card-header">Resumen</div>
+      <div class="card-body">
+        <div class="resumen-row">
+          <span class="resumen-label">Huésped</span>
+          <span class="resumen-valor">{{ estancia.reserva.huesped.nombre_completo }}</span>
+        </div>
+        <div class="resumen-row">
+          <span class="resumen-label">Habitación</span>
+          <span class="resumen-valor">{{ estancia.habitacion.numero }}</span>
+        </div>
+        <div class="resumen-row">
+          <span class="resumen-label">Check-in</span>
+          <span class="resumen-valor">{{ estancia.fecha_checkin|date:"d M Y" }}</span>
+        </div>
+        <div class="resumen-row">
+          <span class="resumen-label">Check-out (programado)</span>
+          <span class="resumen-valor">{{ estancia.reserva.fecha_salida|date:"d M Y" }}</span>
+        </div>
+        <div class="resumen-row">
+          <span class="resumen-label">Noches</span>
+          <span class="resumen-valor">{{ estancia.reserva.num_noches }}</span>
+        </div>
+
+        <div class="resumen-divider"></div>
+
+        <div style="margin-bottom:8px; font-weight:600; font-size:13px; color:var(--color-text-muted);">
+          Desglose de cargos
+        </div>
+        {% for cargo in cargos %}
+        <div class="resumen-row">
+          <span class="resumen-label">{{ cargo.concepto }}</span>
+          <span class="resumen-valor">S/ {{ cargo.monto }}</span>
+        </div>
+        {% empty %}
+        <div class="resumen-row">
+          <span class="resumen-label" style="color:var(--color-text-muted);">Sin cargos registrados</span>
+        </div>
+        {% endfor %}
+
+        <div class="resumen-divider"></div>
+        <div class="resumen-row resumen-total">
+          <span>Total a cobrar</span>
+          <span>S/ {{ estancia.folio.total }}</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-</div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/checkout_confirm.js' %}"></script>
 {% endblock %}

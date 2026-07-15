@@ -109,14 +109,32 @@
           <i class="bi bi-plus-lg"></i> Agregar cargo manual
         </a>
 
-        {% if folio.estado == 'PENDIENTE' %}
-        <a href="{% url 'reservas:checkout' estancia.pk %}" class="btn-primary">
-          <i class="bi bi-box-arrow-right"></i> Realizar Checkout
+{% if folio.estado == 'ABIERTO' %}
+        <form method="post" action="{% url 'reservas:pagar_folio' estancia.pk %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="form-label">Método de pago</label>
+            <select name="metodo_pago" class="form-select">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TARJETA">Tarjeta</option>
+              <option value="TRANSFERENCIA">Transferencia</option>
+              <option value="YAPE">Yape / Plin</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px;">
+            <i class="bi bi-cash"></i> Registrar pago
+          </button>
+        </form>
+        <a href="{% url 'reservas:checkout' estancia.pk %}" class="btn-secondary" style="justify-content:center;">
+          <i class="bi bi-box-arrow-right"></i> Ir al checkout
         </a>
-        {% else %}
+        {% elif folio.estado == 'PAGADO' %}
         <div class="badge badge-green" style="padding:10px; justify-content:center;">
           <i class="bi bi-check-circle"></i> Folio pagado
         </div>
+        <a href="{% url 'reservas:checkout' estancia.pk %}" class="btn-primary" style="justify-content:center;">
+          <i class="bi bi-box-arrow-right"></i> Realizar Checkout
+        </a>
         {% endif %}
 
       </div>

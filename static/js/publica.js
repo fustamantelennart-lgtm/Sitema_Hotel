@@ -82,6 +82,53 @@ if (formBuscador) {
     });
 }
 
+// ===== MODO REGISTRO (global para onclick en HTML) =====
+function setModoRegistro(modo) {
+    const campoDni      = document.getElementById('campoDni');
+    const campoExt      = document.getElementById('campoExtranjero');
+    const btnPeruano    = document.getElementById('btnModoPeruano');
+    const btnExtranjero = document.getElementById('btnModoExtranjero');
+    const firstName     = document.getElementById('regFirstName');
+    const lastName      = document.getElementById('regLastName');
+    const inputDni      = document.getElementById('inputDni');
+    const feedback      = document.getElementById('dniFeedback');
+    const tipoDoc       = document.getElementById('inputTipoDoc');
+
+    if (modo === 'peruano') {
+        campoDni.style.display         = '';
+        campoExt.style.display         = 'none';
+        btnPeruano.style.background    = '#2D4A3E';
+        btnPeruano.style.color         = '#fff';
+        btnExtranjero.style.background = 'transparent';
+        btnExtranjero.style.color      = '#6b7280';
+        firstName.readOnly             = true;
+        lastName.readOnly              = true;
+        firstName.classList.add('modal-input-readonly');
+        lastName.classList.add('modal-input-readonly');
+        firstName.placeholder          = 'Se autocompleta';
+        lastName.placeholder           = 'Se autocompleta';
+        tipoDoc.value                  = 'DNI';
+        inputDni.value                 = '';
+        firstName.value                = '';
+        lastName.value                 = '';
+        if (feedback) feedback.textContent = '';
+    } else {
+        campoDni.style.display         = 'none';
+        campoExt.style.display         = '';
+        btnExtranjero.style.background = '#2D4A3E';
+        btnExtranjero.style.color      = '#fff';
+        btnPeruano.style.background    = 'transparent';
+        btnPeruano.style.color         = '#6b7280';
+        firstName.readOnly             = false;
+        lastName.readOnly             = false;
+        firstName.classList.remove('modal-input-readonly');
+        lastName.classList.remove('modal-input-readonly');
+        firstName.placeholder          = 'Tus nombres';
+        lastName.placeholder           = 'Tus apellidos';
+        tipoDoc.value                  = document.getElementById('selectTipoDoc').value;
+    }
+}
+
 // ===== MODALES + AUTOCOMPLETE DNI =====
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -97,15 +144,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function abrirModal() {
         if (modalLogin) modalLogin.classList.add('active');
     }
-
     function cerrarModal() {
         if (modalLogin) modalLogin.classList.remove('active');
     }
-
     function abrirRegistro() {
         if (modalRegistro) modalRegistro.classList.add('active');
     }
-
     function cerrarRegistro() {
         if (modalRegistro) modalRegistro.classList.remove('active');
     }
@@ -120,7 +164,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (e.target === this) cerrarModal();
         });
     }
-
     if (modalRegistro) {
         modalRegistro.addEventListener('click', function(e) {
             if (e.target === this) cerrarRegistro();
@@ -132,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
         cerrarModal();
         abrirRegistro();
     });
-
     if (btnIrALogin) btnIrALogin.addEventListener('click', function(e) {
         e.preventDefault();
         cerrarRegistro();
@@ -157,8 +199,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ===== AUTOCOMPLETE DNI =====
-    const inputDni = document.getElementById('inputDni');
+// ===== AUTOCOMPLETE DNI =====
+    const inputDni   = document.getElementById('inputDni');
+    const toggleManual = document.getElementById('toggleManual');
+    let   modoManual = false;
+
+    function desbloquearCamposNombre() {
+        const nombreInput   = document.getElementById('regFirstName');
+        const apellidoInput = document.getElementById('regLastName');
+        const feedback      = document.getElementById('dniFeedback');
+        if (nombreInput) {
+            nombreInput.readOnly = false;
+            nombreInput.classList.remove('modal-input-readonly');
+            nombreInput.placeholder = 'Ingresa tus nombres';
+            nombreInput.value = '';
+            nombreInput.focus();
+        }
+        if (apellidoInput) {
+            apellidoInput.readOnly = false;
+            apellidoInput.classList.remove('modal-input-readonly');
+            apellidoInput.placeholder = 'Ingresa tus apellidos';
+            apellidoInput.value = '';
+        }
+        if (feedback) {
+            feedback.innerHTML = 'Completa los datos manualmente.';
+            feedback.style.color = '#2D4A3E';
+        }
+    }
+
+    function bloquearCamposNombre() {
+        const nombreInput   = document.getElementById('regFirstName');
+        const apellidoInput = document.getElementById('regLastName');
+        const feedback      = document.getElementById('dniFeedback');
+        if (nombreInput) {
+            nombreInput.readOnly = true;
+            nombreInput.classList.add('modal-input-readonly');
+            nombreInput.placeholder = 'Se autocompleta';
+            nombreInput.value = '';
+        }
+        if (apellidoInput) {
+            apellidoInput.readOnly = true;
+            apellidoInput.classList.add('modal-input-readonly');
+            apellidoInput.placeholder = 'Se autocompleta';
+            apellidoInput.value = '';
+        }
+        if (feedback) {
+            feedback.innerHTML = '';
+        }
+    }
+
+    if (toggleManual) {
+        toggleManual.addEventListener('change', function() {
+            modoManual = this.checked;
+            if (modoManual) {
+                desbloquearCamposNombre();
+            } else {
+                bloquearCamposNombre();
+            }
+        });
+    }
 
     if (inputDni) {
         inputDni.addEventListener('input', function() {
@@ -170,6 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const apellidoInput = document.getElementById('regLastName');
 
             if (!feedback) return;
+            if (modoManual) return; // Si está en modo manual, no consultar RENIEC
 
             if (dni.length === 8) {
                 feedback.textContent = 'Consultando RENIEC...';
@@ -192,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     })
                     .catch(function() {
-                        feedback.textContent = '❌ DNI no encontrado en RENIEC.';
+                        feedback.innerHTML = '❌ No encontrado en RENIEC. Activa el toggle para ingresar manualmente.';
                         feedback.style.color = '#c0392b';
                     });
             } else {
@@ -200,45 +300,47 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    // Registro AJAX
-const formRegistroAjax = document.getElementById('formRegistroAjax');
-if (formRegistroAjax) {
-    formRegistroAjax.addEventListener('submit', function(e) {
-        e.preventDefault();
 
-        // Limpiar errores previos
-        document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
-        document.querySelectorAll('.modal-input').forEach(el => el.classList.remove('modal-input-error'));
+    // ===== REGISTRO AJAX =====
+    const formRegistroAjax = document.getElementById('formRegistroAjax');
+    if (formRegistroAjax) {
+        formRegistroAjax.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        const data = new FormData(this);
-        const csrf = document.cookie.split(';')
-        .find(c => c.trim().startsWith('csrftoken='))
-        ?.split('=')[1] || '';
+            document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+            document.querySelectorAll('.modal-input').forEach(el => el.classList.remove('modal-input-error'));
 
-        fetch('/cuenta/registro/ajax/', {
-            method: 'POST',
-            headers: { 'X-CSRFToken': csrf },
-            body: data,
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.ok) {
-                window.location.href = res.redirect || '/web/';
-            } else {
-                Object.entries(res.errores).forEach(([field, msg]) => {
-                    const errorEl = document.querySelector(`.field-error[data-field="${field}"]`);
-                    const inputEl = document.querySelector(`[name="${field}"]`);
-                    if (errorEl) errorEl.textContent = msg;
-                    if (inputEl) inputEl.classList.add('modal-input-error');
-                });
-            }
-        })
-        .catch(() => {
-            const errDiv = document.getElementById('registroErrores');
-            errDiv.style.display = 'block';
-            errDiv.innerHTML = '<div class="modal-error">Error de conexión. Intenta de nuevo.</div>';
+            const data = new FormData(this);
+            const csrf = document.cookie.split(';')
+                .find(c => c.trim().startsWith('csrftoken='))
+                ?.split('=')[1] || '';
+
+            fetch('/cuenta/registro/ajax/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrf },
+                body: data,
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.ok) {
+                    window.location.href = res.redirect || '/web/';
+                } else {
+                    Object.entries(res.errores).forEach(([field, msg]) => {
+                        const errorEl = document.querySelector(`.field-error[data-field="${field}"]`);
+                        const inputEl = document.querySelector(`[name="${field}"]`);
+                        if (errorEl) errorEl.textContent = msg;
+                        if (inputEl) inputEl.classList.add('modal-input-error');
+                    });
+                }
+            })
+            .catch(() => {
+                const errDiv = document.getElementById('registroErrores');
+                if (errDiv) {
+                    errDiv.style.display = 'block';
+                    errDiv.innerHTML = '<div class="modal-error">Error de conexión. Intenta de nuevo.</div>';
+                }
+            });
         });
-    });
-}
+    }
 
 });

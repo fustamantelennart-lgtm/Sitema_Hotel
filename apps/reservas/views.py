@@ -196,7 +196,12 @@ def checkout(request, pk):
         except EstanciaNoEncontrada as e:
             messages.error(request, str(e))
 
-    return render(request, 'reservas/checkout.html', {'estancia': estancia})
+    cargos = estancia.cargos.all()
+    return render(request, 'reservas/checkout.html', {
+        'estancia':    estancia,
+        'cargos':      cargos,
+        'tiene_deuda': estancia.folio.tiene_deuda,
+    })
 
 
 @login_required
@@ -285,16 +290,26 @@ def disponibilidad(request):
     hoy        = date.today()
     dias       = [hoy + timedelta(days=i) for i in range(14)]
     habitaciones_cal = Habitacion.objects.select_related('tipo').order_by('piso', 'numero')
-
-    # Para cada habitación obtener sus reservas en el período
+    pisos = habitaciones_cal.values_list('piso', flat=True).distinct().order_by('piso')
+    # Para cada habitación obtener sus reservas en el período (directas o vía estancia activa)
     calendario = []
     for hab in habitaciones_cal:
-        reservas_hab = Reserva.objects.filter(
+        reservas_hab = list(Reserva.objects.filter(
             habitacion=hab,
-            estado__in=['CONFIRMADA', 'CHECKIN'],
+            estado='CONFIRMADA',
             fecha_entrada__lte=dias[-1],
             fecha_salida__gte=dias[0],
-        ).select_related('huesped')
+        ).select_related('huesped'))
+
+        estancias_hab = Estancia.objects.filter(
+            habitacion=hab,
+            estado='ACTIVA',
+            reserva__fecha_entrada__lte=dias[-1],
+            reserva__fecha_salida__gte=dias[0],
+        ).select_related('reserva', 'reserva__huesped')
+
+        for est in estancias_hab:
+            reservas_hab.append(est.reserva)
 
         celdas = []
         for dia in dias:
@@ -307,7 +322,6 @@ def disponibilidad(request):
                 'dia':     dia,
                 'reserva': reserva_dia,
             })
-
         calendario.append({
             'habitacion': hab,
             'celdas':     celdas,
@@ -340,6 +354,7 @@ def disponibilidad(request):
         'buscado':       bool(fecha_entrada and fecha_salida),
         'calendario':    calendario,
         'dias':          dias,
+        'pisos': pisos,
     })
 
 

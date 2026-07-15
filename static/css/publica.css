@@ -1221,6 +1221,8 @@ body {
   margin: 20px;
   position: relative;
   box-shadow: 0 24px 60px rgba(0,0,0,.2);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-close {
@@ -1477,4 +1479,58 @@ body {
 
 .modal-input-error {
   border-color: #dc2626 !important;
+}
+/* Scrollbar suave en modal */
+.modal-box::-webkit-scrollbar {
+  width: 4px;
+}
+.modal-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-box::-webkit-scrollbar-thumb {
+  background: #d1c9be;
+  border-radius: 4px;
+}
+.modal-box::-webkit-scrollbar-thumb:hover {
+  background: #b5aa9e;
+}
+
+/* ===== TOGGLE SWITCH ===== */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 24px;
+  transition: .3s;
+}
+.toggle-slider:before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .3s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.toggle-switch input:checked + .toggle-slider {
+  background: #2D4A3E;
+}
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(20px);
 }

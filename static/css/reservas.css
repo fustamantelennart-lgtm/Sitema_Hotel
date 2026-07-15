@@ -299,3 +299,26 @@
 
 .cal-leyenda-ocupada { background: var(--color-primary); }
 .cal-leyenda-libre   { background: rgba(45,74,62,.06); }
+
+.cal-scroll-wrap {
+  max-height: 600px;
+  overflow: auto;
+  position: relative;
+}
+.cal-hab-header,
+.cal-dia-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-bg, #fff);
+}
+.cal-hab-header {
+  left: 0;
+  z-index: 3;
+}
+.cal-hab-cel {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-bg, #fff);
+}

@@ -87,11 +87,22 @@
 
 <!-- Calendario / Timeline -->
 <div class="card">
-  <div class="card-header">
-    <i class="bi bi-calendar-week" style="color:var(--color-primary);"></i>
-    Calendario de reservas — próximos 14 días
+  <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <div>
+      <i class="bi bi-calendar-week" style="color:var(--color-primary);"></i>
+      Calendario de reservas — próximos 14 días
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <label class="form-label" style="margin-bottom:0;">Piso:</label>
+      <select id="filtroPiso" class="form-select" style="width:auto;">
+        <option value="">Todos</option>
+        {% for p in pisos %}
+        <option value="{{ p }}">Piso {{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
   </div>
-  <div style="overflow-x:auto;">
+  <div class="cal-scroll-wrap">
     <table class="cal-table">
       <thead>
         <tr>
@@ -107,7 +118,7 @@
       </thead>
       <tbody>
         {% for fila in calendario %}
-        <tr class="cal-fila">
+        <tr class="cal-fila" data-piso="{{ fila.habitacion.piso }}">
           <td class="cal-hab-cel">
             <div>{{ fila.habitacion.numero }}</div>
             <div class="cal-hab-tipo">{{ fila.habitacion.tipo.nombre }}</div>
@@ -142,4 +153,8 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/disponibilidad.js' %}"></script>
 {% endblock %}

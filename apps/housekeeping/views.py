@@ -5,9 +5,11 @@ from django.utils import timezone
 from .models import TareaLimpieza, IncidenteHabitacion
 from .services import HousekeepingService
 from .exceptions import TareaYaIniciada, TareaYaCompletada
+from apps.usuarios.decorators import rol_requerido
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def panel(request):
     tareas = TareaLimpieza.objects.filter(
         estado__in=['PENDIENTE', 'EN_PROCESO']
@@ -34,6 +36,7 @@ def panel(request):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def iniciar(request, pk):
     if request.method == 'POST':
         try:
@@ -47,6 +50,7 @@ def iniciar(request, pk):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def completar(request, pk):
     if request.method == 'POST':
         try:
@@ -61,6 +65,7 @@ def completar(request, pk):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def asignar(request, pk):
     if request.method == 'POST':
         try:
@@ -76,6 +81,7 @@ def asignar(request, pk):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def historial(request):
     tareas = TareaLimpieza.objects.filter(
         estado='LISTA'
@@ -94,6 +100,7 @@ def historial(request):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def incidentes(request):
     qs = IncidenteHabitacion.objects.select_related(
         'habitacion', 'reportado_por'
@@ -115,6 +122,7 @@ def incidentes(request):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def reportar_incidente(request):
     if request.method == 'POST':
         try:
@@ -140,6 +148,7 @@ def reportar_incidente(request):
 
 
 @login_required
+@rol_requerido('admin', 'housekeeping')
 def resolver_incidente(request, pk):
     if request.method == 'POST':
         try:
