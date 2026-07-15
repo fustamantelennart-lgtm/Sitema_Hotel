@@ -11,7 +11,6 @@ from .exceptions import DisponibilidadAgotada, PagoInvalido, TarjetaRechazada
 from django.core.cache import cache
 
 
-
 def inicio(request):
     from datetime import date
     hotel         = Hotel.objects.first()
@@ -31,7 +30,6 @@ def inicio(request):
         except Exception:
             noches = None
 
-    # Cache key única por fechas
     cache_key = f'disponibilidad_{fecha_entrada}_{fecha_salida}'
     cached    = cache.get(cache_key) if fecha_entrada and fecha_salida else None
 
@@ -68,7 +66,6 @@ def inicio(request):
                 'noches':       noches,
             })
 
-        # Guardar en caché solo si hay fechas
         if fecha_entrada and fecha_salida:
             cache.set(cache_key, tipos_con_disponibilidad, 300)
 
@@ -139,9 +136,11 @@ def reservar(request):
 
     if request.method == 'POST' and form.is_valid():
         try:
+            data_reserva = form.cleaned_data.copy()
+            data_reserva['acepta_emails'] = request.POST.get('acepta_emails') == '1'
             reserva = ReservaPublicaService.crear_reserva_web(
                 hotel   = hotel,
-                data    = form.cleaned_data,
+                data    = data_reserva,
                 usuario = request.user,
             )
             return redirect('publica:pago', pk=reserva.pk)

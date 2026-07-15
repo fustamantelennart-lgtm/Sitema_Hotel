@@ -36,27 +36,33 @@ class ReservaPublicaService:
 
     @staticmethod
     def crear_reserva_web(hotel, data, usuario) -> Reserva:
-        tipo         = data['tipo_habitacion']
-        fe           = data['fecha_entrada']
-        fs           = data['fecha_salida']
+        tipo = data['tipo_habitacion']
+        fe   = data['fecha_entrada']
+        fs   = data['fecha_salida']
 
         ReservaPublicaService.verificar_disponibilidad(hotel, tipo, fe, fs)
 
         huesped, _ = Huesped.objects.get_or_create(
             num_doc=data['num_doc'],
             defaults={
-                'tipo_doc':     data['tipo_doc'],
-                'nombres':      data['nombres'],
-                'apellidos':    data['apellidos'],
-                'email':        data['email'],
-                'telefono':     data['telefono'],
-                'nacionalidad': data['nacionalidad'],
+                'tipo_doc':      data['tipo_doc'],
+                'nombres':       data['nombres'],
+                'apellidos':     data['apellidos'],
+                'email':         data['email'],
+                'telefono':      data['telefono'],
+                'nacionalidad':  data['nacionalidad'],
+                'acepta_emails': data.get('acepta_emails', False),
             }
         )
 
+        acepta_emails = data.get('acepta_emails', False)
         if huesped.usuario is None and usuario.is_authenticated:
-            huesped.usuario = usuario
+            huesped.usuario       = usuario
+            huesped.acepta_emails = acepta_emails
             huesped.save()
+        elif acepta_emails:
+            huesped.acepta_emails = True
+            huesped.save(update_fields=['acepta_emails'])
 
         precio_noche = Tarifa.get_precio_vigente(tipo, fe, fs)
         noches       = (fs - fe).days
@@ -108,15 +114,16 @@ class ReservaPublicaService:
         reserva.save()
 
         try:
-            from django.core.mail import send_mail
-            from django.conf import settings
-            send_mail(
-                f'¡Reserva confirmada! — {reserva.hotel.nombre}',
-                f'Hola {reserva.huesped.nombres}, tu reserva R-{reserva.pk} fue CONFIRMADA.',
-                settings.DEFAULT_FROM_EMAIL,
-                [reserva.huesped.email],
-                fail_silently=True,
-            )
+            if reserva.huesped.acepta_emails and reserva.huesped.email:
+                from django.core.mail import send_mail
+                from django.conf import settings
+                send_mail(
+                    f'¡Reserva confirmada! — {reserva.hotel.nombre}',
+                    f'Hola {reserva.huesped.nombres}, tu reserva R-{reserva.pk} fue CONFIRMADA.',
+                    settings.DEFAULT_FROM_EMAIL,
+                    [reserva.huesped.email],
+                    fail_silently=True,
+                )
         except Exception:
             pass
 

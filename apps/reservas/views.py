@@ -49,7 +49,8 @@ def nueva(request):
     form    = ReservaPresencialForm(request.POST or None, initial=initial)
 
     if request.method == 'POST' and form.is_valid():
-        huesped, _ = form.get_or_create_huesped()
+        acepta_emails = request.POST.get('acepta_emails') == '1'
+        huesped, _ = form.get_or_create_huesped(acepta_emails=acepta_emails)
         try:
             reserva = ReservaService.crear(
                 data={

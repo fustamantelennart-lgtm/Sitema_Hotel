@@ -13,6 +13,7 @@ class Huesped(ModeloBase):
     email         = models.EmailField(blank=True)
     telefono      = models.CharField(max_length=15, blank=True)
     nacionalidad  = models.CharField(max_length=50, default='Peruana')
+    acepta_emails = models.BooleanField(default=False)
     usuario       = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

@@ -172,7 +172,7 @@ class ReservaPresencialForm(forms.Form):
 
         return cleaned
 
-    def get_or_create_huesped(self):
+def get_or_create_huesped(self, acepta_emails=False):
         num_doc = self.cleaned_data['num_doc']
         huesped, created = Huesped.objects.get_or_create(
             num_doc=num_doc,
@@ -183,8 +183,12 @@ class ReservaPresencialForm(forms.Form):
                 'email':        self.cleaned_data.get('email', ''),
                 'telefono':     self.cleaned_data.get('telefono', ''),
                 'nacionalidad': 'Peruana',
+                'acepta_emails': acepta_emails,
             }
         )
+        if not created and acepta_emails:
+            huesped.acepta_emails = True
+            huesped.save(update_fields=['acepta_emails'])
         return huesped, created
 
 

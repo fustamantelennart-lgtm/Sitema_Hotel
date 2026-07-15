@@ -122,7 +122,16 @@
           <label class="form-label">Observaciones</label>
           {{ form.observaciones }}
         </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; font-size:13px; color:var(--color-text-muted); line-height:1.5;">
+            <input type="checkbox" name="acepta_emails" value="1"
+                   style="margin-top:3px; accent-color:var(--color-primary); width:15px; height:15px; flex-shrink:0;">
+            El huésped acepta recibir confirmaciones y notificaciones por correo electrónico del hotel.
+          </label>
+        </div>
 
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+          <button type="submit" name="accion" value="guardar" class="btn-primary">
         <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
           <button type="submit" name="accion" value="guardar" class="btn-primary">
             <i class="bi bi-check-lg"></i> Crear Reserva
