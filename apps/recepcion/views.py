@@ -11,6 +11,7 @@ from .exceptions import (
 
 
 @login_required
+@rol_requerido('admin', 'recepcionista')
 def dashboard(request):
     hotel        = Hotel.objects.first()
     habitaciones = Habitacion.objects.filter(
