@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.reservas.models import Reserva, Huesped, Estancia, CargoEstancia
+from apps.reservas.models import Reserva, Huesped, Estancia, CargoEstancia, Folio
 from apps.recepcion.models import Hotel, TipoHabitacion, Habitacion
 
 
@@ -57,3 +57,29 @@ class CargoEstanciaSerializer(serializers.ModelSerializer):
     class Meta:
         model  = CargoEstancia
         fields = ['id', 'concepto', 'monto', 'tipo', 'fecha']
+
+
+class EstanciaSerializer(serializers.ModelSerializer):
+    huesped_nombre    = serializers.CharField(source='reserva.huesped.nombre_completo', read_only=True)
+    habitacion_numero = serializers.CharField(source='habitacion.numero', read_only=True)
+    reserva_id        = serializers.IntegerField(source='reserva.id', read_only=True)
+
+    class Meta:
+        model  = Estancia
+        fields = [
+            'id', 'reserva', 'reserva_id', 'habitacion', 'habitacion_numero',
+            'huesped_nombre', 'estado', 'fecha_checkin', 'fecha_checkout',
+        ]
+        read_only_fields = ['estado', 'fecha_checkin', 'fecha_checkout']
+
+
+class FolioSerializer(serializers.ModelSerializer):
+    cargos      = CargoEstanciaSerializer(many=True, read_only=True)
+    tiene_deuda = serializers.BooleanField(read_only=True)
+
+    class Meta:
+        model  = Folio
+        fields = [
+            'id', 'estancia', 'total', 'estado', 'metodo_pago',
+            'fecha_pago', 'tiene_deuda', 'cargos',
+        ]
