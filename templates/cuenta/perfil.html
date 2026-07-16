@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <div class="perfil-body">
+  <div class="perfil-body" style="padding-bottom: 80px;">
 
     {% if messages %}
       {% for msg in messages %}
@@ -68,14 +68,37 @@
               {{ r.fecha_salida|date:"d M Y" }}
               · {{ r.num_noches }} noche(s)
             </div>
+
+            {% if r.estado == 'CONFIRMADA' %}
+            <div style="font-size:12px; color:#2D4A3E; background:#f0f7f4; border-radius:8px; padding:10px 14px; margin-top:10px; margin-bottom:12px; display:flex; align-items:flex-start; gap:8px; line-height:1.7;">
+              <i class="bi bi-info-circle-fill" style="margin-top:2px; flex-shrink:0;"></i>
+              <div>
+                <strong>Información de llegada</strong><br>
+                Check-in disponible desde las <strong>14:00 hrs</strong> del {{ r.fecha_entrada|date:"d M Y" }}.<br>
+                Preséntate en recepción con tu DNI o documento de identidad.<br>
+                Si llegas antes, puedes dejar tu equipaje con nosotros.
+              </div>
+            </div>
+            {% endif %}
+
+            {% if r.estado == 'CHECKIN' %}
+            <div style="font-size:12px; color:#2D4A3E; background:#f0f7f4; border-radius:8px; padding:8px 12px; margin-top:8px; display:flex; align-items:flex-start; gap:8px;">
+              <i class="bi bi-house-check-fill" style="margin-top:2px; flex-shrink:0;"></i>
+              <div>
+                <strong>Actualmente en el hotel</strong><br>
+                Check-out programado para el <strong>{{ r.fecha_salida|date:"d M Y" }}</strong> antes de las <strong>12:00 hrs</strong>.
+              </div>
+            </div>
+            {% endif %}
+
             <div class="perfil-reserva-meta">
               <span class="perfil-precio">S/ {{ r.precio_total }}</span>
               <span class="pub-amenidad perfil-estado perfil-estado-{{ r.estado|lower }}">
                 {% if r.estado == 'CONFIRMADA' %}<i class="bi bi-check-circle"></i> Confirmada
-                {% elif r.estado == 'PENDIENTE' %}<i class="bi bi-clock"></i> Pendiente
+                {% elif r.estado == 'PENDIENTE' %}<i class="bi bi-clock"></i> Pendiente de confirmación
                 {% elif r.estado == 'CANCELADA' %}<i class="bi bi-x-circle"></i> Cancelada
                 {% elif r.estado == 'CHECKIN' %}<i class="bi bi-house-check"></i> En casa
-                {% elif r.estado == 'CHECKOUT' %}<i class="bi bi-house-dash"></i> Checkout
+                {% elif r.estado == 'CHECKOUT' %}<i class="bi bi-house-dash"></i> Estadía finalizada
                 {% else %}{{ r.get_estado_display }}
                 {% endif %}
               </span>

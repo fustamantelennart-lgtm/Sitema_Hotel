@@ -37,9 +37,28 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('resumenSalida').textContent   = salida;
         document.getElementById('resumenNombre').textContent   = `${nombres} ${apells}`.trim();
 
-        const totalEl = document.getElementById('resumenTotal');
-        if (totalEl) {
-            document.getElementById('resumenTotalFinal').textContent = totalEl.textContent;
+// Calcular total directamente
+        const preciosDiv = document.getElementById('tiposPrecios');
+        const selectTipo = document.querySelector('[name="tipo_habitacion"]');
+        const totalFinalEl = document.getElementById('resumenTotalFinal');
+        if (preciosDiv && selectTipo && entrada && salida && totalFinalEl) {
+            const fe      = new Date(entrada);
+            const fs      = new Date(salida);
+            const noches  = Math.round((fs - fe) / (1000 * 60 * 60 * 24));
+            const tipoId  = selectTipo.value;
+            try {
+                const raw    = '{' + preciosDiv.dataset.precios.replace(/,$/, '') + '}';
+                const precios = JSON.parse(raw);
+                const precio  = precios[tipoId];
+                if (precio && noches > 0) {
+                    totalFinalEl.textContent = `S/ ${(precio * noches).toFixed(2)}`;
+                } else {
+                    totalFinalEl.textContent = 'S/ 0.00';
+                }
+            } catch(e) {
+                const totalEl = document.getElementById('resumenTotal');
+                if (totalEl) totalFinalEl.textContent = totalEl.textContent;
+            }
         }
     }
 

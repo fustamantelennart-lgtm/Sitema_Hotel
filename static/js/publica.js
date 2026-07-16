@@ -82,6 +82,16 @@ if (formBuscador) {
     });
 }
 
+// Scroll automático a habitaciones si hay resultados de búsqueda
+if (window.location.search.includes('fecha_entrada')) {
+    const seccionHabitaciones = document.querySelector('.pub-tipos-grid');
+    if (seccionHabitaciones) {
+        setTimeout(function() {
+            seccionHabitaciones.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    }
+}
+
 // ===== MODO REGISTRO (global para onclick en HTML) =====
 function setModoRegistro(modo) {
     const campoDni      = document.getElementById('campoDni');

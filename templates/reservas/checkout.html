@@ -4,7 +4,7 @@
 {% block title %}Checkout{% endblock %}
 {% block breadcrumb_parent %}Recepción · Check-in / out{% endblock %}
 {% block breadcrumb_title %}Checkout{% endblock %}
-{% block nav_checkin %}active{% endblock %}
+{% block nav_checkout %}active{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/reservas.css' %}">
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
@@ -32,10 +32,11 @@
         a estado <strong>Limpieza</strong>.
       </p>
 
-      <form method="post" id="formCheckout">
+<form method="post" id="formCheckout">
         {% csrf_token %}
+        {% if tiene_deuda %}
         <div class="form-group">
-          <label class="form-label">Método de pago</label>
+          <label class="form-label">Método de pago de saldo pendiente (S/ {{ estancia.folio.total }})</label>
           <select name="metodo_pago" class="form-select" id="metodoPago">
             <option value="EFECTIVO">Efectivo</option>
             <option value="TARJETA">Tarjeta</option>
@@ -43,6 +44,13 @@
             <option value="YAPE">Yape / Plin</option>
           </select>
         </div>
+        {% else %}
+        <input type="hidden" name="metodo_pago" value="PAGADO">
+        <p style="font-size:13.5px; color:#2D4A3E; margin-bottom:16px; display:flex; align-items:center; gap:6px;">
+          <i class="bi bi-check-circle-fill"></i>
+          El folio ya fue pagado. Solo confirma la salida del huésped.
+        </p>
+        {% endif %}
 
         <div style="display:flex; gap:8px; margin-top:8px;">
           <button type="button" id="btnAbrirConfirmacion" class="btn-primary">
@@ -71,7 +79,11 @@
             </p>
             <p>
               <span>Total a cobrar</span>
+              {% if tiene_deuda %}
               <strong>S/ {{ estancia.folio.total }}</strong>
+              {% else %}
+              <strong style="color:#2D4A3E;">✓ Pagado</strong>
+              {% endif %}
             </p>
             <div style="display:flex; gap:8px; margin-top:8px;">
               <button type="button" id="btnConfirmarDefinitivo" class="btn-primary" style="flex:1; justify-content:center;">
@@ -104,10 +116,10 @@
     <div class="card resumen-card">
       <div class="card-header">Resumen</div>
       <div class="card-body">
-        <div class="resumen-row">
-          <span class="resumen-label">Huésped</span>
-          <span class="resumen-valor">{{ estancia.reserva.huesped.nombre_completo }}</span>
-        </div>
+    <div class="resumen-row" style="flex-direction:column; align-items:flex-start; gap:2px;">
+      <span class="resumen-label">Huésped</span>
+      <span class="resumen-valor">{{ estancia.reserva.huesped.nombre_completo }}</span>
+    </div>
         <div class="resumen-row">
           <span class="resumen-label">Habitación</span>
           <span class="resumen-valor">{{ estancia.habitacion.numero }}</span>
@@ -142,9 +154,13 @@
         {% endfor %}
 
         <div class="resumen-divider"></div>
-        <div class="resumen-row resumen-total">
+<div class="resumen-row resumen-total">
           <span>Total a cobrar</span>
+          {% if tiene_deuda %}
           <span>S/ {{ estancia.folio.total }}</span>
+          {% else %}
+          <span style="color:#2D4A3E;">✓ Pagado</span>
+          {% endif %}
         </div>
       </div>
     </div>

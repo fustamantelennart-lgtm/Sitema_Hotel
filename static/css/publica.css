@@ -1463,7 +1463,11 @@ body {
   padding: 20px;
   font-size: 12px;
   font-family: 'Inter', sans-serif;
-  margin-top: 60px;
+  width: 100%;
+  box-sizing: border-box;
+  position: fixed;
+  bottom: 0;
+  left: 0;
 }
 
 .pub-nav-actions { display: flex; align-items: center; gap: 12px; }
@@ -1534,3 +1538,33 @@ body {
 .toggle-switch input:checked + .toggle-slider:before {
   transform: translateX(20px);
 }
+/* ===== PERFIL RESERVA CARD ===== */
+.perfil-reserva-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #E5DDD0;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  transition: box-shadow .2s;
+}
+.perfil-reserva-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+.perfil-reserva-tipo {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+.perfil-reserva-fechas {
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+body { overflow-x: hidden; }

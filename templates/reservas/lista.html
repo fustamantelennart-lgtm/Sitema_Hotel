@@ -118,7 +118,7 @@
           <td>Hab. {{ r.habitacion.numero }}</td>
           <td>{{ r.fecha_salida|date:"d M Y" }}</td>
           <td>
-            {% if r.estancia.tiene_deuda %}
+            {% if r.estancia.folio.tiene_deuda %}
               <span class="badge badge-sand">Pendiente</span>
             {% else %}
               <span class="badge badge-green">Pagado</span>

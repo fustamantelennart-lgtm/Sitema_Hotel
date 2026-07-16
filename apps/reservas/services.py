@@ -124,17 +124,16 @@ class EstanciaService:
             atendido_por = usuario,
         )
 
-        # Cargo base de habitación
+# Cargo base de habitación
         noches = reserva.num_noches
-        CargoEstancia.objects.create(
-            estancia      = estancia,
-            concepto      = f'Habitación {habitacion.numero} — {noches} noche(s)',
-            monto         = reserva.precio_total,
-            tipo          = 'HABITACION',
+        cargo_hab = CargoEstancia.objects.create(
+            estancia       = estancia,
+            concepto       = f'Habitación {habitacion.numero} — {noches} noche(s){"  ✓ Pagado en reserva web" if reserva.origen == "WEB" else ""}',
+            monto          = reserva.precio_total if reserva.origen != 'WEB' else 0,
+            tipo           = 'HABITACION',
             registrado_por = usuario,
         )
-
-        # Crear folio
+        # Crear folio — siempre ABIERTO para extras
         folio = Folio.objects.create(estancia=estancia)
         folio.recalcular()
 
