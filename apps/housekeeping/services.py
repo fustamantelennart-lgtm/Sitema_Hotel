@@ -44,7 +44,7 @@ class HousekeepingService:
 
     @staticmethod
     def reportar_incidente(habitacion_id: int, tipo: str, descripcion: str,
-                           monto_cobrar, usuario) -> IncidenteHabitacion:
+                           monto_cobrar, usuario, tarea_id=None) -> IncidenteHabitacion:
         from apps.recepcion.models import Habitacion
         habitacion = Habitacion.objects.get(pk=habitacion_id)
         if habitacion.estado not in ['OCUPADA', 'LIMPIEZA']:
@@ -60,13 +60,21 @@ class HousekeepingService:
             reportado_por = usuario,
         )
 
-        # Si la habitación tiene una estancia activa y el incidente tiene
-        # monto a cobrar, generar el cargo automáticamente en su folio.
+        # Si el incidente tiene monto a cobrar, buscar la estancia correcta
+        # para agregar el cargo a su folio. Primero se intenta a través de
+        # la tarea (funciona incluso si la habitación ya cambió de estancia
+        # por un cambio de habitación), y si no, por la habitación actual.
         if monto_cobrar:
-            from apps.reservas.models import Estancia
-            estancia_activa = Estancia.objects.filter(
-                habitacion=habitacion, estado='ACTIVA'
-            ).select_related('folio').first()
+            estancia_activa = None
+            if tarea_id:
+                tarea_rel = TareaLimpieza.objects.filter(pk=tarea_id).select_related('estancia_relacionada').first()
+                if tarea_rel and tarea_rel.estancia_relacionada and tarea_rel.estancia_relacionada.estado == 'ACTIVA':
+                    estancia_activa = tarea_rel.estancia_relacionada
+            if not estancia_activa:
+                from apps.reservas.models import Estancia
+                estancia_activa = Estancia.objects.filter(
+                    habitacion=habitacion, estado='ACTIVA'
+                ).select_related('folio').first()
             if estancia_activa:
                 from apps.reservas.models import CargoEstancia
                 CargoEstancia.objects.create(

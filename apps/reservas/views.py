@@ -146,12 +146,13 @@ def solicitar_revision(request, pk):
     estancia = get_object_or_404(Estancia, pk=pk)
     if request.method == 'POST':
         TareaLimpieza.objects.create(
-            habitacion    = estancia.habitacion,
-            prioridad     = 'ALTA',
+            habitacion           = estancia.habitacion,
+            tipo                 = 'REVISION',
+            prioridad            = 'ALTA',
+            estancia_relacionada = estancia,
             observaciones = (
-                f'Revisión de minibar/consumos solicitada por recepción — '
-                f'Hab. {estancia.habitacion.numero}, Estancia R-{estancia.reserva.pk} '
-                f'(habitación aún OCUPADA, antes del checkout).'
+                f'Revisión solicitada por recepción — '
+                f'Estancia R-{estancia.reserva.pk} (habitación OCUPADA, antes del checkout).'
             ),
         )
         messages.success(
@@ -159,6 +160,37 @@ def solicitar_revision(request, pk):
             f'Se notificó a Housekeeping para revisar la Hab. {estancia.habitacion.numero} antes del checkout.'
         )
     return redirect('reservas:folio', pk=estancia.pk)
+@login_required
+@rol_requerido('admin', 'recepcionista')
+def cambiar_habitacion(request, pk):
+    from apps.recepcion.models import Habitacion
+    from .exceptions import ReservaNoConfirmada, HabitacionNoDisponible
+
+    estancia = get_object_or_404(Estancia, pk=pk)
+
+    if request.method == 'POST':
+        try:
+            EstanciaService.cambiar_habitacion(
+                estancia_id          = estancia.pk,
+                nueva_habitacion_id  = request.POST.get('habitacion'),
+                motivo               = request.POST.get('motivo', '').strip(),
+                usuario              = request.user,
+            )
+            messages.success(request, 'Cambio de habitación realizado correctamente.')
+            return redirect('reservas:folio', pk=estancia.pk)
+        except (ReservaNoConfirmada, HabitacionNoDisponible) as e:
+            messages.error(request, str(e))
+        except Exception as e:
+            messages.error(request, f'Error: {e}')
+
+    habitaciones_disponibles = Habitacion.objects.filter(
+        hotel=estancia.habitacion.hotel, estado='DISPONIBLE'
+    ).select_related('tipo').order_by('piso', 'numero')
+
+    return render(request, 'reservas/cambiar_habitacion.html', {
+        'estancia':     estancia,
+        'habitaciones': habitaciones_disponibles,
+    })
 
 
 @login_required

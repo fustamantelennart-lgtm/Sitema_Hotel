@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cambiar Habitación{% endblock %}
+{% block breadcrumb_parent %}Recepción · Reservas{% endblock %}
+{% block breadcrumb_title %}Cambiar Habitación{% endblock %}
+{% block nav_reservas %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/reservas.css' %}">
+{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'reservas:folio' estancia.pk %}" class="btn-secondary">
+  <i class="bi bi-arrow-left"></i> Volver al folio
+</a>
+{% endblock %}
+
+{% block content %}
+
+<div style="max-width:700px; margin:0 auto;">
+
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-body" style="display:flex; align-items:center; gap:12px;">
+      <i class="bi bi-info-circle" style="color:var(--color-primary); font-size:20px;"></i>
+      <div style="font-size:13.5px; color:var(--color-text-muted);">
+        Habitación actual: <strong style="color:var(--color-text);">{{ estancia.habitacion.numero }}</strong>
+        ({{ estancia.habitacion.tipo.nombre }}) —
+        Huésped: <strong style="color:var(--color-text);">{{ estancia.reserva.huesped.nombre_completo }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <i class="bi bi-arrow-left-right"></i> Cambiar de habitación
+    </div>
+    <div class="card-body">
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">Nueva habitación</label>
+          <select name="habitacion" class="form-select" required>
+            <option value="">— Selecciona una habitación disponible —</option>
+            {% regroup habitaciones by piso as habs_por_piso %}
+            {% for grupo in habs_por_piso %}
+            <optgroup label="Piso {{ grupo.grouper }}">
+              {% for hab in grupo.list %}
+              <option value="{{ hab.pk }}">
+                Hab. {{ hab.numero }} — {{ hab.tipo.nombre }} (S/ {{ hab.tipo.precio_base }}/noche)
+              </option>
+              {% endfor %}
+            </optgroup>
+            {% endfor %}
+          </select>
+          {% if not habitaciones %}
+          <div class="form-error">No hay habitaciones disponibles en este momento.</div>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Motivo del cambio</label>
+          <textarea name="motivo" class="form-control" rows="3" required
+                    placeholder="Ej: Aire acondicionado dañado, solicitud del huésped, etc."></textarea>
+        </div>
+
+        <div style="background:#F5F0E8; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:12.5px; color:var(--color-text-muted); line-height:1.6;">
+          <i class="bi bi-calculator"></i>
+          Si la nueva habitación es de un tipo diferente, se calculará automáticamente el
+          ajuste de precio (a favor o en contra) según las noches restantes de la estadía,
+          y se agregará como cargo al folio.
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button type="submit" class="btn-primary">
+            <i class="bi bi-check-lg"></i> Confirmar cambio
+          </button>
+          <a href="{% url 'reservas:folio' estancia.pk %}" class="btn-secondary">Cancelar</a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

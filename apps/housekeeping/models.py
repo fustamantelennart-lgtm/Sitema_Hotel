@@ -15,9 +15,17 @@ class TareaLimpieza(ModeloBase):
         ('MEDIA', 'Media'),
         ('BAJA',  'Baja'),
     ]
-
+    TIPO = [
+        ('LIMPIEZA', 'Limpieza'),
+        ('REVISION', 'Revisión pre-checkout'),
+    ]
     habitacion       = models.ForeignKey(Habitacion, on_delete=models.CASCADE,
                                          related_name='tareas_limpieza')
+    tipo             = models.CharField(max_length=10, choices=TIPO, default='LIMPIEZA')
+    estancia_relacionada = models.ForeignKey(
+        'reservas.Estancia', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='tareas_housekeeping'
+    )
     asignada_a       = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True, related_name='tareas_asignadas'

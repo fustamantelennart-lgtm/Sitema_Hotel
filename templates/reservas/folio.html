@@ -116,6 +116,11 @@
           </button>
         </form>
         {% endif %}
+                {% if estancia.estado == 'ACTIVA' %}
+        <a href="{% url 'reservas:cambiar_habitacion' estancia.pk %}" class="btn-secondary" style="width:100%; justify-content:center;">
+          <i class="bi bi-arrow-left-right"></i> Cambiar de habitación
+        </a>
+        {% endif %}
 
 {% if folio.estado == 'ABIERTO' %}
         <form method="post" action="{% url 'reservas:pagar_folio' estancia.pk %}">

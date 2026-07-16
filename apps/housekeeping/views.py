@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
@@ -124,6 +125,8 @@ def incidentes(request):
 @login_required
 @rol_requerido('admin', 'housekeeping')
 def reportar_incidente(request):
+    tarea_id = request.GET.get('tarea') or request.POST.get('tarea')
+
     if request.method == 'POST':
         try:
             incidente = HousekeepingService.reportar_incidente(
@@ -132,8 +135,11 @@ def reportar_incidente(request):
                 descripcion   = request.POST.get('descripcion'),
                 monto_cobrar  = request.POST.get('monto_cobrar') or None,
                 usuario       = request.user,
+                tarea_id      = tarea_id,
             )
-            messages.success(request, f'Incidente reportado en Hab. {incidente.habitacion.numero}.')
+            messages.success(request, f'Consumo/incidente registrado en Hab. {incidente.habitacion.numero}.')
+            if tarea_id:
+                return redirect(f"{reverse('housekeeping:reportar_incidente')}?habitacion={incidente.habitacion.pk}&tarea={tarea_id}")
             return redirect('housekeeping:incidentes')
         except Exception as e:
             messages.error(request, str(e))
@@ -142,8 +148,11 @@ def reportar_incidente(request):
     habitaciones = Habitacion.objects.filter(
         estado__in=['OCUPADA', 'LIMPIEZA']
     ).order_by('piso', 'numero')
+    habitacion_preseleccionada = request.GET.get('habitacion')
     return render(request, 'housekeeping/reportar_incidente.html', {
         'habitaciones': habitaciones,
+        'habitacion_preseleccionada': habitacion_preseleccionada,
+        'tarea_id': tarea_id,
     })
 
 

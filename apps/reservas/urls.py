@@ -22,4 +22,5 @@ urlpatterns = [
     path('<int:pk>/solicitar-revision/',    views.solicitar_revision,  name='solicitar_revision'),
     path('<int:pk>/confirmar-web/',         views.confirmar_solicitud, name='confirmar_solicitud'),
     path('<int:pk>/rechazar-web/',          views.rechazar_solicitud,  name='rechazar_solicitud'),
+    path('<int:pk>/cambiar-habitacion/',    views.cambiar_habitacion,  name='cambiar_habitacion'),
 ]

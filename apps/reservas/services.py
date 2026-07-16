@@ -192,12 +192,101 @@ class EstanciaService:
         estancia.reserva.save()
         estancia.habitacion.save()
 
-        # Crear tarea de limpieza automáticamente
+        # Si había una tarea de revisión pre-checkout pendiente para esta
+        # habitación, convertirla en tarea de limpieza normal (el cliente
+        # ya se fue, ya no aplica "revisar antes de que se vaya").
+        from apps.housekeeping.models import TareaLimpieza
+        tarea_revision = TareaLimpieza.objects.filter(
+            habitacion=estancia.habitacion,
+            tipo='REVISION',
+            estado__in=['PENDIENTE', 'EN_PROCESO'],
+        ).first()
+
+        if tarea_revision:
+            tarea_revision.tipo = 'LIMPIEZA'
+            tarea_revision.prioridad = 'ALTA'
+            tarea_revision.save()
+        else:
+            TareaLimpieza.objects.create(
+                habitacion = estancia.habitacion,
+                tipo       = 'LIMPIEZA',
+                prioridad  = 'ALTA',
+            )
+
+        return estancia
+    @staticmethod
+    @transaction.atomic
+    def cambiar_habitacion(estancia_id: int, nueva_habitacion_id: int, motivo: str, usuario) -> Estancia:
+        from apps.recepcion.models import Habitacion
+
+        estancia = Estancia.objects.select_related(
+            'habitacion', 'reserva', 'reserva__tipo_habitacion', 'folio'
+        ).get(pk=estancia_id)
+
+        if estancia.estado != 'ACTIVA':
+            raise ReservaNoConfirmada('Solo se puede cambiar de habitación en estancias activas.')
+
+        nueva_habitacion = Habitacion.objects.get(pk=nueva_habitacion_id)
+
+        if nueva_habitacion.pk == estancia.habitacion.pk:
+            raise HabitacionNoDisponible('Selecciona una habitación diferente a la actual.')
+
+        if nueva_habitacion.estado != 'DISPONIBLE':
+            raise HabitacionNoDisponible(
+                f'Habitación {nueva_habitacion.numero} no está disponible '
+                f'(estado: {nueva_habitacion.get_estado_display()}).'
+            )
+
+        habitacion_anterior = estancia.habitacion
+        reserva             = estancia.reserva
+        hoy                 = timezone.now().date()
+
+       
+        diferencia = 0
+        if nueva_habitacion.tipo_id != reserva.tipo_habitacion_id:
+            precio_viejo = reserva.tipo_habitacion.precio_base
+            precio_nuevo = nueva_habitacion.tipo.precio_base
+            diferencia = (precio_nuevo - precio_viejo) * reserva.num_noches
+
+        # Actualizar habitaciones
+        habitacion_anterior.estado = 'LIMPIEZA'
+        habitacion_anterior.save()
+
+        nueva_habitacion.estado = 'OCUPADA'
+        nueva_habitacion.save()
+
+
         from apps.housekeeping.models import TareaLimpieza
         TareaLimpieza.objects.create(
-            habitacion = estancia.habitacion,
+            habitacion = habitacion_anterior,
+            tipo       = 'LIMPIEZA',
             prioridad  = 'ALTA',
+            observaciones = (
+                f'Habitación liberada por cambio de habitación. '
+                f'Motivo: {motivo}'
+            ),
         )
+
+        # Actualizar estancia y reserva
+        estancia.habitacion = nueva_habitacion
+        estancia.save()
+
+        reserva.tipo_habitacion = nueva_habitacion.tipo
+        reserva.save()
+
+        # Registrar el cambio como cargo (puede ser 0, positivo o negativo)
+        concepto = (
+            f'Cambio de habitación: {habitacion_anterior.numero} → {nueva_habitacion.numero}. '
+            f'Motivo: {motivo}'
+        )
+        CargoEstancia.objects.create(
+            estancia       = estancia,
+            concepto       = concepto,
+            monto          = diferencia,
+            tipo           = 'OTRO',
+            registrado_por = usuario,
+        )
+        estancia.folio.recalcular()
 
         return estancia
 

@@ -18,16 +18,30 @@
       Nuevo incidente
     </div>
     <div class="card-body">
-      <form method="post">
+<form method="post">
         {% csrf_token %}
+        {% if tarea_id %}
+        <input type="hidden" name="tarea" value="{{ tarea_id }}">
+        <div class="alert alert-success" style="margin-bottom:16px;">
+          <i class="bi bi-info-circle"></i>
+          Reportando desde una revisión pre-checkout solicitada por recepción.
+        </div>
+        {% endif %}
         <div class="form-group">
           <label class="form-label">Habitación</label>
-          <select name="habitacion" class="form-select" required>
+          <select name="habitacion" class="form-select" required
+                  {% if habitacion_preseleccionada %}disabled{% endif %}>
             <option value="">— Selecciona —</option>
             {% for hab in habitaciones %}
-            <option value="{{ hab.pk }}">Hab. {{ hab.numero }} — Piso {{ hab.piso }} ({{ hab.tipo.nombre }})</option>
+            <option value="{{ hab.pk }}"
+              {% if habitacion_preseleccionada and habitacion_preseleccionada == hab.pk|stringformat:"s" %}selected{% endif %}>
+              Hab. {{ hab.numero }} — Piso {{ hab.piso }} ({{ hab.tipo.nombre }})
+            </option>
             {% endfor %}
           </select>
+          {% if habitacion_preseleccionada %}
+          <input type="hidden" name="habitacion" value="{{ habitacion_preseleccionada }}">
+          {% endif %}
         </div>
         <div class="form-group">
           <label class="form-label">Tipo</label>
@@ -48,13 +62,26 @@
           <input type="number" name="monto_cobrar" class="form-control"
                  step="0.01" min="0" placeholder="Ej: 50.00">
         </div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
+<div style="display:flex; gap:8px; margin-top:8px;">
           <button type="submit" class="btn-primary">
-            <i class="bi bi-check-lg"></i> Reportar
+            <i class="bi bi-check-lg"></i> Reportar y agregar otro
           </button>
+          {% if tarea_id %}
           <a href="{% url 'housekeeping:incidentes' %}" class="btn-secondary">Cancelar</a>
+          {% else %}
+          <a href="{% url 'housekeeping:incidentes' %}" class="btn-secondary">Cancelar</a>
+          {% endif %}
         </div>
       </form>
+
+      {% if tarea_id %}
+      <form method="post" action="{% url 'housekeeping:completar' tarea_id %}" style="margin-top:16px;">
+        {% csrf_token %}
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; background:#2D4A3E;">
+          <i class="bi bi-flag-fill"></i> Finalizar revisión (no hay más consumos)
+        </button>
+      </form>
+      {% endif %}
     </div>
   </div>
 </div>

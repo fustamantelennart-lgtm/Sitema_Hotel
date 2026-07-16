@@ -52,7 +52,14 @@
       <div class="tarea-numero">{{ tarea.habitacion.numero }}</div>
 
       <div style="flex:1;">
-        <div class="tarea-tipo">{{ tarea.habitacion.tipo.nombre }}</div>
+        <div class="tarea-tipo">
+          {{ tarea.habitacion.tipo.nombre }}
+          {% if tarea.tipo == 'REVISION' %}
+          <span class="badge badge-red" style="margin-left:6px;">
+            <i class="bi bi-search"></i> Revisión pre-checkout
+          </span>
+          {% endif %}
+        </div>
         <div class="tarea-meta">
           <span class="badge {% if tarea.prioridad == 'ALTA' %}badge-red{% elif tarea.prioridad == 'MEDIA' %}badge-sand{% else %}badge-gray{% endif %}">
             <i class="bi bi-flag"></i> {{ tarea.get_prioridad_display }}
@@ -103,7 +110,20 @@
       </form>
       {% endif %}
 
-      {% if tarea.estado == 'PENDIENTE' %}
+    {% if tarea.tipo == 'REVISION' and tarea.estado != 'LISTA' %}
+      <a href="{% url 'housekeeping:reportar_incidente' %}?habitacion={{ tarea.habitacion.pk }}&tarea={{ tarea.pk }}"
+         class="btn-primary" style="font-size:12px; padding:6px 12px;">
+        <i class="bi bi-cash-coin"></i> Reportar consumo
+      </a>
+      <a href="{% url 'housekeeping:completar' tarea.pk %}"
+         onclick="event.preventDefault(); document.getElementById('form-sin-consumo-{{ tarea.pk }}').submit();"
+         class="btn-secondary" style="font-size:12px; padding:6px 12px;">
+        <i class="bi bi-check-lg"></i> Sin consumos
+      </a>
+      <form id="form-sin-consumo-{{ tarea.pk }}" method="post" action="{% url 'housekeeping:completar' tarea.pk %}" style="display:none;">
+        {% csrf_token %}
+      </form>
+      {% elif tarea.estado == 'PENDIENTE' %}
       <form method="post" action="{% url 'housekeeping:iniciar' tarea.pk %}">
         {% csrf_token %}
         <button class="btn-secondary" type="submit" style="font-size:12px; padding:6px 12px;">

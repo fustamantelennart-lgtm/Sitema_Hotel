@@ -65,7 +65,11 @@
         <td style="font-size:13px;">{{ inc.descripcion }}</td>
         <td>{% if inc.monto_cobrar %}S/ {{ inc.monto_cobrar }}{% else %}—{% endif %}</td>
         <td style="font-size:12px; color:var(--color-text-muted);">
-          {{ inc.reportado_por.get_full_name|default:inc.reportado_por.username|default:"—" }}
+          {% if inc.reportado_por %}
+            {{ inc.reportado_por.get_full_name|default:inc.reportado_por.username }}
+          {% else %}
+            —
+          {% endif %}
         </td>
         <td style="font-size:12px; color:var(--color-text-muted);">
           {{ inc.fecha|date:"d M Y H:i" }}
