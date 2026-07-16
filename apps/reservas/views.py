@@ -83,7 +83,7 @@ def nueva(request):
     precios = {str(t.pk): float(t.precio_base) for t in TipoHabitacion.objects.all()}
     return render(request, 'reservas/nueva.html', {
         'form':    form,
-        'precios': json.dumps(precios),
+        'precios': precios,
     })
 
 

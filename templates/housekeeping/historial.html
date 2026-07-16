@@ -59,7 +59,13 @@
             {{ t.get_prioridad_display }}
           </span>
         </td>
-        <td>{{ t.asignada_a.get_full_name|default:t.asignada_a.username|default:"—" }}</td>
+        <td>
+          {% if t.asignada_a %}
+            {{ t.asignada_a.get_full_name|default:t.asignada_a.username }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
         <td style="color:var(--color-text-muted); font-size:12px;">
           {{ t.fecha_completada|date:"d M Y H:i" }}
         </td>
@@ -67,12 +73,34 @@
       {% endfor %}
     </tbody>
   </table>
-  {% else %}
+{% else %}
   <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
     <i class="bi bi-clock-history" style="font-size:32px; display:block; margin-bottom:8px;"></i>
     No hay tareas completadas{% if fecha %} en esta fecha{% endif %}.
   </div>
   {% endif %}
 </div>
+
+{% if pagina.paginator.num_pages > 1 %}
+<div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-top:20px;">
+  {% if pagina.has_previous %}
+  <a href="?page={{ pagina.previous_page_number }}{% if fecha %}&fecha={{ fecha }}{% endif %}"
+     class="btn-secondary" style="padding:6px 12px; font-size:13px;">
+    <i class="bi bi-chevron-left"></i> Anterior
+  </a>
+  {% endif %}
+
+  <span style="font-size:13px; color:var(--color-text-muted); padding:0 8px;">
+    Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}
+  </span>
+
+  {% if pagina.has_next %}
+  <a href="?page={{ pagina.next_page_number }}{% if fecha %}&fecha={{ fecha }}{% endif %}"
+     class="btn-secondary" style="padding:6px 12px; font-size:13px;">
+    Siguiente <i class="bi bi-chevron-right"></i>
+  </a>
+  {% endif %}
+</div>
+{% endif %}
 
 {% endblock %}

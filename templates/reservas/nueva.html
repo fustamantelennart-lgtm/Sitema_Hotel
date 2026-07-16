@@ -220,9 +220,9 @@
 {% endblock %}
 
 {% block extra_js %}
+{{ precios|json_script:"precios-data" }}
 <script>
-  var TIPO_PRECIOS = {};
-  TIPO_PRECIOS = JSON.parse('{{ precios }}');
+  var TIPO_PRECIOS = JSON.parse(document.getElementById('precios-data').textContent);
 </script>
 <script src="{% static 'js/nueva_reserva.js' %}"></script>
 {% endblock %}s

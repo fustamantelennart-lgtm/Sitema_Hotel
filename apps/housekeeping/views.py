@@ -84,6 +84,8 @@ def asignar(request, pk):
 @login_required
 @rol_requerido('admin', 'housekeeping')
 def historial(request):
+    from django.core.paginator import Paginator
+
     tareas = TareaLimpieza.objects.filter(
         estado='LISTA'
     ).select_related('habitacion', 'habitacion__tipo', 'asignada_a').order_by(
@@ -94,8 +96,13 @@ def historial(request):
         from datetime import date
         tareas = tareas.filter(fecha_completada__date=date.fromisoformat(fecha))
 
+    paginator   = Paginator(tareas, 15)
+    numero_pagina = request.GET.get('page')
+    pagina      = paginator.get_page(numero_pagina)
+
     return render(request, 'housekeeping/historial.html', {
-        'tareas': tareas,
+        'tareas': pagina,
+        'pagina': pagina,
         'fecha':  fecha or '',
     })
 
