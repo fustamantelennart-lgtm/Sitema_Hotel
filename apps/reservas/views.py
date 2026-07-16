@@ -123,13 +123,19 @@ def checkin(request, pk):
 @login_required
 @rol_requerido('admin', 'recepcionista')
 def folio(request, pk):
+    from collections import defaultdict
     estancia = get_object_or_404(Estancia, pk=pk)
     folio    = get_object_or_404(Folio, estancia=estancia)
     cargos   = estancia.cargos.all()
+    from decimal import Decimal
+    desglose = defaultdict(Decimal)
+    for cargo in cargos:
+        desglose[cargo.get_tipo_display()] += cargo.monto
     return render(request, 'reservas/folio.html', {
         'estancia': estancia,
         'folio':    folio,
         'cargos':   cargos,
+        'desglose': dict(desglose),
     })
 
 

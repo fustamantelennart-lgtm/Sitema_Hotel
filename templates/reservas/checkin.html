@@ -134,15 +134,25 @@
       </div>
       {% endif %}
 
+{% if reserva.opcion_checkin and reserva.opcion_checkin.cargo_extra > 0 %}
+      <div class="resumen-row">
+        <span class="resumen-label">Early check-in ({{ reserva.opcion_checkin.hora|time:"H:i" }})</span>
+        <span class="resumen-valor">+ S/ {{ reserva.opcion_checkin.cargo_extra }}</span>
+      </div>
+      {% endif %}
+      {% if reserva.opcion_checkout and reserva.opcion_checkout.cargo_extra > 0 %}
+      <div class="resumen-row">
+        <span class="resumen-label">Late check-out ({{ reserva.opcion_checkout.hora|time:"H:i" }})</span>
+        <span class="resumen-valor">+ S/ {{ reserva.opcion_checkout.cargo_extra }}</span>
+      </div>
+      {% endif %}
       <div class="resumen-row resumen-total">
         <span>Total</span>
-        <span>S/ {{ reserva.precio_total }}</span>
+        <span>S/ {{ reserva.total_con_extras }}</span>
       </div>
     </div>
   </div>
-
 </div>
-
 {% endblock %}
 
 {% block extra_js %}

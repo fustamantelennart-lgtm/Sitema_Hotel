@@ -154,17 +154,10 @@
     <div class="card">
       <div class="card-header">Desglose por categoría</div>
       <div class="card-body" style="display:flex; flex-direction:column; gap:10px;">
-        {% regroup cargos by get_tipo_display as cargos_por_tipo %}
-        {% for grupo in cargos_por_tipo %}
+        {% for tipo, total in desglose.items %}
         <div class="desglose-row">
-          <span>{{ grupo.grouper }}</span>
-          <span style="font-weight:600;">
-            S/ {% with total=0 %}
-              {% for c in grupo.list %}
-                {{ c.monto|add:total }}
-              {% endfor %}
-            {% endwith %}
-          </span>
+          <span>{{ tipo }}</span>
+          <span style="font-weight:600;">S/ {{ total }}</span>
         </div>
         {% empty %}
         <p style="color:var(--color-text-muted); font-size:13px;">Sin cargos</p>

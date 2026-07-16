@@ -117,6 +117,10 @@ class Reserva(ModeloBase):
         return f'R-{self.pk} — {self.huesped} ({self.estado})'
 
     @property
+    def num_noches(self):
+        return (self.fecha_salida - self.fecha_entrada).days
+
+    @property
     def total_con_extras(self):
         extra = 0
         if self.opcion_checkin and self.opcion_checkin.cargo_extra:

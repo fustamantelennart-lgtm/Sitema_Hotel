@@ -38,7 +38,7 @@
         <td>{{ r.tipo_habitacion.nombre }}</td>
         <td>{{ r.fecha_entrada|date:"d M Y" }}</td>
         <td>{{ r.fecha_salida|date:"d M Y" }}</td>
-        <td style="font-weight:600;">S/ {{ r.precio_total }}</td>
+        <td style="font-weight:600;">S/ {{ r.total_con_extras }}</td>
         <td>
           <span class="badge badge-green">
             <i class="bi bi-check-circle"></i> Pagada

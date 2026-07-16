@@ -101,7 +101,7 @@ class EstanciaService:
         from apps.recepcion.models import Habitacion
 
         reserva = Reserva.objects.select_related(
-            'huesped', 'tipo_habitacion'
+            'huesped', 'tipo_habitacion', 'opcion_checkin', 'opcion_checkout'
         ).get(pk=reserva_id)
 
         if reserva.estado != 'CONFIRMADA':
@@ -124,7 +124,7 @@ class EstanciaService:
             atendido_por = usuario,
         )
 
-# Cargo base de habitación
+        # Cargo base de habitación
         noches = reserva.num_noches
         CargoEstancia.objects.create(
             estancia       = estancia,
@@ -137,21 +137,28 @@ class EstanciaService:
         if reserva.opcion_checkin and reserva.opcion_checkin.cargo_extra > 0:
             CargoEstancia.objects.create(
                 estancia       = estancia,
-                concepto       = f'Early check-in — {reserva.opcion_checkin.nombre}',
-                monto          = reserva.opcion_checkin.cargo_extra,
+                concepto       = f'Early check-in ({reserva.opcion_checkin.hora.strftime("%H:%M")}){"  ✓ Pagado en reserva web" if reserva.origen == "WEB" else ""}',
+                monto          = reserva.opcion_checkin.cargo_extra if reserva.origen != 'WEB' else 0,
                 tipo           = 'OTRO',
                 registrado_por = usuario,
             )
         if reserva.opcion_checkout and reserva.opcion_checkout.cargo_extra > 0:
             CargoEstancia.objects.create(
                 estancia       = estancia,
-                concepto       = f'Late check-out — {reserva.opcion_checkout.nombre}',
-                monto          = reserva.opcion_checkout.cargo_extra,
+                concepto       = f'Late check-out ({reserva.opcion_checkout.hora.strftime("%H:%M")}){"  ✓ Pagado en reserva web" if reserva.origen == "WEB" else ""}',
+                monto          = reserva.opcion_checkout.cargo_extra if reserva.origen != 'WEB' else 0,
                 tipo           = 'OTRO',
                 registrado_por = usuario,
             )
-        # Crear folio — siempre ABIERTO para extras
-        folio = Folio.objects.create(estancia=estancia)
+        # Crear folio
+        if reserva.origen == 'WEB':
+            folio = Folio.objects.create(
+                estancia    = estancia,
+                estado      = 'PAGADO',
+                metodo_pago = 'TRANSFERENCIA',
+            )
+        else:
+            folio = Folio.objects.create(estancia=estancia)
         folio.recalcular()
 
         # Cambiar estados
