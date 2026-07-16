@@ -119,9 +119,42 @@ class ReservaPublicaService:
             if reserva.huesped.acepta_emails and reserva.huesped.email:
                 from django.core.mail import send_mail
                 from django.conf import settings
+
+                checkin_info = ''
+                if reserva.opcion_checkin and reserva.opcion_checkin.cargo_extra > 0:
+                    checkin_info = (
+                        f'\nEarly check-in: {reserva.opcion_checkin.hora.strftime("%H:%M")} '
+                        f'(+ S/ {reserva.opcion_checkin.cargo_extra})'
+                    )
+
+                checkout_info = ''
+                if reserva.opcion_checkout and reserva.opcion_checkout.cargo_extra > 0:
+                    checkout_info = (
+                        f'\nLate check-out: {reserva.opcion_checkout.hora.strftime("%H:%M")} '
+                        f'(+ S/ {reserva.opcion_checkout.cargo_extra})'
+                    )
+
+                mensaje = (
+                    f'Hola {reserva.huesped.nombres},\n\n'
+                    f'Tu reserva ha sido CONFIRMADA. Estos son los detalles:\n\n'
+                    f'Código de reserva: R-{reserva.pk}\n'
+                    f'Hotel: {reserva.hotel.nombre}\n'
+                    f'Tipo de habitación: {reserva.tipo_habitacion.nombre}\n'
+                    f'Fecha de entrada: {reserva.fecha_entrada.strftime("%d/%m/%Y")}\n'
+                    f'Fecha de salida: {reserva.fecha_salida.strftime("%d/%m/%Y")}\n'
+                    f'Noches: {reserva.num_noches}'
+                    f'{checkin_info}'
+                    f'{checkout_info}\n\n'
+                    f'Total pagado: S/ {reserva.total_con_extras}\n\n'
+                    f'Check-in estándar: desde las 14:00 hrs\n'
+                    f'Check-out estándar: antes de las 12:00 hrs\n\n'
+                    f'Presenta tu documento de identidad al llegar a recepción.\n\n'
+                    f'¡Gracias por elegir {reserva.hotel.nombre}!'
+                )
+
                 send_mail(
-                    f'¡Reserva confirmada! — {reserva.hotel.nombre}',
-                    f'Hola {reserva.huesped.nombres}, tu reserva R-{reserva.pk} fue CONFIRMADA.',
+                    f'¡Reserva confirmada! — {reserva.hotel.nombre} — R-{reserva.pk}',
+                    mensaje,
                     settings.DEFAULT_FROM_EMAIL,
                     [reserva.huesped.email],
                     fail_silently=True,
