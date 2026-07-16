@@ -1,4 +1,5 @@
 from django import forms
+from datetime import date
 from .models import Reserva, CargoEstancia, Huesped
 from apps.recepcion.models import Hotel
 
@@ -83,8 +84,9 @@ class ReservaPresencialForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_tipo_habitacion'})
     )
     fecha_entrada = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'min': date.today().isoformat()})
     )
+    
     fecha_salida = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )

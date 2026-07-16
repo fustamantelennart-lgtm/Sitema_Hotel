@@ -54,13 +54,15 @@
             <div class="pub-buscador-campo">
               <label class="pub-buscador-label">Ingreso</label>
               <input type="date" name="fecha_entrada" id="fechaEntrada"
-                     class="pub-buscador-input" value="{{ fecha_entrada }}">
+                     class="pub-buscador-input" value="{{ fecha_entrada }}"
+                     min="{% now 'Y-m-d' %}">
             </div>
 
             <div class="pub-buscador-campo">
               <label class="pub-buscador-label">Salida</label>
               <input type="date" name="fecha_salida" id="fechaSalida"
-                     class="pub-buscador-input" value="{{ fecha_salida }}">
+                     class="pub-buscador-input" value="{{ fecha_salida }}"
+                     min="{% now 'Y-m-d' %}">
             </div>
 
             <div class="pub-buscador-campo pub-buscador-campo-hues" id="campHuespedes">

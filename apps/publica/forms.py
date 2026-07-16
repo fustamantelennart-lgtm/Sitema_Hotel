@@ -1,4 +1,5 @@
 from django import forms
+from datetime import date
 from apps.reservas.models import Huesped
 from apps.recepcion.models import TipoHabitacion, Hotel, OpcionCheckin
 
@@ -50,13 +51,13 @@ class ReservaPublicaForm(forms.Form):
     )
     fecha_entrada = forms.DateField(
         widget=forms.DateInput(
-        attrs={'class': 'form-control', 'type': 'date'},
+        attrs={'class': 'form-control', 'type': 'date', 'min': date.today().isoformat()},
         format='%Y-%m-%d'
     )
     )
     fecha_salida = forms.DateField(
             widget=forms.DateInput(
-        attrs={'class': 'form-control', 'type': 'date'},
+        attrs={'class': 'form-control', 'type': 'date', 'min': date.today().isoformat()},
         format='%Y-%m-%d'
     ))
     num_adultos = forms.IntegerField(
