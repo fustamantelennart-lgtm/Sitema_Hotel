@@ -94,3 +94,27 @@ class Habitacion(ModeloBase):
     @property
     def disponible(self):
         return self.estado == 'DISPONIBLE'
+    
+class OpcionCheckin(ModeloBase):
+    TIPO_CHOICES = [
+        ('CHECKIN',  'Early Check-in'),
+        ('CHECKOUT', 'Late Check-out'),
+    ]
+    hotel       = models.ForeignKey(Hotel, on_delete=models.CASCADE,
+                                    related_name='opciones_checkin')
+    tipo        = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    nombre      = models.CharField(max_length=100)
+    hora        = models.TimeField()
+    cargo_extra = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    activo      = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name        = 'Opción Check-in/out'
+        verbose_name_plural = 'Opciones Check-in/out'
+        ordering = ['tipo', 'cargo_extra', 'hora']
+
+    def __str__(self):
+        hora_fmt = self.hora.strftime('%I:%M %p') if self.hora else ''
+        if self.cargo_extra > 0:
+            return f'{self.nombre} ({hora_fmt}) — S/ {self.cargo_extra}'
+        return f'{self.nombre} ({hora_fmt}) — Incluido'

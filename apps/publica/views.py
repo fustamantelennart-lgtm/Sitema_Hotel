@@ -137,7 +137,7 @@ def reservar(request):
     if request.method == 'POST' and form.is_valid():
         try:
             data_reserva = form.cleaned_data.copy()
-            data_reserva['acepta_emails'] = request.POST.get('acepta_emails') == '1'
+            data_reserva['acepta_emails']  = request.POST.get('acepta_emails') == '1'
             reserva = ReservaPublicaService.crear_reserva_web(
                 hotel   = hotel,
                 data    = data_reserva,

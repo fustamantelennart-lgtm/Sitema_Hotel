@@ -74,7 +74,7 @@
               <i class="bi bi-info-circle-fill" style="margin-top:2px; flex-shrink:0;"></i>
               <div>
                 <strong>Información de llegada</strong><br>
-                Check-in disponible desde las <strong>14:00 hrs</strong> del {{ r.fecha_entrada|date:"d M Y" }}.<br>
+                Check-in disponible desde las <strong>{% if r.opcion_checkin %}{{ r.opcion_checkin.hora|time:"H:i" }}{% else %}14:00{% endif %} hrs</strong> del {{ r.fecha_entrada|date:"d M Y" }}.<br>
                 Preséntate en recepción con tu DNI o documento de identidad.<br>
                 Si llegas antes, puedes dejar tu equipaje con nosotros.
               </div>
@@ -91,8 +91,18 @@
             </div>
             {% endif %}
 
+            {% if r.opcion_checkin and r.opcion_checkin.cargo_extra > 0 %}
+            <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">
+              <i class="bi bi-clock"></i> Early check-in {{ r.opcion_checkin.hora|time:"H:i" }} — <strong>+ S/ {{ r.opcion_checkin.cargo_extra }}</strong>
+            </div>
+            {% endif %}
+            {% if r.opcion_checkout and r.opcion_checkout.cargo_extra > 0 %}
+            <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">
+              <i class="bi bi-clock"></i> Late check-out {{ r.opcion_checkout.hora|time:"H:i" }} — <strong>+ S/ {{ r.opcion_checkout.cargo_extra }}</strong>
+            </div>
+            {% endif %}
             <div class="perfil-reserva-meta">
-              <span class="perfil-precio">S/ {{ r.precio_total }}</span>
+              <span class="perfil-precio">S/ {{ r.total_con_extras }}</span>
               <span class="pub-amenidad perfil-estado perfil-estado-{{ r.estado|lower }}">
                 {% if r.estado == 'CONFIRMADA' %}<i class="bi bi-check-circle"></i> Confirmada
                 {% elif r.estado == 'PENDIENTE' %}<i class="bi bi-clock"></i> Pendiente de confirmación

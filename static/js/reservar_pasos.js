@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const preciosDiv = document.getElementById('tiposPrecios');
         const selectTipo = document.querySelector('[name="tipo_habitacion"]');
         const totalFinalEl = document.getElementById('resumenTotalFinal');
-        if (preciosDiv && selectTipo && entrada && salida && totalFinalEl) {
+ if (preciosDiv && selectTipo && entrada && salida && totalFinalEl) {
             const fe      = new Date(entrada);
             const fs      = new Date(salida);
             const noches  = Math.round((fs - fe) / (1000 * 60 * 60 * 24));
@@ -50,11 +50,57 @@ document.addEventListener('DOMContentLoaded', function () {
                 const raw    = '{' + preciosDiv.dataset.precios.replace(/,$/, '') + '}';
                 const precios = JSON.parse(raw);
                 const precio  = precios[tipoId];
+                let total = 0;
                 if (precio && noches > 0) {
-                    totalFinalEl.textContent = `S/ ${(precio * noches).toFixed(2)}`;
-                } else {
-                    totalFinalEl.textContent = 'S/ 0.00';
+                    total = precio * noches;
                 }
+
+                // Cargos extra check-in
+                const checkinSelected = document.querySelector('[name="opcion_checkin"]:checked');
+                const checkinRow      = document.getElementById('resumenCheckinRow');
+                const checkinCargo    = document.getElementById('resumenCheckinCargo');
+                if (checkinSelected) {
+                    const label = checkinSelected.closest('label') ||
+                                  document.querySelector(`label[for="${checkinSelected.id}"]`);
+                    const texto = checkinSelected.parentElement.querySelector('span')?.textContent || '';
+                    const match = texto.match(/S\/\s*([\d.]+)/);
+                    if (match) {
+                        const extra = parseFloat(match[1]);
+                        if (extra > 0) {
+                            total += extra;
+                            checkinRow.style.display  = 'flex';
+                            checkinCargo.textContent  = `+ S/ ${extra.toFixed(2)}`;
+                        } else {
+                            checkinRow.style.display = 'none';
+                        }
+                    } else {
+                        checkinRow.style.display = 'none';
+                    }
+                }
+
+                // Cargos extra check-out
+                const checkoutSelected = document.querySelector('[name="opcion_checkout"]:checked');
+                const checkoutRow      = document.getElementById('resumenCheckoutRow');
+                const checkoutCargo    = document.getElementById('resumenCheckoutCargo');
+                if (checkoutSelected) {
+                    const texto = checkoutSelected.parentElement.querySelector('span')?.textContent || '';
+                    const match = texto.match(/S\/\s*([\d.]+)/);
+                    if (match) {
+                        const extra = parseFloat(match[1]);
+                        if (extra > 0) {
+                            total += extra;
+                            checkoutRow.style.display  = 'flex';
+                            checkoutCargo.textContent  = `+ S/ ${extra.toFixed(2)}`;
+                        } else {
+                            checkoutRow.style.display = 'none';
+                        }
+                    } else {
+                        checkoutRow.style.display = 'none';
+                    }
+                }
+
+                totalFinalEl.textContent = total > 0 ? `S/ ${total.toFixed(2)}` : 'S/ 0.00';
+
             } catch(e) {
                 const totalEl = document.getElementById('resumenTotal');
                 if (totalEl) totalFinalEl.textContent = totalEl.textContent;

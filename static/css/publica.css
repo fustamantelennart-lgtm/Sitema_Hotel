@@ -1568,3 +1568,12 @@ body {
   flex-wrap: wrap;
 }
 body { overflow-x: hidden; }
+
+/* ===== RESUMEN EXTRAS CHECK-IN/OUT ===== */
+.resumen-extra-row {
+  display: none;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.resumen-extra-label { color: #6b7280; }
+.resumen-extra-cargo { font-weight: 600; color: #c0392b; }

@@ -126,13 +126,30 @@ class EstanciaService:
 
 # Cargo base de habitación
         noches = reserva.num_noches
-        cargo_hab = CargoEstancia.objects.create(
+        CargoEstancia.objects.create(
             estancia       = estancia,
             concepto       = f'Habitación {habitacion.numero} — {noches} noche(s){"  ✓ Pagado en reserva web" if reserva.origen == "WEB" else ""}',
             monto          = reserva.precio_total if reserva.origen != 'WEB' else 0,
             tipo           = 'HABITACION',
             registrado_por = usuario,
         )
+        # Cargos extra por opciones de check-in/out
+        if reserva.opcion_checkin and reserva.opcion_checkin.cargo_extra > 0:
+            CargoEstancia.objects.create(
+                estancia       = estancia,
+                concepto       = f'Early check-in — {reserva.opcion_checkin.nombre}',
+                monto          = reserva.opcion_checkin.cargo_extra,
+                tipo           = 'OTRO',
+                registrado_por = usuario,
+            )
+        if reserva.opcion_checkout and reserva.opcion_checkout.cargo_extra > 0:
+            CargoEstancia.objects.create(
+                estancia       = estancia,
+                concepto       = f'Late check-out — {reserva.opcion_checkout.nombre}',
+                monto          = reserva.opcion_checkout.cargo_extra,
+                tipo           = 'OTRO',
+                registrado_por = usuario,
+            )
         # Crear folio — siempre ABIERTO para extras
         folio = Folio.objects.create(estancia=estancia)
         folio.recalcular()

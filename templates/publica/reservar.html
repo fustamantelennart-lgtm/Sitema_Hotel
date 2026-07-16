@@ -106,6 +106,34 @@
           {{ form.observaciones }}
         </div>
 
+        <!-- Opciones de check-in / check-out -->
+        <div style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:200px; background:#F5F0E8; border-radius:12px; padding:14px 16px;">
+            <div style="font-size:12px; font-weight:700; color:#2D4A3E; margin-bottom:10px; text-transform:uppercase; letter-spacing:.05em;">
+              <i class="bi bi-box-arrow-in-right"></i> Hora de Check-in
+            </div>
+            {% for opcion in form.opcion_checkin %}
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(0,0,0,.06);">
+              {{ opcion.tag }}
+              <span style="flex:1;">{{ opcion.choice_label }}</span>
+              {% with op=opcion.data.value %}
+              {% endwith %}
+            </label>
+            {% endfor %}
+          </div>
+          <div style="flex:1; min-width:200px; background:#F5F0E8; border-radius:12px; padding:14px 16px;">
+            <div style="font-size:12px; font-weight:700; color:#2D4A3E; margin-bottom:10px; text-transform:uppercase; letter-spacing:.05em;">
+              <i class="bi bi-box-arrow-right"></i> Hora de Check-out
+            </div>
+            {% for opcion in form.opcion_checkout %}
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; padding:6px 0; border-bottom:1px solid rgba(0,0,0,.06);">
+              {{ opcion.tag }}
+              <span style="flex:1;">{{ opcion.choice_label }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
         <!-- Resumen precio en tiempo real -->
         <div id="resumenPrecio" style="display:none; background:#F5F0E8;
              border-radius:10px; padding:14px 16px; margin-top:4px; margin-bottom:16px;">
@@ -232,6 +260,14 @@
             <div style="display:flex; justify-content:space-between;">
               <span style="color:#6b7280;">Huésped</span>
               <span id="resumenNombre" style="font-weight:600;"></span>
+            </div>
+          <div id="resumenCheckinRow" class="resumen-extra-row">
+              <span class="resumen-extra-label">Early check-in</span>
+              <span id="resumenCheckinCargo" class="resumen-extra-cargo"></span>
+            </div>
+            <div id="resumenCheckoutRow" class="resumen-extra-row">
+              <span class="resumen-extra-label">Late check-out</span>
+              <span id="resumenCheckoutCargo" class="resumen-extra-cargo"></span>
             </div>
             <div style="border-top:1px solid #E5DDD0; padding-top:8px; margin-top:4px;
                         display:flex; justify-content:space-between;

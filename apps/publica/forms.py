@@ -1,6 +1,6 @@
 from django import forms
 from apps.reservas.models import Huesped
-from apps.recepcion.models import TipoHabitacion, Hotel
+from apps.recepcion.models import TipoHabitacion, Hotel, OpcionCheckin
 
 
 class ReservaPublicaForm(forms.Form):
@@ -71,6 +71,20 @@ class ReservaPublicaForm(forms.Form):
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
     )
+    opcion_checkin = forms.ModelChoiceField(
+        queryset=OpcionCheckin.objects.none(),
+        required=False,
+        empty_label=None,
+        widget=forms.RadioSelect(),
+        label='Hora de check-in'
+    )
+    opcion_checkout = forms.ModelChoiceField(
+        queryset=OpcionCheckin.objects.none(),
+        required=False,
+        empty_label=None,
+        widget=forms.RadioSelect(),
+        label='Hora de check-out'
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,6 +98,25 @@ class ReservaPublicaForm(forms.Form):
             str(tipo.pk): str(tipo.precio_base)
             for tipo in TipoHabitacion.objects.all()
         }
+        hotel = Hotel.objects.first()
+        if hotel:
+            self.fields['opcion_checkin'].queryset = OpcionCheckin.objects.filter(
+                hotel=hotel, tipo='CHECKIN', activo=True
+            )
+            self.fields['opcion_checkout'].queryset = OpcionCheckin.objects.filter(
+                hotel=hotel, tipo='CHECKOUT', activo=True
+            )
+            # Seleccionar opción estándar por defecto
+            checkin_std = OpcionCheckin.objects.filter(
+                hotel=hotel, tipo='CHECKIN', cargo_extra=0
+            ).first()
+            checkout_std = OpcionCheckin.objects.filter(
+                hotel=hotel, tipo='CHECKOUT', cargo_extra=0
+            ).first()
+            if checkin_std:
+                self.fields['opcion_checkin'].initial = checkin_std
+            if checkout_std:
+                self.fields['opcion_checkout'].initial = checkout_std
 
     def clean_num_doc(self):
         tipo = self.cleaned_data.get('tipo_doc')

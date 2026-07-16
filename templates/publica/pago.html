@@ -215,7 +215,7 @@
                 </div>
                 <div style="display:flex; justify-content:space-between;">
                   <span style="color:#6b7280;">Monto</span>
-                  <strong style="color:#2D4A3E;">S/ {{ reserva.precio_total }}</strong>
+                  <strong style="color:#2D4A3E;">S/ {{ reserva.total_con_extras }}</strong>
                 </div>
               </div>
             </div>
@@ -229,8 +229,8 @@
           </div>
 
         <button type="submit" class="pub-btn-submit" style="margin-top:20px;"
-                id="btnPagar" data-total="{{ reserva.precio_total }}">
-          <i class="bi bi-lock-fill"></i> Pagar S/ {{ reserva.precio_total }}
+                id="btnPagar" data-total="{{ reserva.total_con_extras }}">
+          <i class="bi bi-lock-fill"></i> Pagar S/ {{ reserva.total_con_extras }}
         </button>
 
 
@@ -269,11 +269,23 @@
               <span style="color:#6b7280;">Huésped</span>
               <span style="font-weight:600;">{{ reserva.huesped.nombre_completo }}</span>
             </div>
+{% if reserva.opcion_checkin and reserva.opcion_checkin.cargo_extra > 0 %}
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Early check-in ({{ reserva.opcion_checkin.hora|time:"H:i" }})</span>
+              <span style="font-weight:600;">+ S/ {{ reserva.opcion_checkin.cargo_extra }}</span>
+            </div>
+            {% endif %}
+            {% if reserva.opcion_checkout and reserva.opcion_checkout.cargo_extra > 0 %}
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#6b7280;">Late check-out ({{ reserva.opcion_checkout.hora|time:"H:i" }})</span>
+              <span style="font-weight:600;">+ S/ {{ reserva.opcion_checkout.cargo_extra }}</span>
+            </div>
+            {% endif %}
             <div style="border-top:1px solid #E5DDD0; padding-top:10px; margin-top:4px;
                         display:flex; justify-content:space-between;
                         font-family:'Playfair Display',serif; font-size:18px; font-weight:700;">
               <span>Total</span>
-              <span style="color:#2D4A3E;">S/ {{ reserva.precio_total }}</span>
+              <span style="color:#2D4A3E;">S/ {{ reserva.total_con_extras }}</span>
             </div>
           </div>
         </div>

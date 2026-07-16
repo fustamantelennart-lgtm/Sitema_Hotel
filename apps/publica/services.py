@@ -69,17 +69,19 @@ class ReservaPublicaService:
         precio_total = precio_noche * noches
 
         reserva = Reserva.objects.create(
-            hotel           = hotel,
-            huesped         = huesped,
-            tipo_habitacion = tipo,
-            fecha_entrada   = fe,
-            fecha_salida    = fs,
-            num_adultos     = data['num_adultos'],
-            num_ninos       = data['num_ninos'],
-            estado          = 'PENDIENTE',
-            precio_total    = precio_total,
-            origen          = 'WEB',
-            observaciones   = data.get('observaciones', ''),
+            hotel            = hotel,
+            huesped          = huesped,
+            tipo_habitacion  = tipo,
+            fecha_entrada    = fe,
+            fecha_salida     = fs,
+            num_adultos      = data['num_adultos'],
+            num_ninos        = data['num_ninos'],
+            estado           = 'PENDIENTE',
+            precio_total     = precio_total,
+            origen           = 'WEB',
+            observaciones    = data.get('observaciones', ''),
+            opcion_checkin   = data.get('opcion_checkin'),
+            opcion_checkout  = data.get('opcion_checkout'),
         )
         return reserva
 

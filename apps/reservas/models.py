@@ -88,7 +88,19 @@ class Reserva(ModeloBase):
     estado          = models.CharField(max_length=20, choices=ESTADOS, default='PENDIENTE', db_index=True)
     origen          = models.CharField(max_length=20, choices=ORIGENES, default='DIRECTO')
     precio_total    = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    observaciones   = models.TextField(blank=True)
+    observaciones    = models.TextField(blank=True)
+    opcion_checkin   = models.ForeignKey(
+        'recepcion.OpcionCheckin',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='reservas_checkin'
+    )
+    opcion_checkout  = models.ForeignKey(
+        'recepcion.OpcionCheckin',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='reservas_checkout'
+    )
     creado_por      = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -105,8 +117,13 @@ class Reserva(ModeloBase):
         return f'R-{self.pk} — {self.huesped} ({self.estado})'
 
     @property
-    def num_noches(self):
-        return (self.fecha_salida - self.fecha_entrada).days
+    def total_con_extras(self):
+        extra = 0
+        if self.opcion_checkin and self.opcion_checkin.cargo_extra:
+            extra += self.opcion_checkin.cargo_extra
+        if self.opcion_checkout and self.opcion_checkout.cargo_extra:
+            extra += self.opcion_checkout.cargo_extra
+        return self.precio_total + extra
 
 
 class Estancia(ModeloBase):
