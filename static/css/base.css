@@ -446,11 +446,22 @@ body {
   margin-top: 6px;
 }
 
-.hab-celda.disponible   { border-color: #2D4A3E22; }
-.hab-celda.ocupada      { border-color: #1a1a1a33; }
-.hab-celda.limpieza     { border-color: #C4A88255; }
-.hab-celda.mantenimiento{ border-color: #6b728055; }
-
+.hab-celda.disponible {
+  border-color: #2D4A3E22;
+  background: #e8f5ec;
+}
+.hab-celda.ocupada {
+  border-color: #c0392b33;
+  background: #fdecea;
+}
+.hab-celda.limpieza {
+  border-color: #C4A88255;
+  background: #fff8e1;
+}
+.hab-celda.mantenimiento {
+  border-color: #6b728055;
+  background: #eceff1;
+}
 .hab-estado-label.disponible   { color: #2D4A3E; }
 .hab-estado-label.ocupada      { color: #1a1a1a; }
 .hab-estado-label.limpieza     { color: #C4A882; }
