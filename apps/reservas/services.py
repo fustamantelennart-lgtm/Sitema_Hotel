@@ -150,15 +150,8 @@ class EstanciaService:
                 tipo           = 'OTRO',
                 registrado_por = usuario,
             )
-        # Crear folio
-        if reserva.origen == 'WEB':
-            folio = Folio.objects.create(
-                estancia    = estancia,
-                estado      = 'PAGADO',
-                metodo_pago = 'TRANSFERENCIA',
-            )
-        else:
-            folio = Folio.objects.create(estancia=estancia)
+        # Crear folio — siempre ABIERTO para extras durante la estancia
+        folio = Folio.objects.create(estancia=estancia)
         folio.recalcular()
 
         # Cambiar estados

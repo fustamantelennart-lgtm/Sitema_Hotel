@@ -115,7 +115,7 @@
             <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
             <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
           </td>
-          <td>Hab. {{ r.habitacion.numero }}</td>
+          <td>Hab. {{ r.habitacion.numero|default:r.estancia.habitacion.numero }}</td>
           <td>{{ r.fecha_salida|date:"d M Y" }}</td>
           <td>
             {% if r.estancia.folio.tiene_deuda %}
@@ -171,7 +171,7 @@
             <div style="font-weight:600;">{{ r.huesped.nombre_completo }}</div>
             <div style="font-size:12px; color:var(--color-text-muted);">{{ r.huesped.num_doc }}</div>
           </td>
-          <td>Hab. {{ r.habitacion.numero }}</td>
+          <td>Hab. {{ r.habitacion.numero|default:r.estancia.habitacion.numero }}</td>
           <td>
             <a href="{% url 'reservas:checkout' r.estancia.pk %}" class="btn-primary"
                style="font-size:12px; padding:6px 12px; background:var(--color-danger);">

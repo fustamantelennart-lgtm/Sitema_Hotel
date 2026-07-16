@@ -41,8 +41,10 @@ class TareaLimpieza(ModeloBase):
         self.estado           = 'LISTA'
         self.fecha_completada = timezone.now()
         self.save()
-        self.habitacion.estado = 'DISPONIBLE'
-        self.habitacion.save()
+        
+        if self.habitacion.estado == 'LIMPIEZA':
+            self.habitacion.estado = 'DISPONIBLE'
+            self.habitacion.save()
 
 
 class IncidenteHabitacion(ModeloBase):

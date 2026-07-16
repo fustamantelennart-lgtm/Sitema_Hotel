@@ -141,6 +141,28 @@ def folio(request, pk):
 
 @login_required
 @rol_requerido('admin', 'recepcionista')
+def solicitar_revision(request, pk):
+    from apps.housekeeping.models import TareaLimpieza
+    estancia = get_object_or_404(Estancia, pk=pk)
+    if request.method == 'POST':
+        TareaLimpieza.objects.create(
+            habitacion    = estancia.habitacion,
+            prioridad     = 'ALTA',
+            observaciones = (
+                f'Revisión de minibar/consumos solicitada por recepción — '
+                f'Hab. {estancia.habitacion.numero}, Estancia R-{estancia.reserva.pk} '
+                f'(habitación aún OCUPADA, antes del checkout).'
+            ),
+        )
+        messages.success(
+            request,
+            f'Se notificó a Housekeeping para revisar la Hab. {estancia.habitacion.numero} antes del checkout.'
+        )
+    return redirect('reservas:folio', pk=estancia.pk)
+
+
+@login_required
+@rol_requerido('admin', 'recepcionista')
 def agregar_cargo(request, pk):
     estancia = get_object_or_404(Estancia, pk=pk, estado='ACTIVA')
     form     = CargoForm(request.POST or None)

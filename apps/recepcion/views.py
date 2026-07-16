@@ -42,8 +42,12 @@ def habitaciones(request):
     q = request.GET.get('q', '')
     if q:
         habitaciones = habitaciones.filter(numero__icontains=q)
+    pisos = {}
+    for hab in habitaciones:
+        pisos.setdefault(hab.piso, []).append(hab)
     return render(request, 'recepcion/habitaciones.html', {
         'habitaciones': habitaciones,
+        'pisos':        pisos,
         'q':            q,
         'hotel':        hotel,
     })

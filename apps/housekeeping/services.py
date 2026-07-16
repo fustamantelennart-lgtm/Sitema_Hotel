@@ -47,13 +47,11 @@ class HousekeepingService:
                            monto_cobrar, usuario) -> IncidenteHabitacion:
         from apps.recepcion.models import Habitacion
         habitacion = Habitacion.objects.get(pk=habitacion_id)
-
         if habitacion.estado not in ['OCUPADA', 'LIMPIEZA']:
             from apps.reservas.exceptions import ReglaNegocioViolada
             raise ReglaNegocioViolada(
                 f'Solo se pueden reportar incidentes en habitaciones OCUPADA o en LIMPIEZA.'
             )
-
         incidente = IncidenteHabitacion.objects.create(
             habitacion    = habitacion,
             tipo          = tipo,
@@ -61,6 +59,25 @@ class HousekeepingService:
             monto_cobrar  = monto_cobrar or None,
             reportado_por = usuario,
         )
+
+        # Si la habitación tiene una estancia activa y el incidente tiene
+        # monto a cobrar, generar el cargo automáticamente en su folio.
+        if monto_cobrar:
+            from apps.reservas.models import Estancia
+            estancia_activa = Estancia.objects.filter(
+                habitacion=habitacion, estado='ACTIVA'
+            ).select_related('folio').first()
+            if estancia_activa:
+                from apps.reservas.models import CargoEstancia
+                CargoEstancia.objects.create(
+                    estancia       = estancia_activa,
+                    concepto       = f'{incidente.get_tipo_display()} — {descripcion}',
+                    monto          = monto_cobrar,
+                    tipo           = 'OTRO',
+                    registrado_por = usuario,
+                )
+                estancia_activa.folio.recalcular()
+
         return incidente
 
     @staticmethod

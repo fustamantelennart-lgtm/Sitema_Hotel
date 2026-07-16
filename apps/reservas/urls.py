@@ -19,6 +19,7 @@ urlpatterns = [
     path('<int:pk>/cargo/',                 views.agregar_cargo,       name='cargo'),
     path('<int:pk>/pagar/',                 views.pagar_folio,         name='pagar_folio'),
     path('<int:pk>/cancelar/',              views.cancelar,            name='cancelar'),
+    path('<int:pk>/solicitar-revision/',    views.solicitar_revision,  name='solicitar_revision'),
     path('<int:pk>/confirmar-web/',         views.confirmar_solicitud, name='confirmar_solicitud'),
     path('<int:pk>/rechazar-web/',          views.rechazar_solicitud,  name='rechazar_solicitud'),
 ]

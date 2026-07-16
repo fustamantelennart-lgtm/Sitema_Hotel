@@ -39,81 +39,104 @@
     <i class="bi bi-list-ul" style="color:var(--color-primary);"></i>
     Habitaciones — {{ hotel.nombre }}
   </div>
-  {% if habitaciones %}
-  <table class="tabla">
-    <thead>
-      <tr>
-        <th>Número</th>
-        <th>Piso</th>
-        <th>Tipo</th>
-        <th>Estado</th>
-        <th>Observaciones</th>
-        <th>Cambiar estado</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for hab in habitaciones %}
-      <tr>
-        <td style="font-weight:700; font-size:16px;">{{ hab.numero }}</td>
-        <td>Piso {{ hab.piso }}</td>
-        <td>{{ hab.tipo.nombre }}</td>
-        <td>
-          <span class="badge
-            {% if hab.estado == 'DISPONIBLE' %}badge-green
-            {% elif hab.estado == 'OCUPADA' %}badge-red
-            {% elif hab.estado == 'LIMPIEZA' %}badge-sand
-            {% else %}badge-gray{% endif %}">
-            {{ hab.get_estado_display }}
-          </span>
-        </td>
-        <td style="font-size:12px; color:var(--color-text-muted);">
-          {{ hab.observaciones|default:"—" }}
-        </td>
-        <td>
-          {% if hab.estado == 'OCUPADA' and user.es_admin %}
-          <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
-                style="display:flex; gap:6px;">
-            {% csrf_token %}
-            <select name="estado" class="form-select"
-                    style="font-size:12px; padding:4px 8px; width:auto;">
-              <option value="DISPONIBLE">Disponible</option>
-              <option value="LIMPIEZA">En Limpieza</option>
-              <option value="MANTENIMIENTO">Mantenimiento</option>
-            </select>
-            <button type="submit" class="btn-secondary"
-                    style="font-size:12px; padding:4px 10px;">
-              <i class="bi bi-save"></i>
-            </button>
-          </form>
-          {% elif hab.estado == 'OCUPADA' %}
-          <span style="font-size:12px; color:var(--color-text-muted);">
-            <i class="bi bi-lock"></i> Ocupada
-          </span>
-          {% else %}
-          <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
-                style="display:flex; gap:6px;">
-            {% csrf_token %}
-            <select name="estado" class="form-select"
-                    style="font-size:12px; padding:4px 8px; width:auto;">
-              {% for val, label in hab.ESTADO_CHOICES %}
-              {% if val != 'OCUPADA' %}
-              <option value="{{ val }}" {% if hab.estado == val %}selected{% endif %}>
-                {{ label }}
-              </option>
+{% if pisos %}
+  {% for piso, habs in pisos.items %}
+  <div class="acordeon-piso">
+    <button type="button" class="acordeon-header" onclick="togglePiso(this)">
+      <span>
+        <i class="bi bi-building"></i>
+        Piso {{ piso }}
+        <span class="acordeon-count">{{ habs|length }} hab.</span>
+      </span>
+      <i class="bi bi-chevron-down acordeon-icon"></i>
+    </button>
+    <div class="acordeon-body" style="display:none;">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Observaciones</th>
+            <th>Cambiar estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for hab in habs %}
+          <tr>
+            <td style="font-weight:700; font-size:16px;">{{ hab.numero }}</td>
+            <td>{{ hab.tipo.nombre }}</td>
+            <td>
+              <span class="badge
+                {% if hab.estado == 'DISPONIBLE' %}badge-green
+                {% elif hab.estado == 'OCUPADA' %}badge-red
+                {% elif hab.estado == 'LIMPIEZA' %}badge-sand
+                {% else %}badge-gray{% endif %}">
+                {{ hab.get_estado_display }}
+              </span>
+            </td>
+            <td style="font-size:12px; color:var(--color-text-muted);">
+              {{ hab.observaciones|default:"—" }}
+            </td>
+            <td>
+              {% if hab.estado == 'OCUPADA' and user.es_admin %}
+              <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
+                    style="display:flex; gap:6px;">
+                {% csrf_token %}
+                <select name="estado" class="form-select"
+                        style="font-size:12px; padding:4px 8px; width:auto;">
+                  <option value="DISPONIBLE">Disponible</option>
+                  <option value="LIMPIEZA">En Limpieza</option>
+                  <option value="MANTENIMIENTO">Mantenimiento</option>
+                </select>
+                <button type="submit" class="btn-secondary"
+                        style="font-size:12px; padding:4px 10px;">
+                  <i class="bi bi-save"></i>
+                </button>
+              </form>
+              {% elif hab.estado == 'OCUPADA' %}
+              <span style="font-size:12px; color:var(--color-text-muted);">
+                <i class="bi bi-lock"></i> Ocupada
+              </span>
+              {% else %}
+              <form method="post" action="{% url 'recepcion:cambiar_estado' hab.pk %}"
+                    style="display:flex; gap:6px;">
+                {% csrf_token %}
+                <select name="estado" class="form-select"
+                        style="font-size:12px; padding:4px 8px; width:auto;">
+                  {% for val, label in hab.ESTADO_CHOICES %}
+                  {% if val != 'OCUPADA' %}
+                  <option value="{{ val }}" {% if hab.estado == val %}selected{% endif %}>
+                    {{ label }}
+                  </option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+                <button type="submit" class="btn-secondary"
+                        style="font-size:12px; padding:4px 10px;">
+                  <i class="bi bi-save"></i>
+                </button>
+              </form>
               {% endif %}
-              {% endfor %}
-            </select>
-            <button type="submit" class="btn-secondary"
-                    style="font-size:12px; padding:4px 10px;">
-              <i class="bi bi-save"></i>
-            </button>
-          </form>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+  {% block extra_js %}
+<script>
+function togglePiso(btn) {
+    const body = btn.nextElementSibling;
+    const icon = btn.querySelector('.acordeon-icon');
+    const abierto = body.style.display !== 'none';
+    body.style.display = abierto ? 'none' : 'block';
+    icon.style.transform = abierto ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+</script>
+{% endblock %}
   {% else %}
   <div class="card-body" style="text-align:center; padding:40px; color:var(--color-text-muted);">
     <i class="bi bi-list-ul" style="font-size:32px; display:block; margin-bottom:8px;"></i>

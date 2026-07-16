@@ -72,9 +72,21 @@
         <span>Noches</span>
         <strong>{{ reserva.num_noches }}</strong>
       </div>
+  {% if reserva.opcion_checkin and reserva.opcion_checkin.cargo_extra > 0 %}
+      <div class="pub-conf-row">
+        <span>Early check-in ({{ reserva.opcion_checkin.hora|time:"H:i" }})</span>
+        <strong>+ S/ {{ reserva.opcion_checkin.cargo_extra }}</strong>
+      </div>
+      {% endif %}
+      {% if reserva.opcion_checkout and reserva.opcion_checkout.cargo_extra > 0 %}
+      <div class="pub-conf-row">
+        <span>Late check-out ({{ reserva.opcion_checkout.hora|time:"H:i" }})</span>
+        <strong>+ S/ {{ reserva.opcion_checkout.cargo_extra }}</strong>
+      </div>
+      {% endif %}
       <div class="pub-conf-row pub-conf-total">
         <span>Total</span>
-        <strong>S/ {{ reserva.precio_total }}</strong>
+        <strong>S/ {{ reserva.total_con_extras }}</strong>
       </div>
     </div>
 
@@ -88,6 +100,48 @@
     </a>
 
   </div>
+
+<!-- Modal informativo de check-in -->
+<div id="modalInfoCheckin" class="modal-overlay active">
+  <div class="modal-box" style="max-width:420px;">
+    <div class="modal-header">
+      <div class="modal-icono" style="background:#e8f0ec; color:#2D4A3E;">
+        <i class="bi bi-info-circle"></i>
+      </div>
+      <h2 class="modal-titulo" style="font-size:18px;">¿Dónde veo mi check-in?</h2>
+    </div>
+    <div style="font-size:13.5px; color:#4b5563; line-height:1.7; margin-bottom:20px;">
+      <p>La información de tu llegada (hora de check-in, habitación asignada y detalles) está disponible en:</p>
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:12px;">
+        <div style="display:flex; align-items:center; gap:10px; background:#f5f3f0; border-radius:10px; padding:10px 14px;">
+          <i class="bi bi-person-circle" style="font-size:20px; color:#2D4A3E;"></i>
+          <div>
+            <div style="font-weight:600;">Tu perfil</div>
+            <div style="font-size:12px; color:#6b7280;">Visita "Mi cuenta" para ver todos los detalles de tu reserva.</div>
+          </div>
+        </div>
+        {% if reserva.huesped.acepta_emails %}
+        <div style="display:flex; align-items:center; gap:10px; background:#f5f3f0; border-radius:10px; padding:10px 14px;">
+          <i class="bi bi-envelope-fill" style="font-size:20px; color:#2D4A3E;"></i>
+          <div>
+            <div style="font-weight:600;">Tu correo</div>
+            <div style="font-size:12px; color:#6b7280;">Te enviamos un email a <strong>{{ reserva.huesped.email }}</strong>.</div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <button type="button" class="pub-btn-submit" id="btnCerrarInfoCheckin">
+      Entendido
+    </button>
+  </div>
+</div>
+
+<script>
+document.getElementById('btnCerrarInfoCheckin').addEventListener('click', function() {
+  document.getElementById('modalInfoCheckin').classList.remove('active');
+});
+</script>
 
 </body>
 </html>

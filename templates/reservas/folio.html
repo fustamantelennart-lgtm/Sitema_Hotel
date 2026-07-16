@@ -108,6 +108,14 @@
         <a href="{% url 'reservas:cargo' estancia.pk %}" class="btn-secondary">
           <i class="bi bi-plus-lg"></i> Agregar cargo manual
         </a>
+        {% if estancia.estado == 'ACTIVA' %}
+        <form method="post" action="{% url 'reservas:solicitar_revision' estancia.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-secondary" style="width:100%; justify-content:center;">
+            <i class="bi bi-clipboard-check"></i> Solicitar revisión de minibar
+          </button>
+        </form>
+        {% endif %}
 
 {% if folio.estado == 'ABIERTO' %}
         <form method="post" action="{% url 'reservas:pagar_folio' estancia.pk %}">

@@ -563,3 +563,39 @@ body {
   padding-bottom: 6px;
   border-bottom: 1px solid var(--color-border);
 }
+
+/* ===== ACORDEÓN PISOS ===== */
+.acordeon-piso {
+  border-bottom: 1px solid var(--color-border);
+}
+.acordeon-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  text-align: left;
+  transition: background .15s;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  box-shadow: none;
+}
+.acordeon-header:hover { background: var(--color-bg); }
+.acordeon-count {
+  margin-left: 8px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+.acordeon-icon {
+  transition: transform .2s;
+  color: var(--color-text-muted);
+}

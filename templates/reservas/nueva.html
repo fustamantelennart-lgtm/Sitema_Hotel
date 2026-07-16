@@ -34,16 +34,58 @@
           Datos del huésped
         </div>
 
-        <div class="form-group">
-          <label class="form-label">DNI</label>
-          <input type="text" name="num_doc" id="id_num_doc" class="form-control"
-                 maxlength="8" placeholder="Ej: 75897100"
-                 oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)"
-                 value="{{ form.num_doc.value|default:'' }}">
-          <small id="dniFeedback" style="font-size:12px; display:block; margin-top:4px;"></small>
-          {% if form.num_doc.errors %}
-            <div class="form-error">{{ form.num_doc.errors.0 }}</div>
-          {% endif %}
+<!-- Toggle modo registro -->
+        <div style="display:flex; gap:8px; margin-bottom:16px;">
+          <button type="button" id="btnModoPeruanoNR" 
+                  class="btn-primary" style="flex:1; justify-content:center;">
+            <i class="bi bi-person-vcard"></i> DNI (Perú)
+          </button>
+          <button type="button" id="btnModoExtranjeroNR" 
+                  class="btn-secondary" style="flex:1; justify-content:center;">
+            <i class="bi bi-globe"></i> Extranjero
+          </button>
+        </div>
+
+        <!-- Modo peruano -->
+        <div id="camposDniNR">
+          <div class="form-group">
+            <label class="form-label">DNI</label>
+            <input type="text" name="num_doc" id="id_num_doc" class="form-control"
+                   maxlength="8" placeholder="Ej: 75897100"
+                   oninput="this.value=this.value.replace(/\D/g,'').slice(0,8)"
+                   value="{{ form.num_doc.value|default:'' }}">
+            <small id="dniFeedback" style="font-size:12px; display:block; margin-top:4px;"></small>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggleManualNR">
+                <span class="toggle-slider"></span>
+              </label>
+              <span style="font-size:12px; color:#6b7280;">Ingresar manualmente</span>
+            </div>
+            {% if form.num_doc.errors %}
+              <div class="form-error">{{ form.num_doc.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Modo extranjero -->
+        <div id="camposExtranjeroNR" style="display:none;">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Tipo documento</label>
+              <select id="selectTipoDocNR" name="tipo_doc" class="form-control"
+                      onchange="document.getElementById('id_num_doc_ext_nr').focus()">
+                <option value="CE">Carnet de Extranjería</option>
+                <option value="PAS">Pasaporte</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Número documento</label>
+              <input type="text" id="id_num_doc_ext_nr" class="form-control"
+                     placeholder="Nro. documento"
+                     oninput="document.getElementById('id_num_doc').value=this.value">
+            </div>
+          </div>
         </div>
 
         <div class="form-row-2">
